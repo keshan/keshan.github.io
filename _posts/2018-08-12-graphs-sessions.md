@@ -8,7 +8,7 @@ fig-caption: # Add figcaption (optional)
 tags: [Machine learning, Tensorflow]
 ---
 
-Tensorflow has been an open source software library for high performance numerical computation which became highly popular among Machine learning practitioners ever since it was open sourced few years back by Google. It has become one of the go to frameworks for deep learning projects because of it's richness of features and ability to abstract lot of boilerplate code and configurations without reducing the flexibility and scalability.
+Tensorflow has been the most popular open source software library for high performance numerical computation which became highly popular among Machine learning practitioners ever since it was open sourced few years back by Google. It has become one of the go to frameworks for deep learning projects because of it's richness of features and ability to abstract lot of boilerplate code and configurations without reducing the flexibility and scalability.
 However, this article will try to discuss some of the underlying nuts and bolts which will not be necessary when using high level APIs like Keras or Tensorflow estimators.
 
 **_What is a graph?_**
