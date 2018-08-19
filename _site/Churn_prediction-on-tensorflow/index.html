@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Customer churn prediction with Pandas and Keras - Hello, world! I'm Keshan Sodimana</title>
+
+  <!-- Edit site and author settings in `_config.yml` to make the social details your own -->
+
+    <meta content="Hello, world! I'm Keshan Sodimana" property="og:site_name">
+  
+    <meta content="Customer churn prediction with Pandas and Keras" property="og:title">
+  
+  
+    <meta content="article" property="og:type">
+  
+  
+    <meta content="Customer churn prediction on a telco dataset with Pandas and Keras." property="og:description">
+  
+  
+    <meta content="http://localhost:4000/Churn_prediction-on-tensorflow/" property="og:url">
+  
+  
+    <meta content="2018-08-20T00:00:00+05:30" property="article:published_time">
+    <meta content="http://localhost:4000/about/" property="article:author">
+  
+  
+    <meta content="http://localhost:4000/assets/img/churn.png" property="og:image">
+  
+  
+    
+  
+  
+    
+    <meta content="Machine learning" property="article:tag">
+    
+    <meta content="Tensorflow" property="article:tag">
+    
+    <meta content="Data analysis" property="article:tag">
+    
+    <meta content="pandas" property="article:tag">
+    
+  
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@">
+    <meta name="twitter:creator" content="@crazykesh">
+  
+    <meta name="twitter:title" content="Customer churn prediction with Pandas and Keras">
+  
+  
+    <meta name="twitter:url" content="http://localhost:4000/Churn_prediction-on-tensorflow/">
+  
+  
+    <meta name="twitter:description" content="Customer churn prediction on a telco dataset with Pandas and Keras.">
+  
+  
+    <meta name="twitter:image:src" content="http://localhost:4000/assets/img/churn.png">
+  
+
+	<meta name="description" content="Customer churn prediction on a telco dataset with Pandas and Keras.">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta property="og:image" content="">
+	<link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/assets/img/favicon/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/assets/img/favicon/apple-touch-icon-114x114.png">
+	<!-- Chrome, Firefox OS and Opera -->
+	<meta name="theme-color" content="#263959">
+	<!-- Windows Phone -->
+	<meta name="msapplication-navbutton-color" content="#263959">
+	<!-- iOS Safari -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="#263959">
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=PT+Serif:400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="/assets/fonts/font-awesome/css/font-awesome.min.css">
+	<!-- Styles -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <aside class="sidebar">
+  <header>
+    <div class="about">
+      <div class="cover-author-image">
+        <a href="/"><img src="/assets/img/keshan.jpg" alt="Keshan Sanjaya Sodimana"></a>
+      </div>
+      <div class="author-name">Keshan Sanjaya Sodimana</div>
+      <p>I am a Machine Learning enthusiast with a Computer Science background. Enjoy travelling, reading and learning cool new stuff.</p>
+    <div><ul>
+      <li><a href="/"><i>Home</i></a></li>
+      <li><a href="/about/"><i>About</i></a></li>
+      <li><a href="/publications/"><i>Publications & Presentations</i></a></li>
+    </ul></div>
+    </div>
+  </header> <!-- End Header -->
+  <footer>
+    <section class="contact">
+      <h3 class="contact-title">Contact me</h3>
+      <ul>
+        
+          <li><a href="https://twitter.com/crazykesh" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+        
+        
+          <li><a href="https://facebook.com/keshan88" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+        
+        
+          <li class="github"><a href="http://github.com/keshan" target="_blank"><i class="fa fa-github"></i></a></li>
+        
+        
+          <li class="linkedin"><a href="https://in.linkedin.com/in/keshan" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        
+        
+          <li class="email"><a href="mailto:keshan88@gmail.com"><i class="fa fa-envelope-o"></i></a></li>
+        
+      </ul>
+    </section> <!-- End Section Contact -->
+    <div class="copyright">
+      <p>2018 &copy; Keshan Sanjaya Sodimana</p>
+    </div>
+  </footer> <!-- End Footer -->
+</aside> <!-- End Sidebar -->
+<div class="content-box clearfix">
+  <article class="article-page">
+  <div class="page-content">
+    
+    <div class="page-cover-image">
+      <figure>
+        <img class="page-image" src=/assets/img/churn.png alt="Customer churn prediction with Pandas and Keras">
+        
+      </figure>
+    </div> <!-- End Page Cover Image -->
+    
+    <div class="wrap-content">
+      <header class="header-page">
+        <h1 class="page-title">Customer churn prediction with Pandas and Keras</h1>
+        <div class="page-date"><span>2018, Aug 20&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+      </header>
+      <p>Customer churn or customer attrition is the loss of existing customers from a service or a company and that is a vital part of many businesses to understand in order to provide more relevant and quality services and retain the valuable customers to increase their profitability. In this post we will try to predict customer churn for a telco operator. We will be using <a href="https://community.watsonanalytics.com/wp-content/uploads/2015/03/WA_Fn-UseC_-Telco-Customer-Churn.csv">a dataset from IBM Watson analytics community</a></p>
+
+<p><strong>Let’s dive in:</strong></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">load_model</span>
+</code></pre></div></div>
+<p>first things first, import the necessary libraries and make sure you have downloaded the csv file in to the working directory.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'WA_Fn-UseC_-Telco-Customer-Churn.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+<p>We’ll then read the csv file in to a pandas dataframe. In this post we are using a relatively small dataset which can be easily stored in the memory but if you are using a bigger file(s) it’s highly recommended to look in to <a href="https://www.tensorflow.org/guide/datasets">Tensorflow Dataset API</a> which is beyond the scope of this post.</p>
+
+<p>Before moving on to building our model, we have to do some important things, that’s to get an idea about our dataset, apply data wrangling if necessary, and identify the features for our model.</p>
+
+<p>You can run:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>To see a gist of the dataset.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+</code></pre></div></div>
+<p><img src="../assets/img/churn/columns.png" alt="column names" /></p>
+
+<p>Let’s check what these columns really are:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">dtypes</span>
+</code></pre></div></div>
+<p><img src="../assets/img/churn/dtypes.png" alt="data types" /></p>
+
+<p>It’s quite obvious that we have some issues to fix in this dataset.</p>
+
+<ul>
+  <li>Senior Citizen column has two values, Yes and No but here it’s 1 and 0 and column is a int64 type. Let’s fix that.
+first we need to replace 1s and 0s with Yes and No:
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">SeniorCitizen</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s">"No"</span><span class="p">,</span> <span class="s">"Yes"</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>TotalCharges column should be numerical.
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</code></pre></div>    </div>
+    <p>But when we try to convert this column in to float data type it raises an error. That’s because this column has some blank cells. Let’s go a bit deep in to this rabbit hole.</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">charge</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span><span class="p">:</span>
+<span class="k">try</span><span class="p">:</span>
+  <span class="n">charge</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">"charge is: </span><span class="si">%</span><span class="s">s"</span> <span class="o">%</span> <span class="n">charge</span><span class="p">)</span>
+</code></pre></div>    </div>
+    <p>Checking in this way it shows that 11 rows has a space as TotalCharge. What do we do for this?
+Let’s check what are the MonthlyCharge and Tenure when TotalCharge is a space/blank value</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+  <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">" "</span><span class="p">:</span>
+      <span class="k">print</span><span class="p">(</span><span class="s">"Tenure is </span><span class="si">%</span><span class="s">s and Monthly charges are </span><span class="si">%</span><span class="s">s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tenure</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">MonthlyCharges</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</code></pre></div>    </div>
+    <p><img src="../assets/img/churn/tenure.png" alt="total charge" /></p>
+  </li>
+</ul>
+
+<p>So, it’s obvious that total charges are blank when tenure is 0 in other words they are pretty new and short timed customers. Since their tenure is zero it’s quite logical to think that their total charges as zero. Let’s replace space in TotalCharges to 0 and convert the column to float data type.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="s">" "</span><span class="p">],</span> <span class="p">[</span><span class="s">"0"</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TotalCharges</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>Let’s do some normalizations</strong></p>
+
+<p>CustomerID, just as value, will not have any affect in customer churn so, let;s first drop that column.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">"customerID"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">dtypes</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">==</span> <span class="nb">object</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+</code></pre></div></div>
+<p><img src="../assets/img/churn/features.png" alt="features" /></p>
+
+<p>Now we have 3 numerical columns and rest are categorical. In order to normalize the numerical columns let’s divide the values of each column by the max value of the relevant column. This will make sure all the values are between 0 - 1 thus, helping to reduce those values giving unwanted weighing on final model.</p>
+
+<p>Since our labels will be Churn and it has Yes, No values, let’s replace Yes with one and No with zero so our model will be a binary classification model.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">.</span><span class="n">Churn</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="s">"Yes"</span><span class="p">,</span> <span class="s">"No"</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Next, we should encode all the categorical data in to one-hot encoding. Pandas have a quite easy way to do that:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>Prepare the data for training</strong></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">"Churn"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Churn</span>
+</code></pre></div></div>
+<p>Inputs to the model will be X and it has all the columns except Churn which is our label thus, assign it to y. To train and test our model we should split our dataset. This split will create 20% of data for testing and 80% for training.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span> <span class="mi">1234</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>Training</strong></p>
+
+<p>Creating the model:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'sigmoid'</span><span class="p">))</span>
+</code></pre></div></div>
+<p>Compiling the model:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">'binary_crossentropy'</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s">'adam'</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'accuracy'</span><span class="p">])</span>
+</code></pre></div></div>
+<p>Fitting the model for 150 epochs with 10 as batch size:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div></div>
+<p>This will start training your model on the training data split we created before. This will take a little while to finish. The model I trained had a accuracy of 84% on the training set which is not phenomenal.</p>
+
+<p><strong>Evaluating and saving the model</strong></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_</span><span class="p">,</span> <span class="n">accuracy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</code></pre></div></div>
+<p>For the model I trained on I got 77% accuracy on test set. You will get different values. However, we have ~8% difference in accuracy on training set and test set which may be due to overfitting. However, diagnosing these errors could be discussed in a separate post.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'my_model.h5'</span><span class="p">)</span>
+</code></pre></div></div>
+<p>You can save your model for future inferences but keep in mind that you have to do the same transformations, normalizations to the data that we did for the above dataset to your data before making inferences on this model.</p>
+
+<p>There are lot of things to improve in this model as well as diagnose some issue. Still you can play around with different hyper parameters and of course different other models like boosting, decision trees, SVMs and other classical algorithms and compare the results.</p>
+
+<p>Thanks!</p>
+
+      <div class="page-footer">
+        <div class="page-share">
+          <a href="https://twitter.com/intent/tweet?text=Customer churn prediction with Pandas and Keras&url=http://localhost:4000/Churn_prediction-on-tensorflow/" title="Share on Twitter" rel="nofollow" target="_blank">Twitter</a>
+          <a href="https://facebook.com/sharer.php?u=http://localhost:4000/Churn_prediction-on-tensorflow/" title="Share on Facebook" rel="nofollow" target="_blank">Facebook</a>
+          <a href="https://plus.google.com/share?url=http://localhost:4000/Churn_prediction-on-tensorflow/" title="Share on Google+" rel="nofollow" target="_blank">Google+</a>
+        </div>
+        <div class="page-tag">
+          
+            <a href="/tags#Machine learning" class="tag">&#35; Machine learning</a>
+          
+            <a href="/tags#Tensorflow" class="tag">&#35; Tensorflow</a>
+          
+            <a href="/tags#Data analysis" class="tag">&#35; Data analysis</a>
+          
+            <a href="/tags#pandas" class="tag">&#35; pandas</a>
+          
+        </div>
+      </div>
+      <section class="comment-area">
+  <div class="comment-wrapper">
+    
+    <div id="disqus_thread" class="article-comments"></div>
+    <script>
+      (function() {
+          var d = document, s = d.createElement('script');
+          s.src = '//keshan.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+  </div>
+</section> <!-- End Comment Area -->
+
+    </div> <!-- End Wrap Content -->
+  </div> <!-- End Page Content -->
+</article> <!-- End Article Page -->
+
+</div>
+
+  </div>
+  
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-122765133-1', 'auto');
+  ga('send', 'pageview');
+</script> <!-- End Analytics -->
+
+</body>
+</html>

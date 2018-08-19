@@ -5,10 +5,10 @@ date: 2018-08-12
 description: An introduction to graphs and sessions in Tensorflow. # Add post description (optional)
 img: tf_graph.png # Add image post (optional)
 fig-caption: # Add figcaption (optional)
-tags: [Machine learning, Tensorflow]
+tags: [Machine learning, Tensorflow, artificial intelligence]
 ---
 
-Tensorflow has been the most popular open source software library for high performance numerical computation which became highly popular among Machine learning practitioners ever since it was open sourced few years back by Google. It has become one of the go to frameworks for deep learning projects because of it's richness of features and ability to abstract lot of boilerplate code and configurations without reducing the flexibility and scalability.
+Tensorflow has been the most popular open source software library for high performance numerical computation which became highly popular among Machine learning practitioners ever since it was open sourced by Google. It has become one of the go to frameworks for deep learning projects because of it's richness of features and ability to abstract lot of boilerplate code and configurations without reducing the flexibility and scalability.
 However, this article will try to discuss some of the underlying nuts and bolts which will not be necessary when using high level APIs like Keras or Tensorflow estimators.
 
 **_What is a graph?_**
