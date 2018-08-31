@@ -206,13 +206,15 @@ One other benefit of using Estimators is that it already has canned estimators w
 </code></pre></div></div>
 <p>Let’s use a very simple DNNRegressor which is a pre made Estimator with the inputs and feature columns which we created in the above functions.</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
 
 <span class="n">tf</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">OUTDIR</span> <span class="o">=</span> <span class="s">'taxi_trained'</span>
+
 <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">OUTDIR</span><span class="p">,</span> <span class="n">ignore_errors</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span> <span class="c"># start fresh each time</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">DNNRegressor</span><span class="p">(</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
       <span class="n">feature_columns</span> <span class="o">=</span> <span class="n">make_feature_cols</span><span class="p">(),</span> <span class="n">model_dir</span> <span class="o">=</span> <span class="n">OUTDIR</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">input_fn</span> <span class="o">=</span> <span class="n">make_input_fn</span><span class="p">(</span><span class="n">df_train</span><span class="p">,</span> <span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">100</span><span class="p">))</span>
-<span class="n">print_rmse</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s">'validation'</span><span class="p">,</span> <span class="n">df_valid</span><span class="p">)</span>
 </code></pre></div></div>
 <p>After training the model let’s evaluate on the validation data</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">print_rmse</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>

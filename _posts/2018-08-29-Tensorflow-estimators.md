@@ -81,13 +81,15 @@ def make_feature_cols():
 Let's use a very simple DNNRegressor which is a pre made Estimator with the inputs and feature columns which we created in the above functions.
 ```python
 import shutil
+import tensorflow as tf
 
 tf.logging.set_verbosity(tf.logging.INFO)
+OUTDIR = 'taxi_trained'
+
 shutil.rmtree(OUTDIR, ignore_errors = True) # start fresh each time
 model = tf.estimator.DNNRegressor(hidden_units = [32, 8, 2],
       feature_columns = make_feature_cols(), model_dir = OUTDIR)
 model.train(input_fn = make_input_fn(df_train, num_epochs = 100))
-print_rmse(model, 'validation', df_valid)
 ```
 After training the model let's evaluate on the validation data
 ```python
