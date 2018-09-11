@@ -5,14 +5,14 @@ date: 2018-08-31
 description: How to use Tensorflow Estimators. # Add post description (optional)
 img: tf_estimators.png # Add image post (optional)
 fig-caption: # Add figcaption (optional)
-tags: [Tensorflow, Machine learning, Data analysis]
+tags: [Tensorflow, Machine learning, Data analysis, Deep learning]
 ---
 In a [previous post](https://keshan.github.io/graphs-sessions/), we discussed about Tensorflow graphs and sessions. Since building a computation graph, worrying about sessions too much and unnecessary work, Tensorflow comes with this high level API called Estimators it is inspired by scikit-learn and simplify machine learning programming. It doesn't just add an abstraction to graphs and sessions but it also encapsulate the actions like training, evaluation, prediction and export for serving with Google CloudML it handles scaling, and running on different hardware out of the box. Besides, Tensorflow official documentation highly encourage to use Estimator API in production level developments.
 One other benefit of using Estimators is that it already has canned estimators which are pre made to handle various different ML problems. However, not all the ML problems can be solved with the give pre built Estimators therefore Tensorflow has an easy API to implement custom estimators. It's pretty easy to even create keras models and wrap them around with estimator functionalities to get all the power of estimators to it.
 
 **Let's see how to build a model with a pre-made estimator.**
 
-In this post just for the purpose of showing how to build a model with Estimators we will be using [2016 Green Taxi trip data from NYC OpenData portal](https://data.cityofnewyork.us/Transportation/2016-Green-Taxi-Trip-Data/hvrh-b6nb). In this post we will not worry about model accuracy or the real problem this is just to show how to use estimator API and how to run such pipeline on Google CloudML.
+In this post just for the purpose of showing how to build a model with Estimators we will be using [2016 Green Taxi trip data from NYC OpenData portal](https://data.cityofnewyork.us/Transportation/2016-Green-Taxi-Trip-Data/hvrh-b6nb). In this post we will not worry about model accuracy or the real problem this is just to show how to use estimator API and how to run such pipeline.
 ```python
 import pandas as pd
 from sodapy import Socrata
