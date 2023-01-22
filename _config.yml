@@ -1,7 +1,7 @@
 title: Hello, world! I'm Keshan Sodimana
 description: > # this means to ignore newlines until "baseurl:"
   This is my personal website and blog. I will write about Machine Learning, Artificial Intelligence, Mathematics and Science in this blog.
-permalink: ':title/'
+permalink: ":title/"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 site-twitter: #if your site has a twitter account, enter it here
@@ -11,7 +11,6 @@ author: Keshan Sanjaya Sodimana # add your name
 author-img: keshan.jpg # add your photo
 about-author: I am a Machine Learning enthusiast with a Computer Science background. Enjoy travelling, reading and learning cool new stuff. # add description
 social-twitter: crazykesh # add your Twitter handle
-social-facebook: keshan88 # add your Facebook handle
 social-github: keshan # add your Github handle
 social-linkedin: keshan # add your Linkedin handle
 social-email: keshan88@gmail.com # add your Email address
