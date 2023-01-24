@@ -11,6 +11,8 @@ author: Keshan Sanjaya Sodimana # add your name
 author-img: keshan.jpg # add your photo
 about-author: I am a Machine Learning enthusiast with a Computer Science background. Enjoy travelling, reading and learning cool new stuff. # add description
 social-twitter: crazykesh # add your Twitter handle
+social-facebook:
+social-huggingface: keshan
 social-github: keshan # add your Github handle
 social-linkedin: keshan # add your Linkedin handle
 social-email: keshan88@gmail.com # add your Email address
