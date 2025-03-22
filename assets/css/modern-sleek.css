@@ -2024,8 +2024,8 @@ body.post-template {
   border-radius: 30px;
   font-size: 0.9rem;
   font-weight: 500;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: all 0.3s ease;
   text-decoration: none;
 }
 
@@ -2033,7 +2033,7 @@ body.post-template {
   background-color: #4a5568;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(50, 50, 93, 0.1);
 }
 
 .tag-count {
@@ -2276,4 +2276,236 @@ body.post-template {
 .contact-email a:hover {
   color: #2980b9;
   text-decoration: underline;
+}
+
+/* About Page Styles */
+.about-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.profile-image {
+  flex-shrink: 0;
+}
+
+.profile-image img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #3498db;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.profile-image img:hover {
+  transform: scale(1.05);
+}
+
+.profile-details h1 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 2.2rem;
+}
+
+.skills-section {
+  margin: 2rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.skills-section h2 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.skill-item {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.skill-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.skill-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.skill-item h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  color: #3498db;
+}
+
+.experience-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.experience-section h2 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+/* Publications Page Styles */
+.publications-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.publications-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  color: #2c3e50;
+}
+
+.publication-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+  background: #3498db;
+  color: white;
+}
+
+.publications-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.publication-item {
+  display: flex;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.publication-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.publication-year {
+  background: #3498db;
+  color: white;
+  padding: 1rem;
+  font-weight: bold;
+  min-width: 80px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.publication-content {
+  padding: 1.5rem;
+  flex-grow: 1;
+}
+
+.publication-title {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.publication-authors {
+  font-style: italic;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.publication-venue {
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.publication-links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pub-link {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: #e9ecef;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  color: #2c3e50;
+  transition: all 0.2s ease;
+}
+
+.pub-link:hover {
+  background: #3498db;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .publication-item {
+    flex-direction: column;
+  }
+  
+  .publication-year {
+    width: 100%;
+    padding: 0.5rem;
+  }
 }
