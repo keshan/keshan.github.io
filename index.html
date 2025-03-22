@@ -2,11 +2,17 @@
 layout: main
 ---
 
-<div class="hero">
+<div class="hero glass-card">
   <div class="hero-content">
     <h1>{{ site.title }}</h1>
     <p>{{ site.description }}</p>
+    <a href="{{site.baseurl}}/about/" class="hero-button">Learn More</a>
   </div>
+</div>
+
+<div class="section-heading">
+  <h2>Latest Articles</h2>
+  <p>Explore my thoughts on Machine Learning, AI, and more</p>
 </div>
 
 <div class="posts-grid">
@@ -16,14 +22,27 @@ layout: main
       {% if post.img %}
       <div class="post-card-image">
         <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}" alt="{{post.title}}">
+        {% if post.categories %}
+        <div class="post-card-category">
+          <span>{{ post.categories | first }}</span>
+        </div>
+        {% endif %}
       </div>
       {% endif %}
       <div class="post-card-content">
         <h2 class="post-card-title">{{post.title}}</h2>
         <p class="post-card-excerpt">{{ post.content | strip_html | truncatewords: 15 }}</p>
         <div class="post-card-meta">
-          <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>
-          <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless %}</span>
+          <div class="post-card-author">
+            {% if site.author-img %}
+            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}}" class="author-image">
+            {% endif %}
+            <span>{{site.author}}</span>
+          </div>
+          <div class="post-card-info">
+            <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>
+            <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless %}</span>
+          </div>
         </div>
       </div>
     </a>
@@ -31,6 +50,19 @@ layout: main
   {% endfor %}
 </div>
 
+{% if paginator.total_pages > 1 %}
 <div class="pagination-container">
   {% include pagination.html %}
+</div>
+{% endif %}
+
+<div class="newsletter-section glass-card">
+  <div class="newsletter-content">
+    <h2>Stay Updated</h2>
+    <p>Subscribe to my newsletter to get the latest updates on Machine Learning, AI, and more.</p>
+    <form class="newsletter-form">
+      <input type="email" placeholder="Your email address" required>
+      <button type="submit" class="newsletter-button">Subscribe</button>
+    </form>
+  </div>
 </div>

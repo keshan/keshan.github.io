@@ -2,51 +2,81 @@
 layout: default
 ---
 
-<header class="site-header">
-  <div class="header-wrapper">
-    <div class="site-title">
-      <a href="{{site.baseurl}}/">{{site.title}}</a>
+<div class="wrapper">
+  <header class="site-header">
+    <div class="header-wrapper">
+      <div class="site-title">
+        <a href="{{site.baseurl}}/" class="logo-link">
+          {% if site.author-img %}
+          <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}}" class="logo-image">
+          {% endif %}
+          <span>{{site.title}}</span>
+        </a>
+      </div>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="{{site.baseurl}}/" class="{% if page.url == '/' %}active{% endif %}">Home</a></li>
+          <li><a href="{{site.baseurl}}/about/" class="{% if page.url contains '/about/' %}active{% endif %}">About</a></li>
+          <li><a href="{{site.baseurl}}/publications/" class="{% if page.url contains '/publications/' %}active{% endif %}">Publications</a></li>
+          {% if site.social-email %}
+          <li><a href="{{site.baseurl}}/contact/" class="{% if page.url contains '/contact/' %}active{% endif %}">Contact</a></li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
-    <nav class="site-nav">
-      <ul>
-        <li><a href="{{site.baseurl}}/">Home</a></li>
-        <li><a href="{{site.baseurl}}/about/">About</a></li>
-        <li><a href="{{site.baseurl}}/publications/">Publications</a></li>
-        {% if site.social-email %}
-        <li><a href="{{site.baseurl}}/contact/">Contact</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-</header>
+  </header>
 
-<div class="content-wrapper">
-  {{ content }}
+  <div class="content-wrapper">
+    {{ content }}
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-wrapper">
+      <div class="footer-content">
+        <div class="footer-about">
+          <h3>About</h3>
+          <p>{{site.about-author}}</p>
+        </div>
+        
+        <div class="footer-nav">
+          <h3>Navigation</h3>
+          <ul>
+            <li><a href="{{site.baseurl}}/">Home</a></li>
+            <li><a href="{{site.baseurl}}/about/">About</a></li>
+            <li><a href="{{site.baseurl}}/publications/">Publications</a></li>
+            {% if site.social-email %}
+            <li><a href="{{site.baseurl}}/contact/">Contact</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        
+        <div class="footer-connect">
+          <h3>Connect</h3>
+          <div class="social-links">
+            <ul>
+              {% if site.social-twitter %}
+                <li><a href="https://twitter.com/{{ site.social-twitter }}" target="_blank" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+              {% endif %}
+              {% if site.social-huggingface %}
+                <li><a href="https://huggingface.com/{{ site.social-huggingface }}" target="_blank" aria-label="Hugging Face"><i class="fa fa-code" aria-hidden="true"></i></a></li>
+              {% endif %}
+              {% if site.social-github %}
+                <li><a href="http://github.com/{{site.social-github}}" target="_blank" aria-label="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+              {% endif %}
+              {% if site.social-linkedin %}
+                <li><a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+              {% endif %}
+              {% if site.social-email %}
+                <li><a href="mailto:{{site.social-email}}" aria-label="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="copyright">
+        <p>&copy; {{site.time | date: '%Y'}} <span>{{site.author}}</span> • Built with <i class="fa fa-heart" aria-hidden="true"></i> and Jekyll</p>
+      </div>
+    </div>
+  </footer>
 </div>
-
-<footer class="site-footer">
-  <div class="footer-wrapper">
-    <div class="social-links">
-      <ul>
-        {% if site.social-twitter %}
-          <li><a href="https://twitter.com/{{ site.social-twitter }}" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-        {% endif %}
-        {% if site.social-huggingface %}
-          <li><a href="https://huggingface.com/{{ site.social-huggingface }}" target="_blank"><i class="fa fa-code" aria-hidden="true"></i></a></li>
-        {% endif %}
-        {% if site.social-github %}
-          <li><a href="http://github.com/{{site.social-github}}" target="_blank"><i class="fa fa-github"></i></a></li>
-        {% endif %}
-        {% if site.social-linkedin %}
-          <li><a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank"><i class="fa fa-linkedin"></i></a></li>
-        {% endif %}
-        {% if site.social-email %}
-          <li><a href="mailto:{{site.social-email}}"><i class="fa fa-envelope-o"></i></a></li>
-        {% endif %}
-      </ul>
-    </div>
-    <div class="copyright">
-      <p>{{site.time | date: '%Y'}} &copy; {{site.author}}</p>
-    </div>
-  </div>
-</footer>
