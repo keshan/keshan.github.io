@@ -2259,3 +2259,21 @@ body.post-template {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+/* Contact Email Styling */
+.contact-email {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: #4a5568;
+}
+
+.contact-email a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contact-email a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
