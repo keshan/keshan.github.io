@@ -117,13 +117,12 @@ img {
   display: flex;
   align-items: center;
   width: 100%;
+  justify-content: center;
 }
 
 .header-wrapper {
   width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -192,13 +191,14 @@ img {
   background-color: var(--background);
   padding: 3rem 0;
   margin-top: 3rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .footer-wrapper {
   width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -586,6 +586,9 @@ img {
 
 .post-container {
   padding: 2.5rem;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .post-header {
@@ -638,6 +641,8 @@ img {
   font-size: 1.125rem;
   line-height: 1.8;
   margin-bottom: 2.5rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .post-content h1,
@@ -660,6 +665,7 @@ img {
   border-radius: 0.5rem;
   margin: 2rem auto;
   box-shadow: var(--shadow);
+  display: block;
 }
 
 .post-content blockquote {
@@ -693,10 +699,12 @@ img {
 
 .post-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 2rem;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
   border-top: 1px solid var(--border-color);
+  width: 100%;
 }
 
 .post-tags {
@@ -955,6 +963,7 @@ img {
 /* Post Styles */
 .post {
   position: relative;
+  width: 100%;
 }
 
 .post-hero {
@@ -966,12 +975,15 @@ img {
   align-items: center;
   justify-content: center;
   margin-bottom: 3rem;
+  width: 100%;
+  border-radius: 0;
 }
 
 .post-hero-content {
   text-align: center;
   color: white;
-  max-width: 800px;
+  max-width: 1000px;
+  width: 100%;
   padding: 0 2rem;
   z-index: 1;
 }
@@ -1062,6 +1074,8 @@ img {
   padding: 1.5rem;
   margin-bottom: 2rem;
   border-left: 4px solid var(--primary-color);
+  width: 100%;
+  max-width: 100%;
 }
 
 .table-of-contents h3 {
@@ -1331,6 +1345,7 @@ img {
 
 .related-posts {
   margin-bottom: 3rem;
+  width: 100%;
 }
 
 .related-posts h3 {
@@ -1355,8 +1370,9 @@ img {
 
 .related-posts-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
+  width: 100%;
 }
 
 .related-post-card {
