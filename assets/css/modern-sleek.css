@@ -2098,61 +2098,82 @@ body.post-template {
   color: #718096;
 }
 
-/* Tags Page Styling */
-.page-heading {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2.5rem;
-    color: #2c3e50;
+/* Tags Page Styling - Updated */
+h1 + .tags-in-blog, .page-heading {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 2.5rem;
+  color: #2c3e50;
 }
 
-/* Tag cloud links at the top */
-#content a[href^="/tags/"] {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    margin: 0.25rem;
-    background-color: #f5f7fa;
-    color: #3498db;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+/* Tag cloud links - make them more button-like */
+a[href^="/tags/"] {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  background-color: #f8f9fa;
+  color: #3498db;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #e9ecef;
 }
 
-#content a[href^="/tags/"]:hover {
-    background-color: #3498db;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+a[href^="/tags/"]:hover {
+  background-color: #3498db;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(50, 50, 93, 0.1);
+}
+
+/* Container for all tags */
+#content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 /* Tag section headings */
 #content h2 {
-    margin-top: 2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #eaeaea;
-    color: #2c3e50;
+  margin-top: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+  color: #2c3e50;
+  font-size: 1.8rem;
 }
 
 /* Post listings under tags */
 #content p {
-    margin: 0.5rem 0;
+  margin: 0.75rem 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+#content p:hover {
+  background-color: #f8f9fa;
 }
 
 #content p a {
-    color: #3498db;
-    text-decoration: none;
-    transition: color 0.2s ease;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 #content p a:hover {
-    color: #2980b9;
-    text-decoration: underline;
+  color: #2980b9;
+  text-decoration: underline;
 }
 
 /* Date styling */
 #content p small {
-    color: #7f8c8d;
-    font-style: italic;
-    margin-left: 0.5rem;
+  color: #7f8c8d;
+  font-style: italic;
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
 }
