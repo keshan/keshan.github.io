@@ -181,7 +181,7 @@ img {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding: 3rem 0;
   display: flex;
   flex-direction: column;
 }
@@ -1448,7 +1448,7 @@ img {
 /* Responsive Styles */
 @media (max-width: 1024px) {
   :root {
-    --max-width: 90%;
+    --max-width: 100%;
   }
   
   .hero-content h1 {
