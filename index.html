@@ -1,19 +1,36 @@
 ---
 layout: main
 ---
-{% for post in paginator.posts %}
-<article class="post">
-  {% if post.img %}
-    <a class="post-thumbnail" style="background-image: url({{"/assets/img/" | prepend: site.baseurl | append : post.img}})" href="{{post.url | prepend: site.baseurl}}"></a>
-  {% else %}
-  {% endif %}
-  <div class="post-content">
-    <h2 class="post-title"><a href="{{post.url | prepend: site.baseurl}}">{{post.title}}</a></h2>
-    <p>{{ post.content | strip_html | truncatewords: 15 }}</p>
-    <span class="post-date">{{post.date | date: '%Y, %b %d'}}&nbsp;&nbsp;&nbsp;—&nbsp;</span>
-    <span class="post-words">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " minute read" }}{% endunless %}</span>
-  </div>
-</article>
-{% endfor %}
 
-{% include pagination.html %}
+<div class="hero">
+  <div class="hero-content">
+    <h1>{{ site.title }}</h1>
+    <p>{{ site.description }}</p>
+  </div>
+</div>
+
+<div class="posts-grid">
+  {% for post in paginator.posts %}
+  <article class="post-card">
+    <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
+      {% if post.img %}
+      <div class="post-card-image">
+        <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}" alt="{{post.title}}">
+      </div>
+      {% endif %}
+      <div class="post-card-content">
+        <h2 class="post-card-title">{{post.title}}</h2>
+        <p class="post-card-excerpt">{{ post.content | strip_html | truncatewords: 15 }}</p>
+        <div class="post-card-meta">
+          <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>
+          <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless %}</span>
+        </div>
+      </div>
+    </a>
+  </article>
+  {% endfor %}
+</div>
+
+<div class="pagination-container">
+  {% include pagination.html %}
+</div>
