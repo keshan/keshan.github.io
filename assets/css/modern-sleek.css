@@ -2602,3 +2602,117 @@ body.post-template {
     padding: 0.5rem;
   }
 }
+
+/* Certifications Section Styling */
+.certifications-section {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.certifications-section h2 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.certifications-section h2:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #3494e6, #ec6ead);
+  bottom: -10px;
+  left: 0;
+}
+
+.certifications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.cert-item {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1.5rem;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cert-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cert-item h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #f8f8f8;
+}
+
+.cert-date {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.cert-item a {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #3494e6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.cert-item a:hover {
+  color: #ec6ead;
+}
+
+/* Resume Embed Section */
+.resume-embed {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.resume-embed h2 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.resume-embed h2:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #3494e6, #ec6ead);
+  bottom: -10px;
+  left: 0;
+}
+
+.resume-container {
+  margin-top: 2rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .certifications-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .resume-container iframe {
+    height: 400px;
+  }
+}
