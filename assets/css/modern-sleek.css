@@ -1751,26 +1751,12 @@ img {
   opacity: 1;
 }
 
-.cert-item h3 {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-  color: #ffffff;
-  font-weight: 600;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
-}
-
 .cert-date {
   font-size: 0.9rem;
-  color: #e0e0e0;
+  color: #aaa;
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   margin-bottom: 0.75rem;
   display: block;
-}
-
-.cert-item p {
-  color: #e0e0e0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .cert-item a {
@@ -1870,7 +1856,6 @@ img {
   font-size: 1.1rem;
   line-height: 1.8;
   margin-bottom: 1.5rem;
-  color: #e0e0e0;
 }
 
 .bio strong {
@@ -2686,9 +2671,8 @@ body.post-template {
 
 .experience-item h3 {
   font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  color: #f8f8f8;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  color: #3498db;
+  font-weight: 500;
 }
 
 .experience-item .period {
@@ -2699,10 +2683,8 @@ body.post-template {
 }
 
 .experience-item p {
-  margin-bottom: 0.5rem;
   line-height: 1.6;
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  color:#4e4d4d;
 }
 
 /* Responsive adjustments */
@@ -2858,18 +2840,8 @@ body.post-template {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.experience-item h3 {
-  color: #ffffff;
-  font-weight: 600;
-}
-
 .period {
   color: #e0e0e0;
-}
-
-.cert-item h3 {
-  color: #ffffff !important;
-  font-weight: 600;
 }
 
 .author-name, .author-title {
@@ -2888,13 +2860,18 @@ body.post-template {
   font-weight: 600;
 }
 
-.experience-item h3 {
-  color: #2196F3;  
-  font-weight: 500;
+.certifications-section h2:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #3494e6, #ec6ead);
+  bottom: -10px;
+  left: 0;
 }
 
 .cert-item h3 {
-  color: #2196F3;  
+  color: #238ae4;  
   font-weight: 500;
 }
 
@@ -2905,4 +2882,24 @@ body.post-template {
 
 .about-section p {
   color: #333;
+}
+
+.skills-section h2:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #3494e6, #ec6ead);
+  bottom: -10px;
+  left: 0;
+}
+
+.resume-embed h2:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #3494e6, #ec6ead);
+  bottom: -10px;
+  left: 0;
 }
