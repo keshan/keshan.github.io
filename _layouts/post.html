@@ -3,7 +3,7 @@ layout: main
 ---
 <article class="post">
   {% if page.img %}
-  <div class="post-hero" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url({{ "/assets/img/" | prepend: site.baseurl | append: page.img }})">
+  <div class="post-hero" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('{{site.baseurl}}/assets/img/{{page.img}}')">
     <div class="post-hero-content">
       <h1 class="post-title">{{page.title}}</h1>
       <div class="post-meta">

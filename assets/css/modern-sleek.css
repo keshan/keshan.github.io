@@ -179,6 +179,9 @@ img {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .site-footer {
@@ -244,6 +247,7 @@ img {
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .hero::before {
