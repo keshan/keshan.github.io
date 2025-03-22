@@ -2374,6 +2374,99 @@ body.post-template {
   margin-bottom: 1.5rem;
 }
 
+/* Experience Section Styling */
+.experience-section {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.experience-section h2 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.experience-section h2:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #3494e6, #ec6ead);
+  bottom: -10px;
+  left: 0;
+}
+
+.experience-timeline {
+  position: relative;
+}
+
+.experience-timeline:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(52, 148, 230, 0.8), rgba(236, 106, 173, 0.8));
+}
+
+.experience-item {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.experience-item:before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #3494e6;
+  z-index: 1;
+}
+
+.experience-item:hover {
+  transform: translateX(5px);
+}
+
+.experience-item h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #f8f8f8;
+}
+
+.experience-item .period {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.experience-item p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .experience-section {
+    padding: 1.5rem;
+  }
+  
+  .experience-item {
+    padding-left: 25px;
+  }
+}
+
 /* Publications Page Styles */
 .publications-container {
   max-width: 900px;
