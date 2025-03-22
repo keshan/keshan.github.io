@@ -2,12 +2,20 @@
 layout: main
 ---
 
+{% assign latest_post = site.posts.first %}
+
 <div class="hero glass-card">
   <div class="hero-content">
-    <h1>{{ site.title }}</h1>
-    <p>{{ site.description }}</p>
-    <a href="{{site.baseurl}}/about/" class="hero-button">Learn More</a>
+    {% if latest_post.categories %}
+    <span class="hero-category">{{ latest_post.categories | first }}</span>
+    {% endif %}
+    <h1>{{ latest_post.title }}</h1>
+    <p>{{ latest_post.content | strip_html | truncatewords: 30 }}</p>
+    <a href="{{ latest_post.url | prepend: site.baseurl }}" class="hero-button">Read More</a>
   </div>
+  {% if latest_post.img %}
+  <div class="hero-background" style="background-image: url('{{site.baseurl}}/assets/img/{{latest_post.img}}')"></div>
+  {% endif %}
 </div>
 
 <div class="section-heading">
@@ -17,6 +25,7 @@ layout: main
 
 <div class="posts-grid">
   {% for post in paginator.posts %}
+  {% if forloop.index > 1 %}
   <article class="post-card">
     <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
       {% if post.img %}
@@ -47,6 +56,7 @@ layout: main
       </div>
     </a>
   </article>
+  {% endif %}
   {% endfor %}
 </div>
 
