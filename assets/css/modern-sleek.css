@@ -116,13 +116,13 @@ img {
   display: flex;
   align-items: center;
   width: 100%;
-  justify-content: center;
 }
 
 .header-wrapper {
   width: 100%;
-  max-width: 100%;
-  padding: 0;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -182,9 +182,8 @@ img {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 3rem 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .site-footer {
