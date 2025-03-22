@@ -2620,12 +2620,6 @@ body.post-template {
   border-top: 1px solid #e9ecef;
 }
 
-.experience-section h2 {
-  font-size: 1.8rem;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-}
-
 /* Experience Section Styling */
 .experience-section {
   margin: 3rem 0;
@@ -2885,4 +2879,30 @@ body.post-template {
 
 .overlay-content, .overlay-content * {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.about-section h2, 
+.experience-section h2, 
+.certifications-section h2 {
+  color: #333;
+  font-weight: 600;
+}
+
+.experience-item h3 {
+  color: #2196F3;  
+  font-weight: 500;
+}
+
+.cert-item h3 {
+  color: #2196F3;  
+  font-weight: 500;
+}
+
+.cert-item p, 
+.cert-item a {
+  color: #333;
+}
+
+.about-section p {
+  color: #333;
 }
