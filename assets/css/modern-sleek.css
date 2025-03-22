@@ -1991,3 +1991,109 @@ body.post-template {
   width: 100%;
   max-width: 100%;
 }
+
+/* Tags in Blog page styling */
+.tags-page-header {
+  text-align: center;
+  margin: 3rem 0;
+}
+
+.tags-page-header h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #2d3748;
+  font-family: "Playfair Display", serif;
+}
+
+/* Tag cloud styling */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 3rem;
+  padding: 1rem;
+  background-color: #f5f7fa;
+  border-radius: 8px;
+}
+
+.tag-item {
+  background-color: white;
+  color: #4a5568;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.tag-item:hover {
+  background-color: #4a5568;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tag-count {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Tag sections styling */
+.tag-section {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.tag-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+  font-family: "Playfair Display", serif;
+  border-bottom: 2px solid #f5f7fa;
+  padding-bottom: 0.75rem;
+}
+
+.tag-post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.tag-post-item {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f5f7fa;
+}
+
+.tag-post-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.tag-post-link {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3d4852;
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.tag-post-link:hover {
+  color: #4299e1;
+}
+
+.tag-post-date {
+  font-size: 0.85rem;
+  color: #718096;
+}
