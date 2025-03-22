@@ -122,6 +122,7 @@ img {
 
 .header-wrapper {
   width: 100%;
+  max-width: none;
   padding: 0 2rem;
   display: flex;
   justify-content: space-between;
@@ -198,6 +199,7 @@ img {
 
 .footer-wrapper {
   width: 100%;
+  max-width: none;
   padding: 0 2rem;
   display: flex;
   flex-direction: column;
@@ -581,12 +583,11 @@ img {
   overflow: hidden;
   box-shadow: var(--shadow);
   margin: 0 auto;
-  max-width: var(--content-width);
+  width: 100%;
 }
 
 .post-container {
   padding: 2.5rem;
-  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
 }
