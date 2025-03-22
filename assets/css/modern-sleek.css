@@ -1,4 +1,4 @@
-/* Modern Sleek Theme - Beast Mode Activated */
+it a/* Modern Sleek Theme - Beast Mode Activated */
 
 :root {
   --primary-color: #2563eb;
@@ -181,7 +181,7 @@ img {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 3rem 0;
+  padding: 3rem 5%;
   display: flex;
   flex-direction: column;
 }
@@ -582,11 +582,14 @@ img {
   box-shadow: var(--shadow);
   margin: 0 auto;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .post-container {
-  padding: 2.5rem;
+  padding: 2.5rem 5%;
   width: 100%;
+  max-width: 90%;
   margin: 0 auto;
 }
 
