@@ -1,4 +1,4 @@
-it a/* Modern Sleek Theme - Beast Mode Activated */
+/* Modern Sleek Theme - Beast Mode Activated */
 
 :root {
   --primary-color: #2563eb;
@@ -1612,4 +1612,81 @@ img {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--light-text);
+}
+
+/* Post styling for individual pages */
+body.post-template {
+  background-color: #f5f7fa;
+}
+
+.post {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 3rem auto;
+  width: 100%;
+  max-width: 85%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.post-container {
+  padding: 3rem 8%;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.post-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.post-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.post-author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.post-author-name {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4a5568;
+}
+
+.post-date {
+  color: #718096;
+  margin-left: 12px;
+}
+
+.post-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a5568;
+}
+
+.post-image {
+  width: 100%;
+  margin: 2rem 0;
+  border-radius: 6px;
+  overflow: hidden;
 }
