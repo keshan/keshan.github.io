@@ -2099,18 +2099,38 @@ body.post-template {
 }
 
 /* Tags Page Styling - Updated */
-h1 + .tags-in-blog, .page-heading {
+.blog-tags {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.blog-tags h1 {
   text-align: center;
-  margin: 2rem 0;
+  margin-bottom: 2rem;
   font-size: 2.5rem;
   color: #2c3e50;
 }
 
-/* Tag cloud links - make them more button-like */
-a[href^="/tags/"] {
+.tags {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.tags li {
+  margin: 0.25rem;
+}
+
+.tags a {
   display: inline-block;
   padding: 0.5rem 1rem;
-  margin: 0.25rem;
   background-color: #f8f9fa;
   color: #3498db;
   border-radius: 20px;
@@ -2121,25 +2141,14 @@ a[href^="/tags/"] {
   border: 1px solid #e9ecef;
 }
 
-a[href^="/tags/"]:hover {
+.tags a:hover {
   background-color: #3498db;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(50, 50, 93, 0.1);
 }
 
-/* Container for all tags */
-#content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-/* Tag section headings */
-#content h2 {
+.blog-tags h2 {
   margin-top: 2.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #e9ecef;
@@ -2147,31 +2156,29 @@ a[href^="/tags/"]:hover {
   font-size: 1.8rem;
 }
 
-/* Post listings under tags */
-#content p {
+.blog-tags p {
   margin: 0.75rem 0;
   padding: 0.5rem;
   border-radius: 4px;
 }
 
-#content p:hover {
+.blog-tags p:hover {
   background-color: #f8f9fa;
 }
 
-#content p a {
+.blog-tags p a {
   color: #3498db;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
-#content p a:hover {
+.blog-tags p a:hover {
   color: #2980b9;
   text-decoration: underline;
 }
 
-/* Date styling */
-#content p small {
+.blog-tags p small {
   color: #7f8c8d;
   font-style: italic;
   margin-left: 0.5rem;
