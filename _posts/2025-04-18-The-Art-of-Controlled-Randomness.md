@@ -1,8 +1,8 @@
 ---
 layout: post
-title: The Art of Controlled Randomness: A Deep Dive into Sampling techniques in LLMs
+title: "The Art of Controlled Randomness: A Deep Dive into Sampling techniques in LLMs"
 date: 2025-04-18
-description: A Deep Dive into Sampling Techniques in LLMs
+description: "A Deep Dive into Sampling Techniques in LLMs"
 img: controlled_randomness.jpg
 fig-caption: # Add figcaption (optional)
 tags: [JAX, Flax, LLM, Generation, Sampling]
@@ -21,7 +21,7 @@ This tutorial dives deep into the most common sampling techniques – **Temperat
 
 Let's dive in!
 
-Imagine our LLM has processed the input ```"The rocket lifted off towards the"``` and needs to predict the next word. It outputs logits (raw, unnormalized scores) for its entire vocabulary. Let's focus on a few plausible candidates (here the logits values are just made up for illustration):
+Imagine our LLM has processed the input `"The rocket lifted off towards the"` and needs to predict the next word. It outputs logits (raw, unnormalized scores) for its entire vocabulary. Let's focus on a few plausible candidates (here the logits values are just made up for illustration):
 
 *   `moon`: logit = `3.5`
 *   `stars`: logit = `3.1`
