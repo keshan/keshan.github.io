@@ -51,7 +51,7 @@ Our goal is to use sampling techniques to intelligently select *one* of these wo
     ```
     Simple division, but crucial for reshaping the landscape.
 
-*   **Example (Temperature = 0.8):** for an interactive demo, check out [here](https://blog.keshan.dev/llm-demo-apps/).
+*   **Example (Temperature = 0.8):** for an interactive demo, check out <a href="https://blog.keshan.dev/llm-demo-apps/" target="_blank">here</a>.
     *   `moon`: 3.5 / 0.8 = `4.375`
     *   `stars`: 3.1 / 0.8 = `3.875`
     *   `sky`: 2.9 / 0.8 = `3.625`
@@ -127,7 +127,7 @@ Our goal is to use sampling techniques to intelligently select *one* of these wo
     ```
     `jax.lax.top_k` is efficient for finding the threshold value.
 
-*   **Example (Continuing, Top-K = 3):** for an interactive demo, check out [here](https://blog.keshan.dev/llm-demo-apps/).
+*   **Example (Continuing, Top-K = 3):** for an interactive demo, check out <a href="https://blog.keshan.dev/llm-demo-apps/" target="_blank">here</a>.
     *   Current logits: `[4.375, 3.875, 3.625, 2.5, -inf, ...]`
     *   The top 3 logits are `4.375` (moon), `3.875` (stars), `3.625` (sky).
     *   The 3rd highest logit is `3.625`.
@@ -180,7 +180,7 @@ Our goal is to use sampling techniques to intelligently select *one* of these wo
     ```
     This implementation cleverly finds the probability threshold from the sorted list and applies it back to the original probabilities to create the final mask.
 
-*   **Example (Continuing, Top-P = 0.7):** for an interactive demo, check out [here](https://blog.keshan.dev/llm-demo-apps/).
+*   **Example (Continuing, Top-P = 0.7):** for an interactive demo, check out <a href="https://blog.keshan.dev/llm-demo-apps/" target="_blank">here</a>.
     1.  **Softmax on current logits:** `[4.375, 3.875, 3.625, -inf, -inf, ...]`.
         `exp(4.375) ≈ 79.4`, `exp(3.875) ≈ 48.2`, `exp(3.625) ≈ 37.5`. Others are 0.
         Sum ≈ `165.1`.
