@@ -92,7 +92,23 @@
 	<!-- Styles -->
 	<link rel="stylesheet" href="{{ "/assets/css/main.css" | prepend: site.baseurl }}">
 	<link rel="stylesheet" href="{{ "/assets/css/bracia-style.css" | prepend: site.baseurl }}">
-  <link rel="stylesheet" href="{{ "/assets/css/modern-sleek.css" | prepend: site.baseurl }}">
-  <link rel="stylesheet" href="{{ "/assets/css/custom-fixes.css" | prepend: site.baseurl }}">
-
+  <link rel="stylesheet" href="/assets/css/modern-sleek.css">
+  {% if page.title %}
+    <meta name="twitter:title" content="{{ page.title }}">
+  {% else %}
+    <meta name="twitter:title" content="{{ site.title }}">
+  {% endif %}
+  {% if page.url %}
+    <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
+  {% endif %}
+  {% if page.description %}
+    <meta name="twitter:description" content="{{ page.description }}">
+  {% else %}
+    <meta name="twitter:description" content="{{ site.description }}">
+  {% endif %}
+  {% if page.img %}
+    <meta name="twitter:image:src" content="{{ site.url }}{{ site.baseurl }}/assets/img/{{ page.img }}">
+  {% else %}
+    <meta name="twitter:image:src" content="{{ site.url }}{{ site.baseurl }}/assets/img/{{ site.author-img }}">
+  {% endif %}
 </head>
