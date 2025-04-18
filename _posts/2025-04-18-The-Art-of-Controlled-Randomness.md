@@ -242,6 +242,8 @@ def sample_logits(
     return sampled_indices
 ```
 
+
+
 **Key Takeaways:**
 
 1.  **Order:** Temperature -> Min-P -> Top-K -> Top-P. This specific order applies the broad temperature adjustment first, then prunes the dynamic low-end (Min-P), then enforces a hard count limit (Top-K), and finally applies the dynamic probability mass limit (Top-P). Other orderings are possible but would yield different results.
