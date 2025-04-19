@@ -447,7 +447,6 @@ template {
 .highlighter-rouge {
   color: #ce887b;
   font-weight: 400;
-  box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15);
   -webkit-border-radius: 3px;
           border-radius: 3px;
   padding: 0.1rem 0.5rem;
