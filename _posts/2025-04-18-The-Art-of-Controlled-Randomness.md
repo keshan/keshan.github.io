@@ -21,6 +21,15 @@ This tutorial dives deep into the most common sampling techniques – **Temperat
 
 Let's dive in!
 
+---
+<div class="demo-box">
+  <div class="demo-box-title">🧪 Interactive Demo: Experiment with Sampling Techniques</div>
+  <iframe src="https://blog.keshan.dev/llm-demo-apps/" loading="lazy" title="LLM Sampling Interactive Demo"></iframe>
+</div>
+
+---
+
+
 Imagine our LLM has processed the input `"The rocket lifted off towards the"` and needs to predict the next word. It outputs logits (raw, unnormalized scores) for its entire vocabulary. Let's focus on a few plausible candidates (here the logits values are just made up for illustration):
 
 *   `moon`: logit = `3.5`

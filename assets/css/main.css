@@ -188,7 +188,34 @@ sup {
   top: -0.5em;
 }
 
-/* Embedded content
+/* Embedded content */
+.demo-box {
+  background: linear-gradient(90deg, #f8fafc 0%, #e0e7ef 100%);
+  border: 2px solid #4f8cff;
+  border-radius: 12px;
+  padding: 1.5rem 1.2rem;
+  margin: 2rem 0 2.5rem 0;
+  box-shadow: 0 4px 24px 0 rgba(80,120,255,0.09);
+  transition: box-shadow 0.2s;
+  overflow-x: auto;
+}
+.demo-box:hover {
+  box-shadow: 0 8px 32px 0 rgba(80,120,255,0.16);
+}
+.demo-box-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2366d1;
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.01em;
+}
+.demo-box iframe {
+  width: 100%;
+  min-height: 400px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+}
    ========================================================================== */
 /**
  * Add the correct display in IE 9-.
