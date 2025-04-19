@@ -49,7 +49,7 @@ layout: main
             <span>{{site.author}}</span>
           </div>
           <div class="post-card-info">
-            <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>
+            <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>&nbsp;&nbsp;
             <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless %}</span>
           </div>
         </div>
