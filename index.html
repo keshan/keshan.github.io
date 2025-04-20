@@ -33,7 +33,11 @@ layout: main
     <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
       {% if post.img %}
       <div class="post-card-image">
-        <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}" alt="Cover image for {{post.title}}">
+        <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}"
+  alt="Cover image for {{post.title}}"
+  srcset="{{'/assets/img/' | prepend: site.baseurl | append: post.img | replace: '.jpg', '.webp'}} 1x, {{'/assets/img/' | prepend: site.baseurl | append: post.img}} 2x"
+  loading="lazy">
+
         {% if post.categories %}
         <div class="post-card-category">
           <span>{{ post.categories | first }}</span>
@@ -47,7 +51,7 @@ layout: main
         <div class="post-card-meta">
           <div class="post-card-author">
             {% if site.author-img %}
-            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}} profile photo" class="author-image">
+            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}} profile photo" class="author-image" loading="lazy">
             {% endif %}
             <span>{{site.author}}</span>
           </div>
