@@ -26,6 +26,7 @@ analytics: UA-122765133-1 # Google Analytics
 # Build Settings
 markdown: kramdown
 plugins:
+  - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-paginate
   - jemoji
