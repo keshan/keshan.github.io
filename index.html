@@ -4,6 +4,7 @@ layout: main
 
 {% assign latest_post = site.posts.first %}
 
+<a href="#main-content" class="skip-to-content">Skip to content</a>
 <div class="hero glass-card">
   <div class="hero-content">
     {% if latest_post.categories %}
@@ -12,13 +13,15 @@ layout: main
     <h1>{{ latest_post.title }}</h1>
     <p>{{ latest_post.content | strip_html | truncatewords: 30 }}</p>
     <a href="{{ latest_post.url | prepend: site.baseurl }}" class="hero-button">Read More</a>
+    <button class="dark-mode-toggle" aria-label="Toggle dark mode">Toggle Dark Mode</button>
   </div>
   {% if latest_post.img %}
   <div class="hero-background" style="background-image: url('{{site.baseurl}}/assets/img/{{latest_post.img}}')"></div>
   {% endif %}
-</div>
+</header>
 
-<div class="section-heading">
+<main id="main-content" aria-label="Main content">
+  <div class="section-heading">
   <h2>Other Articles</h2>
   <p>Explore my thoughts on Machine Learning, AI, and more</p>
 </div>
@@ -30,7 +33,7 @@ layout: main
     <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
       {% if post.img %}
       <div class="post-card-image">
-        <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}" alt="{{post.title}}">
+        <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}" alt="Cover image for {{post.title}}">
         {% if post.categories %}
         <div class="post-card-category">
           <span>{{ post.categories | first }}</span>
@@ -44,7 +47,7 @@ layout: main
         <div class="post-card-meta">
           <div class="post-card-author">
             {% if site.author-img %}
-            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}}" class="author-image">
+            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}} profile photo" class="author-image">
             {% endif %}
             <span>{{site.author}}</span>
           </div>
@@ -60,6 +63,10 @@ layout: main
   {% endfor %}
 </div>
 
+</main>
+
+<script src="/assets/js/theme-toggle.js"></script>
+
 {% if paginator.total_pages > 1 %}
 <div class="pagination-container">
   {% include pagination.html %}
@@ -67,6 +74,9 @@ layout: main
 {% endif %}
 
 <div class="newsletter-section glass-card">
+  <form class="search-form" role="search" aria-label="Site search">
+    <input type="search" placeholder="Search articles..." aria-label="Search articles">
+  </form>
   <div class="newsletter-content">
     <h2>Stay Updated</h2>
     <p>Subscribe to my newsletter to get the latest updates on Machine Learning, AI, and more.</p>
