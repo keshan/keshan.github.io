@@ -3,7 +3,7 @@ layout: post
 title: "From Video to Structured Insight: A Practical Guide to Gemini-Powered Video Analysis"
 date: 2025-06-21
 description: "This guide demonstrates how to build a secure and reliable Python pipeline for video analysis using the Google Gemini API."
-img: video_analysis.jpg
+img: video_analysis.png
 tags: [Gemini, Video Analysis, Computer Vision, LLM]
 ---
 
