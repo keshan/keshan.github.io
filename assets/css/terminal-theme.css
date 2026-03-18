@@ -2915,3 +2915,268 @@ a:hover .fa {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
 }
+
+/* Inline code */
+code {
+  font-family: var(--term-font) !important;
+  background: #0a0a15 !important;
+  color: #ffab70 !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 4px !important;
+  font-size: 0.9em !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+pre {
+  background: #0a0a15 !important;
+  border: 1px solid var(--term-border) !important;
+  border-radius: 8px !important;
+  padding: 1.25rem !important;
+  overflow-x: auto !important;
+  box-shadow: 
+    inset 0 0 30px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 255, 136, 0.1) !important;
+}
+
+pre code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: var(--term-text) !important;
+  font-size: 0.85rem !important;
+  line-height: 1.6 !important;
+}
+
+/* ========================================
+   SYNTAX HIGHLIGHTING - Terminal Theme
+   ======================================== */
+
+.highlight,
+pre code,
+.code-block,
+.highlighter-rouge {
+  background: #0a0a15 !important;
+  border: 1px solid var(--term-border) !important;
+  border-radius: 8px !important;
+  padding: 1rem 1.25rem !important;
+  overflow-x: auto !important;
+  font-family: var(--term-font) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+  margin: 1.5rem 0 !important;
+  position: relative;
+  box-shadow: 
+    inset 0 0 30px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 255, 136, 0.1) !important;
+}
+
+.highlight::before {
+  content: '> code';
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: #0a0a15;
+  padding: 0 10px;
+  color: var(--term-text-muted);
+  font-size: 0.75rem;
+  font-family: var(--term-font);
+}
+
+.language-python.highlighter-rouge::before,
+.language-bash.highlighter-rouge::before,
+.language-javascript.highlighter-rouge::before,
+.language-ruby.highlighter-rouge::before,
+.language-css.highlighter-rouge::before,
+.language-html.highlighter-rouge::before,
+.language-yaml.highlighter-rouge::before,
+.language-json.highlighter-rouge::before {
+  content: attr(class);
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: #0a0a15;
+  padding: 0 10px;
+  color: var(--term-text-muted);
+  font-size: 0.75rem;
+  font-family: var(--term-font);
+  text-transform: uppercase;
+}
+
+.highlight .c,
+.highlight .cm,
+.highlight .c1,
+.highlight .cp,
+.highlight .cs,
+.highlight .comment {
+  color: #6b7280 !important;
+  font-style: italic !important;
+}
+
+.highlight .err,
+.highlight .error {
+  color: #ff5555 !important;
+  background: rgba(255, 85, 85, 0.1) !important;
+}
+
+.highlight .k,
+.highlight .kn,
+.highlight .kd,
+.highlight .kc,
+.highlight .kr,
+.highlight .kp,
+.highlight .keyword {
+  color: #ff6b9d !important;
+  font-weight: 600 !important;
+}
+
+.highlight .o,
+.highlight .operator {
+  color: #ffdd57 !important;
+}
+
+.highlight .na,
+.highlight .nb,
+.highlight .nc,
+.highlight .nd,
+.highlight .ne,
+.highlight .nf,
+.highlight .ni,
+.highlight .nn,
+.highlight .nt,
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi,
+.highlight .name {
+  color: #00d9ff !important;
+}
+
+.highlight .m,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo,
+.highlight .ml,
+.highlight .literal {
+  color: #ffab70 !important;
+}
+
+.highlight .s,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .s2,
+.highlight .s1,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx,
+.highlight .sr,
+.highlight .ss,
+.highlight .string {
+  color: #00ff88 !important;
+}
+
+.highlight .p,
+.highlight .punctuation {
+  color: #9ca3af !important;
+}
+
+.highlight .n,
+.highlight .variable {
+  color: #e4e4e7 !important;
+}
+
+.highlight .f,
+.highlight .function {
+  color: #c792ea !important;
+}
+
+.highlight .tp,
+.highlight .type {
+  color: #ffab70 !important;
+}
+
+.highlight .attr,
+.highlight .attribute {
+  color: #00d9ff !important;
+}
+
+.highlight .tag {
+  color: #ff6b9d !important;
+}
+
+.highlight .h,
+.highlight .heading,
+.highlight .title {
+  color: #00d9ff !important;
+  font-weight: 600 !important;
+}
+
+.highlight .dl,
+.highlight .doctag {
+  color: #00ff88 !important;
+}
+
+.highlight .bp,
+.highlight .builtin {
+  color: #ffab70 !important;
+}
+
+.highlight .x,
+.highlight .other {
+  color: #ff6b9d !important;
+}
+
+.highlight .w,
+.highlight .whitespace {
+  color: #4b5563 !important;
+}
+
+.highlight .gd,
+.highlight .deleted {
+  color: #ff5555 !important;
+  text-decoration: line-through !important;
+}
+
+.highlight .gi,
+.highlight .inserted {
+  color: #00ff88 !important;
+}
+
+.highlight .ge {
+  font-style: italic !important;
+}
+
+.highlight .gs {
+  font-weight: bold !important;
+}
+
+.highlight .gu {
+  color: #ffab70 !important;
+}
+
+.highlight .gt {
+  color: #ff5555 !important;
+}
+
+.highlight .gr {
+  color: #ff5555 !important;
+}
+
+.highlight .go {
+  color: #6b7280 !important;
+}
+
+.highlight .gp {
+  color: #9ca3af !important;
+}
+
+/* Line numbers (if enabled) */
+.highlight .lineno {
+  color: #4b5563 !important;
+  user-select: none;
+  padding-right: 1rem;
+  border-right: 1px solid #2d2d5a;
+  margin-right: 1rem;
+}
