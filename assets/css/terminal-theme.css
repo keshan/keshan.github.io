@@ -3164,39 +3164,35 @@ a:hover .fa {
    CODE BLOCKS - Terminal Window Style (FIXED)
    ======================================== */
 
-/* Outer wrapper - the terminal window */
+/* Only outer wrapper gets terminal styling */
 div.highlighter-rouge,
-figure.highlight,
-.highlight {
+figure.highlight {
   background: #1a1a2e !important;
-  border: none !important;
-  border-radius: 10px !important;
+  border: 1px solid rgba(45, 45, 90, 0.6) !important;
+  border-radius: 12px !important;
   margin: 2rem 0 !important;
+  padding: 0 !important;
   overflow: hidden !important;
   box-shadow: 
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 255, 136, 0.05) !important;
   position: relative !important;
 }
 
-/* Terminal header bar */
-div.highlighter-rouge::before,
-figure.highlight::before,
-.highlight:not(div)::before {
+/* Terminal header bar - ONLY on div.highlighter-rouge, not on inner .highlight */
+div.highlighter-rouge::before {
   content: '' !important;
   display: block !important;
-  height: 36px !important;
+  height: 38px !important;
   background: linear-gradient(180deg, #2d2d4a 0%, #252540 100%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Terminal traffic lights */
-div.highlighter-rouge::after,
-figure.highlight::after,
-.highlight:not(div)::after {
+/* Traffic lights - ONLY on div.highlighter-rouge */
+div.highlighter-rouge::after {
   content: '' !important;
   position: absolute !important;
-  top: 12px !important;
+  top: 13px !important;
   left: 14px !important;
   width: 12px !important;
   height: 12px !important;
@@ -3208,29 +3204,56 @@ figure.highlight::after,
   z-index: 10 !important;
 }
 
-/* Inner .highlight div - transparent, no pseudo elements */
-div.highlighter-rouge > div.highlight,
-figure.highlight > div.highlight {
+/* figure.highlight gets header via child (::before only on figure itself) */
+figure.highlight::before {
+  content: '' !important;
+  display: block !important;
+  height: 38px !important;
+  background: linear-gradient(180deg, #2d2d4a 0%, #252540 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+figure.highlight::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 13px !important;
+  left: 14px !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background: #ff5f57 !important;
+  box-shadow: 
+    18px 0 0 #ffbd2e,
+    36px 0 0 #28ca41 !important;
+  z-index: 10 !important;
+}
+
+/* Inner div.highlight - completely transparent, no pseudo elements */
+div.highlighter-rouge > div.highlight {
   background: transparent !important;
+  border: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   position: static !important;
 }
 
+/* Hide ALL pseudo elements on inner .highlight */
 div.highlighter-rouge > div.highlight::before,
-div.highlighter-rouge > div.highlight::after,
-figure.highlight > div.highlight::before,
-figure.highlight > div.highlight::after {
+div.highlighter-rouge > div.highlight::after {
   display: none !important;
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  height: 0 !important;
+  width: 0 !important;
 }
 
-/* Pre element */
+/* Pre element - inside terminal window, below header */
 div.highlighter-rouge pre,
-figure.highlight pre,
-.highlight pre {
+figure.highlight pre {
   background: #0f0f1a !important;
   margin: 0 !important;
   padding: 1.25rem 1.5rem !important;
@@ -3241,8 +3264,7 @@ figure.highlight pre,
 
 /* Code element */
 div.highlighter-rouge code,
-figure.highlight code,
-.highlight code {
+figure.highlight code {
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
@@ -3256,7 +3278,7 @@ figure.highlight code,
 .code-lang-label {
   position: absolute !important;
   top: 8px !important;
-  right: 60px !important;
+  right: 70px !important;
   color: #6c7086 !important;
   font-size: 0.7rem !important;
   font-family: 'JetBrains Mono', monospace !important;
@@ -3264,7 +3286,7 @@ figure.highlight code,
   letter-spacing: 0.08em !important;
   z-index: 10 !important;
   background: rgba(108, 112, 134, 0.15) !important;
-  padding: 3px 10px !important;
+  padding: 4px 10px !important;
   border-radius: 4px !important;
   border: 1px solid rgba(108, 112, 134, 0.2) !important;
 }
@@ -3272,8 +3294,8 @@ figure.highlight code,
 /* Copy button */
 .code-copy-btn {
   position: absolute !important;
-  top: 6px !important;
-  right: 10px !important;
+  top: 8px !important;
+  right: 14px !important;
   background: rgba(108, 112, 134, 0.1) !important;
   border: 1px solid rgba(108, 112, 134, 0.2) !important;
   border-radius: 4px !important;
@@ -3290,6 +3312,282 @@ figure.highlight code,
   background: rgba(0, 255, 136, 0.15) !important;
   border-color: rgba(0, 255, 136, 0.3) !important;
   color: #00ff88 !important;
+}
+
+/* ========================================
+   HERO SECTION - Enhanced
+   ======================================== */
+
+.hero,
+.hero-content,
+.glass-card {
+  background: #1a1a2e !important;
+  border: 1px solid rgba(45, 45, 90, 0.6) !important;
+  border-radius: 16px !important;
+  padding: 2.5rem !important;
+  margin: 1.5rem 0 !important;
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(0, 217, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.hero-content {
+  position: relative !important;
+}
+
+.hero-content::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #00ff88, #00d9ff, #c792ea, #ff6b9d) !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+/* ========================================
+   POST CARDS - Enhanced
+   ======================================== */
+
+.post-card,
+.post-card-content {
+  background: #1a1a2e !important;
+  border: 1px solid rgba(45, 45, 90, 0.6) !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  margin: 1rem 0 !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(0, 217, 255, 0.03) !important;
+  transition: all 0.3s ease !important;
+}
+
+.post-card:hover {
+  border-color: rgba(0, 217, 255, 0.4) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(0, 217, 255, 0.1) !important;
+  transform: translateY(-4px) !important;
+}
+
+.post-card-content {
+  padding: 1.75rem !important;
+}
+
+.post-card-title {
+  color: #e4e4e7 !important;
+  margin-bottom: 0.75rem !important;
+  font-size: 1.2rem !important;
+}
+
+.post-card-excerpt {
+  color: #9ca3af !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.post-card-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-top: 1rem !important;
+  margin-top: 1rem !important;
+  border-top: 1px solid rgba(45, 45, 90, 0.8) !important;
+  font-size: 0.85rem !important;
+  color: #6c7086 !important;
+}
+
+.post-card-author {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.post-card-author img,
+.author-image {
+  border: 2px solid rgba(0, 255, 136, 0.4) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2) !important;
+}
+
+/* ========================================
+   NEWSLETTER SECTION - Enhanced
+   ======================================== */
+
+.newsletter-section,
+.newsletter-content,
+.glass-card.newsletter-section {
+  background: #1a1a2e !important;
+  border: 1px solid rgba(45, 45, 90, 0.6) !important;
+  border-radius: 16px !important;
+  padding: 2.5rem !important;
+  margin: 2rem 0 !important;
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(199, 146, 234, 0.05) !important;
+  text-align: center !important;
+}
+
+.newsletter-content h2 {
+  color: #00d9ff !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.newsletter-content p {
+  color: #9ca3af !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.newsletter-form {
+  display: flex !important;
+  gap: 1rem !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  margin-top: 1.5rem !important;
+}
+
+.newsletter-form input {
+  background: #0f0f1a !important;
+  border: 1px solid rgba(45, 45, 90, 0.8) !important;
+  border-radius: 8px !important;
+  padding: 0.875rem 1.25rem !important;
+  color: #e4e4e7 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.9rem !important;
+  min-width: 280px !important;
+  transition: all 0.2s ease !important;
+}
+
+.newsletter-form input:focus {
+  outline: none !important;
+  border-color: rgba(0, 217, 255, 0.5) !important;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.15) !important;
+}
+
+.newsletter-button,
+.submit-btn {
+  background: transparent !important;
+  border: 2px solid #00ff88 !important;
+  border-radius: 8px !important;
+  padding: 0.875rem 1.75rem !important;
+  color: #00ff88 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.newsletter-button:hover,
+.submit-btn:hover {
+  background: #00ff88 !important;
+  color: #0f0f1a !important;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.4) !important;
+}
+
+/* ========================================
+   FOOTER - Enhanced
+   ======================================== */
+
+.site-footer,
+.footer-wrapper {
+  background: #1a1a2e !important;
+  border-top: 1px solid rgba(45, 45, 90, 0.6) !important;
+  padding: 2.5rem !important;
+  margin-top: 3rem !important;
+}
+
+.footer-content {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.footer-wrapper {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.footer-about h3,
+.footer-nav h3,
+.footer-connect h3 {
+  color: #00ff88 !important;
+  font-size: 1rem !important;
+  margin-bottom: 1rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid rgba(45, 45, 90, 0.8) !important;
+}
+
+.footer-about p {
+  color: #9ca3af !important;
+  line-height: 1.7 !important;
+}
+
+.footer-nav ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.footer-nav li {
+  margin-bottom: 0.5rem !important;
+}
+
+.footer-nav a {
+  color: #9ca3af !important;
+  transition: all 0.2s ease !important;
+  display: inline-block !important;
+  padding: 0.25rem 0 !important;
+}
+
+.footer-nav a:hover {
+  color: #00ff88 !important;
+  padding-left: 0.5rem !important;
+}
+
+.social-links ul {
+  display: flex !important;
+  gap: 0.75rem !important;
+  list-style: none !important;
+  padding: 0 !important;
+}
+
+.social-links a {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 42px !important;
+  height: 42px !important;
+  background: #252540 !important;
+  border: 1px solid rgba(45, 45, 90, 0.8) !important;
+  border-radius: 10px !important;
+  color: #9ca3af !important;
+  font-size: 1.1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.social-links a:hover {
+  background: #c792ea !important;
+  border-color: #c792ea !important;
+  color: #0f0f1a !important;
+  box-shadow: 0 0 20px rgba(199, 146, 234, 0.4) !important;
+  transform: translateY(-3px) !important;
+}
+
+.copyright {
+  text-align: center !important;
+  padding-top: 2rem !important;
+  margin-top: 1.5rem !important;
+  border-top: 1px solid rgba(45, 45, 90, 0.6) !important;
+  color: #6c7086 !important;
+  font-size: 0.85rem !important;
 }
 
 /* Inline code - distinct from blocks */
