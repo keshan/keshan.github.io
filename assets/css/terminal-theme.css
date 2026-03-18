@@ -2911,51 +2911,213 @@ a:hover .fa {
   animation: heartbeat 1.5s ease-in-out infinite;
 }
 
-/* Inline code */
-code {
-  font-family: var(--term-font) !important;
-  background: var(--term-bg-tertiary) !important;
-  color: var(--term-orange) !important;
-  padding: 0.2rem 0.5rem !important;
-  border-radius: 4px !important;
-  font-size: 0.9em !important;
-  border: 1px solid var(--term-border) !important;
+/* ========================================
+   CODE BLOCKS - Clean Dark Syntax Highlighting
+   ======================================== */
+
+.highlight,
+pre code,
+.highlighter-rouge {
+  background: #1e1e2e !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 1.25rem 1.5rem !important;
+  overflow-x: auto !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
+  font-size: 0.875rem !important;
+  line-height: 1.65 !important;
+  margin: 1.5rem 0 !important;
+  box-shadow: none !important;
 }
 
+/* Code inside pre */
 pre {
-  background: var(--term-bg-tertiary) !important;
-  border: 1px solid var(--term-border) !important;
+  background: #1e1e2e !important;
+  border: none !important;
   border-radius: 8px !important;
-  padding: 1.25rem !important;
+  padding: 1rem 1.25rem !important;
   overflow-x: auto !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+  margin: 1.5rem 0 !important;
 }
 
 pre code {
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
-  color: var(--term-text) !important;
+  color: #cdd6f4 !important;
   font-size: 0.85rem !important;
   line-height: 1.6 !important;
 }
 
-/* Basic syntax highlighting for code blocks */
-.highlight .k,
-.highlight .keyword { color: var(--term-pink) !important; }
-.highlight .nb,
-.highlight .builtin { color: var(--term-cyan) !important; }
-.highlight .s,
-.highlight .string { color: var(--term-green) !important; }
-.highlight .m,
-.highlight .number { color: var(--term-orange) !important; }
+/* Inline code */
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  background: #313244 !important;
+  color: #fab387 !important;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 4px !important;
+  font-size: 0.875em !important;
+  border: none !important;
+}
+
+/* Rouge syntax highlighting - Catppuccin Mocha inspired */
 .highlight .c,
-.highlight .comment { color: var(--term-text-muted) !important; font-style: italic; }
+.highlight .cm,
+.highlight .c1,
+.highlight .cp,
+.highlight .cs,
+.highlight .comment,
+.highlight .co {
+  color: #6c7086 !important;
+  font-style: italic !important;
+}
+
+.highlight .err,
+.highlight .error {
+  color: #f38ba8 !important;
+  background: rgba(243, 139, 168, 0.1) !important;
+}
+
+.highlight .k,
+.highlight .kn,
+.highlight .kd,
+.highlight .kc,
+.highlight .kr,
+.highlight .kp,
+.highlight .kt,
+.highlight .keyword {
+  color: #cba6f7 !important;
+}
+
+.highlight .o,
+.highlight .operator,
+.highlight .p {
+  color: #89dceb !important;
+}
+
+.highlight .na,
+.highlight .nb,
 .highlight .nc,
-.highlight .class { color: var(--term-purple) !important; }
+.highlight .nd,
+.highlight .ne,
 .highlight .nf,
-.highlight .function { color: var(--term-cyan) !important; }
-.highlight .err { color: var(--term-red) !important; }
+.highlight .ni,
+.highlight .nn,
+.highlight .nt,
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi,
+.highlight .no,
+.highlight .bp,
+.highlight .name {
+  color: #89b4fa !important;
+}
+
+.highlight .m,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo,
+.highlight .ml,
+.highlight .il,
+.highlight .number {
+  color: #fab387 !important;
+}
+
+.highlight .s,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .s2,
+.highlight .s1,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx,
+.highlight .sr,
+.highlight .ss,
+.highlight .string {
+  color: #a6e3a1 !important;
+}
+
+.highlight .f,
+.highlight .function {
+  color: #89b4fa !important;
+}
+
+.highlight .tc,
+.highlight .type {
+  color: #f9e2af !important;
+}
+
+.highlight .attr,
+.highlight .attribute {
+  color: #89b4fa !important;
+}
+
+.highlight .tag {
+  color: #f38ba8 !important;
+}
+
+.highlight .h,
+.highlight .heading,
+.highlight .title {
+  color: #89b4fa !important;
+}
+
+.highlight .dl,
+.highlight .doctag {
+  color: #a6e3a1 !important;
+}
+
+.highlight .x,
+.highlight .other {
+  color: #f38ba8 !important;
+}
+
+.highlight .w,
+.highlight .whitespace {
+  color: #6c7086 !important;
+}
+
+.highlight .gd,
+.highlight .deleted {
+  color: #f38ba8 !important;
+}
+
+.highlight .gi,
+.highlight .inserted {
+  color: #a6e3a1 !important;
+}
+
+.highlight .ge {
+  font-style: italic !important;
+}
+
+.highlight .gs {
+  font-weight: bold !important;
+}
+
+.highlight .gu {
+  color: #f9e2af !important;
+}
+
+.highlight .gt {
+  color: #f38ba8 !important;
+}
+
+.highlight .gr {
+  color: #f38ba8 !important;
+}
+
+.highlight .go {
+  color: #6c7086 !important;
+}
+
+.highlight .gp {
+  color: #89dceb !important;
+}
 
 /* Images in posts */
 .post-content img,
