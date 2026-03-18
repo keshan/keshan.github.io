@@ -9,9 +9,9 @@ layout: main
     {% if latest_post.categories %}
     <span class="hero-category">{{ latest_post.categories | first }}</span>
     {% endif %}
-    <h1>{{ latest_post.title }}</h1>
+    <h1>{{ latest_post.title }}<span class="cursor-blink"></span></h1>
     <p>{{ latest_post.content | strip_html | truncatewords: 30 }}</p>
-    <a href="{{ latest_post.url | prepend: site.baseurl }}" class="hero-button">Read More</a>
+    <a href="{{ latest_post.url | prepend: site.baseurl }}" class="hero-button">./read_more.sh</a>
   </div>
   {% if latest_post.img %}
   <div class="hero-background" style="background-image: url('{{site.baseurl}}/assets/img/{{latest_post.img}}')"></div>
@@ -19,8 +19,8 @@ layout: main
 </div>
 
   <div class="section-heading">
-  <h2>Other Articles</h2>
-  <p>Explore my thoughts on Machine Learning, AI, and more</p>
+  <h2>~/articles<span class="cursor-blink"></span></h2>
+  <p>// Explore my thoughts on Machine Learning, AI, and more</p>
 </div>
 
 <div class="posts-grid">
@@ -72,11 +72,11 @@ layout: main
 
 <div class="newsletter-section glass-card">
   <div class="newsletter-content">
-    <h2>Stay Updated</h2>
-    <p>Subscribe to my newsletter to get the latest updates on Machine Learning, AI, and more.</p>
+    <h2>~/subscribe<span class="cursor-blink"></span></h2>
+    <p>// Get the latest updates on Machine Learning, AI, and more</p>
     <form class="newsletter-form">
-      <input type="email" placeholder="Your email address" required>
-      <button type="submit" class="newsletter-button">Subscribe</button>
+      <input type="email" placeholder="your@email.com" required>
+      <button type="submit" class="newsletter-button">[ SUBSCRIBE ]</button>
     </form>
   </div>
 </div>
