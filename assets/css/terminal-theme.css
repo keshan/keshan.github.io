@@ -3443,7 +3443,7 @@ figure.highlight code {
   left: 0 !important;
   right: 0 !important;
   height: 3px !important;
-  background: linear-gradient(90deg, #00ff88, #00d9ff, #c792ea, #ff6b9d) !important;
+  /* background: linear-gradient(90deg, #00ff88, #00d9ff, #c792ea, #ff6b9d) !important; */
   border-radius: 16px 16px 0 0 !important;
 }
 
