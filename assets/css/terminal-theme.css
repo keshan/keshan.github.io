@@ -2912,72 +2912,129 @@ a:hover .fa {
 }
 
 /* ========================================
-   CODE BLOCKS - Clean Dark Syntax Highlighting
+   CODE BLOCKS - Terminal Window Style
    ======================================== */
 
+/* Terminal window wrapper for code blocks */
 .highlight,
-pre code,
-.highlighter-rouge {
-  background: #1e1e2e !important;
+.code-block-wrapper,
+div.highlighter-rouge,
+figure.highlight {
+  background: #1a1a2e !important;
   border: none !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
+  margin: 1.5rem 0 !important;
+  overflow: hidden !important;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  position: relative !important;
+}
+
+/* Terminal header bar */
+.highlight::before,
+.code-block-wrapper::before,
+div.highlighter-rouge::before,
+figure.highlight::before {
+  content: '' !important;
+  display: block !important;
+  background: linear-gradient(180deg, #2d2d4a 0%, #1a1a2e 100%) !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  position: relative !important;
+}
+
+/* Terminal traffic lights */
+.highlight::after,
+.code-block-wrapper::after,
+div.highlighter-rouge::after,
+figure.highlight::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 10px !important;
+  left: 14px !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background: #ff5f57 !important;
+  box-shadow: 
+    16px 0 0 #ffbd2e,
+    32px 0 0 #28ca41,
+    0 0 8px rgba(255, 95, 87, 0.5) !important;
+  display: block !important;
+}
+
+/* Language label in terminal header */
+div.highlighter-rouge .code-header,
+.highlight .code-header {
+  position: absolute !important;
+  top: 8px !important;
+  right: 16px !important;
+  color: #9ca3af !important;
+  font-size: 0.75rem !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  z-index: 1 !important;
+}
+
+/* Pre element inside highlight */
+.highlight pre,
+.code-block-wrapper pre,
+div.highlighter-rouge pre,
+figure.highlight pre {
+  background: #0f0f1a !important;
+  border: none !important;
+  border-radius: 0 !important;
   padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
   overflow-x: auto !important;
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
   font-size: 0.875rem !important;
   line-height: 1.65 !important;
-  margin: 1.5rem 0 !important;
-  box-shadow: none !important;
 }
 
-/* Code inside pre */
-pre {
-  background: #1e1e2e !important;
-  border: none !important;
-  border-radius: 8px !important;
-  padding: 1rem 1.25rem !important;
-  overflow-x: auto !important;
-  margin: 1.5rem 0 !important;
-}
-
-pre code {
+/* Code element */
+.highlight code,
+.code-block-wrapper code,
+div.highlighter-rouge code,
+figure.highlight code {
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
-  color: #cdd6f4 !important;
-  font-size: 0.85rem !important;
-  line-height: 1.6 !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
+  font-size: inherit !important;
+  color: #e4e4e7 !important;
 }
 
-/* Inline code */
+/* Inline code - distinct from blocks */
 code {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
   background: #313244 !important;
   color: #fab387 !important;
-  padding: 0.2rem 0.4rem !important;
+  padding: 0.2rem 0.5rem !important;
   border-radius: 4px !important;
   font-size: 0.875em !important;
-  border: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Rouge syntax highlighting - Catppuccin Mocha inspired */
+/* ========================================
+   SYNTAX HIGHLIGHTING COLORS
+   ======================================== */
+
+/* Comments - muted gray */
 .highlight .c,
 .highlight .cm,
 .highlight .c1,
 .highlight .cp,
 .highlight .cs,
-.highlight .comment,
-.highlight .co {
+.highlight .co,
+.highlight .comment {
   color: #6c7086 !important;
   font-style: italic !important;
 }
 
-.highlight .err,
-.highlight .error {
-  color: #f38ba8 !important;
-  background: rgba(243, 139, 168, 0.1) !important;
-}
-
+/* Keywords - bright purple */
 .highlight .k,
 .highlight .kn,
 .highlight .kd,
@@ -2987,44 +3044,10 @@ code {
 .highlight .kt,
 .highlight .keyword {
   color: #cba6f7 !important;
+  font-weight: 500 !important;
 }
 
-.highlight .o,
-.highlight .operator,
-.highlight .p {
-  color: #89dceb !important;
-}
-
-.highlight .na,
-.highlight .nb,
-.highlight .nc,
-.highlight .nd,
-.highlight .ne,
-.highlight .nf,
-.highlight .ni,
-.highlight .nn,
-.highlight .nt,
-.highlight .nv,
-.highlight .vc,
-.highlight .vg,
-.highlight .vi,
-.highlight .no,
-.highlight .bp,
-.highlight .name {
-  color: #89b4fa !important;
-}
-
-.highlight .m,
-.highlight .mf,
-.highlight .mh,
-.highlight .mi,
-.highlight .mo,
-.highlight .ml,
-.highlight .il,
-.highlight .number {
-  color: #fab387 !important;
-}
-
+/* Strings - soft green */
 .highlight .s,
 .highlight .sb,
 .highlight .sc,
@@ -3041,82 +3064,132 @@ code {
   color: #a6e3a1 !important;
 }
 
+/* Numbers - peach/orange */
+.highlight .m,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo,
+.highlight .ml,
+.highlight .il,
+.highlight .number {
+  color: #fab387 !important;
+}
+
+/* Functions - blue */
+.highlight .nf,
 .highlight .f,
+.highlight .fu,
 .highlight .function {
   color: #89b4fa !important;
 }
 
+/* Classes/Types - yellow */
+.highlight .nc,
 .highlight .tc,
-.highlight .type {
+.highlight .type,
+.highlight .class {
   color: #f9e2af !important;
+  font-weight: 500 !important;
 }
 
+/* Variables/Names - sky blue */
+.highlight .na,
+.highlight .nb,
+.highlight .nc,
+.highlight .nd,
+.highlight .ne,
+.highlight .ni,
+.highlight .nn,
+.highlight .nt,
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi,
+.highlight .no,
+.highlight .bp,
+.highlight .name,
+.highlight .n {
+  color: #89dceb !important;
+}
+
+/* Operators - cyan */
+.highlight .o,
+.highlight .op,
+.highlight .operator,
+.highlight .p {
+  color: #89dceb !important;
+}
+
+/* Errors - red */
+.highlight .err,
+.highlight .error {
+  color: #f38ba8 !important;
+  background: rgba(243, 139, 168, 0.1) !important;
+  border-radius: 2px !important;
+  padding: 0 2px !important;
+}
+
+/* Builtins - aqua */
+.highlight .bu,
+.highlight .builtin {
+  color: #94e2d5 !important;
+}
+
+/* Constants - peach */
+.highlight .kc,
+.highlight .constant {
+  color: #fab387 !important;
+}
+
+/* Tags (HTML/XML) - pink */
+.highlight .tag,
+.highlight .html {
+  color: #f38ba8 !important;
+}
+
+/* Attributes - blue */
+.highlight .at,
 .highlight .attr,
 .highlight .attribute {
   color: #89b4fa !important;
 }
 
-.highlight .tag {
-  color: #f38ba8 !important;
-}
-
-.highlight .h,
-.highlight .heading,
-.highlight .title {
-  color: #89b4fa !important;
-}
-
-.highlight .dl,
-.highlight .doctag {
-  color: #a6e3a1 !important;
-}
-
-.highlight .x,
-.highlight .other {
-  color: #f38ba8 !important;
-}
-
-.highlight .w,
-.highlight .whitespace {
-  color: #6c7086 !important;
-}
-
+/* Deleted - red */
 .highlight .gd,
 .highlight .deleted {
   color: #f38ba8 !important;
+  background: rgba(243, 139, 168, 0.15) !important;
 }
 
+/* Inserted - green */
 .highlight .gi,
 .highlight .inserted {
   color: #a6e3a1 !important;
+  background: rgba(166, 227, 161, 0.15) !important;
 }
 
-.highlight .ge {
-  font-style: italic !important;
-}
-
-.highlight .gs {
-  font-weight: bold !important;
-}
-
-.highlight .gu {
-  color: #f9e2af !important;
-}
-
-.highlight .gt {
-  color: #f38ba8 !important;
-}
-
-.highlight .gr {
-  color: #f38ba8 !important;
-}
-
-.highlight .go {
-  color: #6c7086 !important;
-}
-
+/* Generic - defaults */
+.highlight .ge,
+.highlight .gs,
+.highlight .gu,
+.highlight .gt,
+.highlight .gr,
+.highlight .go,
 .highlight .gp {
-  color: #89dceb !important;
+  color: #cdd6f4 !important;
+}
+
+/* Punctuation */
+.highlight .p,
+.highlight .punctuation {
+  color: #bac2de !important;
+}
+
+/* Escape sequences */
+.highlight .esc,
+.highlight .ee {
+  color: #f5c2e7 !important;
 }
 
 /* Images in posts */
