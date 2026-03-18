@@ -2,40 +2,40 @@
    TERMINAL THEME - Jekyll Blog
    ======================================== */
 
-/* CSS Custom Properties */
+/* CSS Custom Properties - Vibrant Terminal Theme */
 :root {
-  /* Terminal Colors */
-  --term-bg: #0a0e14;
-  --term-bg-secondary: #0d1117;
-  --term-bg-tertiary: #161b22;
-  --term-bg-elevated: #1c2128;
-  --term-green: #39ff14;
-  --term-green-dim: #00c853;
-  --term-green-muted: #238636;
-  --term-cyan: #00d4ff;
-  --term-cyan-dim: #0097a7;
-  --term-red: #ff5f56;
-  --term-yellow: #ffbd2e;
-  --term-purple: #bd93f9;
-  --term-text: #e6edf3;
+  /* Terminal Colors - More Vibrant */
+  --term-bg: #0f0f23;
+  --term-bg-secondary: #1a1a2e;
+  --term-bg-tertiary: #16213e;
+  --term-bg-elevated: #1f1f3a;
+  --term-green: #00ff88;
+  --term-green-dim: #00cc6a;
+  --term-green-muted: #0a9f5e;
+  --term-cyan: #00d9ff;
+  --term-cyan-dim: #00a8cc;
+  --term-pink: #ff6b9d;
+  --term-purple: #c792ea;
+  --term-orange: #ffab70;
+  --term-red: #ff5555;
+  --term-yellow: #ffdd57;
+  --term-text: #e4e4e7;
   --term-text-bright: #ffffff;
-  --term-text-dim: #8b949e;
-  --term-text-muted: #484f58;
-  --term-border: #30363d;
-  --term-border-light: #3d444d;
-  --term-glow: rgba(57, 255, 20, 0.5);
-  --term-glow-cyan: rgba(0, 212, 255, 0.5);
+  --term-text-dim: #9ca3af;
+  --term-text-muted: #6b7280;
+  --term-border: #2d2d5a;
+  --term-border-light: #3d3d6b;
+  --term-glow: rgba(0, 255, 136, 0.5);
+  --term-glow-cyan: rgba(0, 217, 255, 0.5);
+  --term-glow-pink: rgba(255, 107, 157, 0.5);
   
-  /* Typography - Improved for visibility */
-  --term-font: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+  /* Typography - Better visibility */
+  --term-font: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
   --font-size-base: 15px;
-  --font-size-lg: 18px;
-  --font-size-sm: 13px;
   --line-height: 1.7;
   
   /* Effects */
-  --scanline-opacity: 0.025;
-  --glow-intensity: 0.6;
+  --scanline-opacity: 0.02;
 }
 
 /* ========================================
@@ -1580,4 +1580,338 @@ a:hover .fa {
 .social-links .fa:hover {
   color: var(--term-green);
   text-shadow: 0 0 10px var(--term-glow);
+}
+
+/* ========================================
+   FORCE OVERRIDES - Fix White Backgrounds
+   ======================================== */
+
+/* Override any white backgrounds */
+.hero, 
+.post-card, 
+.post,
+.article-page,
+.glass-card,
+.newsletter-section,
+.sidebar,
+.about,
+.contact,
+.related-post-card,
+.author-bio,
+.table-of-contents,
+.terminal-window {
+  background: var(--term-bg-secondary) !important;
+}
+
+/* Navbar background */
+.site-header {
+  background: var(--term-bg-secondary) !important;
+  border-bottom: 1px solid var(--term-border) !important;
+}
+
+/* Post cards styling */
+.post-card {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+  border-radius: 12px !important;
+}
+
+.post-card:hover {
+  border-color: var(--term-cyan) !important;
+  box-shadow: 0 8px 30px rgba(0, 217, 255, 0.15) !important;
+}
+
+/* Post card content */
+.post-card-content {
+  background: transparent !important;
+}
+
+.post-card-title {
+  color: var(--term-text-bright) !important;
+  font-weight: 600 !important;
+}
+
+.post-card-title:hover {
+  color: var(--term-cyan) !important;
+  text-shadow: 0 0 15px var(--term-glow-cyan) !important;
+}
+
+.post-card-excerpt {
+  color: var(--term-text-dim) !important;
+}
+
+.post-card-meta {
+  border-top: 1px solid var(--term-border) !important;
+}
+
+.post-card-author {
+  color: var(--term-text-dim) !important;
+}
+
+.post-card-author .author-image {
+  border: 2px solid var(--term-green) !important;
+  box-shadow: 0 0 10px var(--term-glow) !important;
+}
+
+.post-card-date,
+.post-card-info {
+  color: var(--term-text-muted) !important;
+}
+
+.post-card-category {
+  background: var(--term-cyan) !important;
+  color: var(--term-bg) !important;
+  font-weight: 600 !important;
+}
+
+/* Hero section */
+.hero {
+  background: linear-gradient(135deg, var(--term-bg-secondary) 0%, var(--term-bg-tertiary) 100%) !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+.hero::before {
+  background: linear-gradient(90deg, var(--term-green), var(--term-cyan), var(--term-pink), var(--term-purple)) !important;
+  height: 3px !important;
+}
+
+.hero h1 {
+  color: var(--term-text-bright) !important;
+}
+
+.hero-category {
+  background: var(--term-purple) !important;
+  color: var(--term-bg) !important;
+  font-weight: 600 !important;
+}
+
+.hero p {
+  color: var(--term-text-dim) !important;
+}
+
+.hero-button {
+  background: transparent !important;
+  border: 2px solid var(--term-green) !important;
+  color: var(--term-green) !important;
+}
+
+.hero-button:hover {
+  background: var(--term-green) !important;
+  color: var(--term-bg) !important;
+  box-shadow: 0 0 25px var(--term-glow) !important;
+}
+
+/* Section heading */
+.section-heading h2 {
+  color: var(--term-cyan) !important;
+}
+
+.section-heading p {
+  color: var(--term-text-dim) !important;
+}
+
+/* Newsletter section */
+.newsletter-section {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+.newsletter-section h2 {
+  color: var(--term-cyan) !important;
+}
+
+.newsletter-section p {
+  color: var(--term-text-dim) !important;
+}
+
+.newsletter-form input {
+  background: var(--term-bg) !important;
+  border: 1px solid var(--term-border) !important;
+  color: var(--term-text) !important;
+}
+
+.newsletter-form input:focus {
+  border-color: var(--term-cyan) !important;
+  box-shadow: 0 0 15px var(--term-glow-cyan) !important;
+}
+
+.newsletter-button {
+  background: transparent !important;
+  border: 2px solid var(--term-cyan) !important;
+  color: var(--term-cyan) !important;
+}
+
+.newsletter-button:hover {
+  background: var(--term-cyan) !important;
+  color: var(--term-bg) !important;
+  box-shadow: 0 0 20px var(--term-glow-cyan) !important;
+}
+
+/* Author bio */
+.author-bio {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+.author-image-large {
+  border: 3px solid var(--term-purple) !important;
+  box-shadow: 0 0 20px var(--term-glow-pink) !important;
+}
+
+.author-info h3 {
+  color: var(--term-pink) !important;
+}
+
+.author-info p {
+  color: var(--term-text-dim) !important;
+}
+
+/* Related posts */
+.related-post-card {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+.related-post-card:hover {
+  border-color: var(--term-pink) !important;
+  box-shadow: 0 0 15px var(--term-glow-pink) !important;
+}
+
+.related-post-content h4 {
+  color: var(--term-text-bright) !important;
+}
+
+.related-post-content h4:hover {
+  color: var(--term-pink) !important;
+}
+
+/* Table of contents */
+.table-of-contents {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+.table-of-contents h3 {
+  color: var(--term-green) !important;
+}
+
+/* Footer */
+.site-footer {
+  background: var(--term-bg-secondary) !important;
+}
+
+.footer-content h3 {
+  color: var(--term-cyan) !important;
+}
+
+.footer-content a {
+  color: var(--term-text-dim) !important;
+}
+
+.footer-content a:hover {
+  color: var(--term-green) !important;
+}
+
+.copyright {
+  color: var(--term-text-muted) !important;
+  border-top: 1px solid var(--term-border) !important;
+}
+
+/* Post page */
+.post-hero {
+  background: linear-gradient(to bottom, transparent 0%, var(--term-bg-secondary) 100%), 
+              var(--term-bg-tertiary) !important;
+}
+
+.post-hero .post-title {
+  color: var(--term-text-bright) !important;
+}
+
+.post-container {
+  background: var(--term-bg) !important;
+}
+
+.post-header {
+  border-bottom: 1px solid var(--term-border) !important;
+}
+
+.post-meta {
+  color: var(--term-text-dim) !important;
+}
+
+.post-author-info .author-image {
+  border: 2px solid var(--term-cyan) !important;
+}
+
+.post-category {
+  background: var(--term-pink) !important;
+  color: var(--term-bg) !important;
+}
+
+.post-content {
+  color: var(--term-text) !important;
+}
+
+.post-content h2 {
+  color: var(--term-cyan) !important;
+  border-bottom: 1px solid var(--term-border) !important;
+}
+
+.post-content h3 {
+  color: var(--term-green) !important;
+}
+
+.post-footer {
+  border-top: 1px solid var(--term-border) !important;
+}
+
+.tag {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+  color: var(--term-text-dim) !important;
+}
+
+.tag:hover {
+  border-color: var(--term-green) !important;
+  color: var(--term-green) !important;
+}
+
+/* Pagination */
+.pagination-container a {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+  color: var(--term-text-dim) !important;
+}
+
+.pagination-container a:hover {
+  border-color: var(--term-green) !important;
+  color: var(--term-green) !important;
+}
+
+.pagination-container .active {
+  background: var(--term-green) !important;
+  color: var(--term-bg) !important;
+  border-color: var(--term-green) !important;
+}
+
+/* Progress bar */
+.progress-bar {
+  background: var(--term-bg) !important;
+}
+
+.progress-indicator {
+  background: linear-gradient(90deg, var(--term-green), var(--term-cyan), var(--term-pink)) !important;
+  box-shadow: 0 0 15px var(--term-glow) !important;
+}
+
+/* Share buttons */
+.share-buttons a {
+  background: var(--term-bg-tertiary) !important;
+  border: 1px solid var(--term-border) !important;
+}
+
+.share-buttons a:hover {
+  background: var(--term-pink) !important;
+  border-color: var(--term-pink) !important;
+  box-shadow: 0 0 15px var(--term-glow-pink) !important;
 }

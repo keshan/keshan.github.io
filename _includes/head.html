@@ -83,8 +83,6 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="#0d1117">
 	<!-- Google Fonts -->
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-	<!-- Terminal Theme -->
-	<link rel="stylesheet" href="{{ "/assets/css/terminal-theme.css" | prepend: site.baseurl }}">
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="{{ "/assets/fonts/font-awesome/css/font-awesome.min.css" | prepend: site.baseurl }}">
 	<!-- Google Fonts -->
@@ -96,6 +94,8 @@
 	<link rel="stylesheet" href="{{ "/assets/css/main.css" | prepend: site.baseurl }}">
 	<link rel="stylesheet" href="{{ "/assets/css/bracia-style.css" | prepend: site.baseurl }}">
   <link rel="stylesheet" href="/assets/css/modern-sleek.css">
+  <!-- Terminal Theme - Must be last to override -->
+  <link rel="stylesheet" href="{{ "/assets/css/terminal-theme.css" | prepend: site.baseurl }}">
   {% if page.title %}
     <meta name="twitter:title" content="{{ page.title }}">
   {% else %}
