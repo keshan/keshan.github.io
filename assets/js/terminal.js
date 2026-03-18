@@ -158,4 +158,19 @@ document.addEventListener('DOMContentLoaded', function() {
     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     observer.observe(card);
   });
+
+  const codeBlocks = document.querySelectorAll('div.highlighter-rouge, figure.highlight');
+  codeBlocks.forEach(block => {
+    const classList = block.className;
+    const langMatch = classList.match(/language-(\w+)/);
+    if (langMatch && langMatch[1]) {
+      const lang = langMatch[1];
+      if (!block.querySelector('.code-lang-label')) {
+        const label = document.createElement('span');
+        label.className = 'code-lang-label';
+        label.textContent = lang;
+        block.appendChild(label);
+      }
+    }
+  });
 });

@@ -2916,8 +2916,6 @@ a:hover .fa {
    ======================================== */
 
 /* Terminal window wrapper for code blocks */
-.highlight,
-.code-block-wrapper,
 div.highlighter-rouge,
 figure.highlight {
   background: #1a1a2e !important;
@@ -2934,8 +2932,6 @@ figure.highlight {
 }
 
 /* Hover glow effect on code blocks */
-.highlight:hover,
-.code-block-wrapper:hover,
 div.highlighter-rouge:hover,
 figure.highlight:hover {
   border-color: rgba(0, 255, 136, 0.15) !important;
@@ -2946,9 +2942,7 @@ figure.highlight:hover {
     inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Terminal header bar */
-.highlight::before,
-.code-block-wrapper::before,
+/* Terminal header bar - only on outer wrapper */
 div.highlighter-rouge::before,
 figure.highlight::before {
   content: '' !important;
@@ -2960,9 +2954,7 @@ figure.highlight::before {
   min-height: 40px !important;
 }
 
-/* Terminal traffic lights */
-.highlight::after,
-.code-block-wrapper::after,
+/* Terminal traffic lights - only on outer wrapper */
 div.highlighter-rouge::after,
 figure.highlight::after {
   content: '' !important;
@@ -2981,6 +2973,26 @@ figure.highlight::after {
     36px 0 6px rgba(40, 202, 65, 0.4) !important;
   display: block !important;
   z-index: 2 !important;
+}
+
+/* Inner highlight div should NOT have pseudo-elements */
+div.highlighter-rouge div.highlight,
+figure.highlight div.highlight {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+}
+
+/* Hide any ::before or ::after on inner .highlight */
+div.highlighter-rouge div.highlight::before,
+div.highlighter-rouge div.highlight::after,
+figure.highlight div.highlight::before,
+figure.highlight div.highlight::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* Language label injected by JS */
@@ -3049,9 +3061,7 @@ div.highlighter-rouge .code-header,
   z-index: 1 !important;
 }
 
-/* Pre element inside highlight */
-.highlight pre,
-.code-block-wrapper pre,
+/* Pre element inside highlight - ONLY the inner div.highlight pre should have this styling */
 div.highlighter-rouge pre,
 figure.highlight pre {
   background: #0d0d18 !important;
@@ -3063,7 +3073,6 @@ figure.highlight pre {
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
   font-size: 0.875rem !important;
   line-height: 1.7 !important;
-  counter-reset: line-numbering !important;
 }
 
 /* Code element */
