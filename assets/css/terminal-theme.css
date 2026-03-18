@@ -2921,14 +2921,29 @@ a:hover .fa {
 div.highlighter-rouge,
 figure.highlight {
   background: #1a1a2e !important;
-  border: none !important;
+  border: 1px solid rgba(45, 45, 90, 0.8) !important;
   border-radius: 12px !important;
-  margin: 1.5rem 0 !important;
+  margin: 1.8rem 0 !important;
   overflow: hidden !important;
   box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
   position: relative !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+/* Hover glow effect on code blocks */
+.highlight:hover,
+.code-block-wrapper:hover,
+div.highlighter-rouge:hover,
+figure.highlight:hover {
+  border-color: rgba(0, 255, 136, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 255, 136, 0.1),
+    0 0 40px rgba(0, 255, 136, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Terminal header bar */
@@ -2938,10 +2953,11 @@ div.highlighter-rouge::before,
 figure.highlight::before {
   content: '' !important;
   display: block !important;
-  background: linear-gradient(180deg, #2d2d4a 0%, #1a1a2e 100%) !important;
-  padding: 12px 16px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: linear-gradient(180deg, #252540 0%, #1e1e38 100%) !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   position: relative !important;
+  min-height: 40px !important;
 }
 
 /* Terminal traffic lights */
@@ -2951,20 +2967,75 @@ div.highlighter-rouge::after,
 figure.highlight::after {
   content: '' !important;
   position: absolute !important;
-  top: 10px !important;
-  left: 14px !important;
+  top: 14px !important;
+  left: 16px !important;
   width: 12px !important;
   height: 12px !important;
   border-radius: 50% !important;
   background: #ff5f57 !important;
   box-shadow: 
-    16px 0 0 #ffbd2e,
-    32px 0 0 #28ca41,
-    0 0 8px rgba(255, 95, 87, 0.5) !important;
+    18px 0 0 #ffbd2e,
+    36px 0 0 #28ca41,
+    0 0 6px rgba(255, 95, 87, 0.4),
+    18px 0 6px rgba(255, 189, 46, 0.4),
+    36px 0 6px rgba(40, 202, 65, 0.4) !important;
   display: block !important;
+  z-index: 2 !important;
 }
 
-/* Language label in terminal header */
+/* Language label injected by JS */
+.code-lang-label {
+  position: absolute !important;
+  top: 10px !important;
+  right: 60px !important;
+  color: #6c7086 !important;
+  font-size: 0.72rem !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  z-index: 3 !important;
+  background: rgba(108, 112, 134, 0.12) !important;
+  padding: 2px 10px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(108, 112, 134, 0.15) !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+/* Copy to clipboard button */
+.code-copy-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 12px !important;
+  background: rgba(108, 112, 134, 0.1) !important;
+  border: 1px solid rgba(108, 112, 134, 0.2) !important;
+  border-radius: 6px !important;
+  color: #6c7086 !important;
+  font-size: 0.75rem !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  padding: 4px 10px !important;
+  cursor: pointer !important;
+  z-index: 3 !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.code-copy-btn:hover {
+  background: rgba(0, 255, 136, 0.15) !important;
+  border-color: rgba(0, 255, 136, 0.3) !important;
+  color: #00ff88 !important;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.2) !important;
+}
+
+.code-copy-btn.copied {
+  background: rgba(0, 255, 136, 0.2) !important;
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+}
+
+/* Language label in terminal header (old class, kept for compatibility) */
 div.highlighter-rouge .code-header,
 .highlight .code-header {
   position: absolute !important;
@@ -2983,7 +3054,7 @@ div.highlighter-rouge .code-header,
 .code-block-wrapper pre,
 div.highlighter-rouge pre,
 figure.highlight pre {
-  background: #0f0f1a !important;
+  background: #0d0d18 !important;
   border: none !important;
   border-radius: 0 !important;
   padding: 1.25rem 1.5rem !important;
@@ -2991,7 +3062,8 @@ figure.highlight pre {
   overflow-x: auto !important;
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
   font-size: 0.875rem !important;
-  line-height: 1.65 !important;
+  line-height: 1.7 !important;
+  counter-reset: line-numbering !important;
 }
 
 /* Code element */
@@ -3004,22 +3076,34 @@ figure.highlight code {
   padding: 0 !important;
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
   font-size: inherit !important;
-  color: #e4e4e7 !important;
+  color: #cdd6f4 !important;
 }
 
 /* Inline code - distinct from blocks */
-code {
+:not(pre) > code,
+p > code,
+li > code,
+td > code,
+h1 > code,
+h2 > code,
+h3 > code,
+h4 > code,
+h5 > code,
+h6 > code {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
   background: #313244 !important;
   color: #fab387 !important;
-  padding: 0.2rem 0.5rem !important;
-  border-radius: 4px !important;
-  font-size: 0.875em !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 0.15rem 0.45rem !important;
+  border-radius: 5px !important;
+  font-size: 0.85em !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  word-break: break-word !important;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
 }
 
 /* ========================================
    SYNTAX HIGHLIGHTING COLORS
+   Catppuccin Mocha Palette - Enhanced
    ======================================== */
 
 /* Comments - muted gray */
@@ -3038,12 +3122,22 @@ code {
 .highlight .k,
 .highlight .kn,
 .highlight .kd,
-.highlight .kc,
 .highlight .kr,
 .highlight .kp,
-.highlight .kt,
 .highlight .keyword {
   color: #cba6f7 !important;
+  font-weight: 500 !important;
+}
+
+/* Keyword.Constant (True, False, None) */
+.highlight .kc {
+  color: #fab387 !important;
+  font-weight: 500 !important;
+}
+
+/* Keyword.Type */
+.highlight .kt {
+  color: #f9e2af !important;
   font-weight: 500 !important;
 }
 
@@ -3054,14 +3148,18 @@ code {
 .highlight .sd,
 .highlight .s2,
 .highlight .s1,
-.highlight .se,
 .highlight .sh,
-.highlight .si,
 .highlight .sx,
 .highlight .sr,
 .highlight .ss,
 .highlight .string {
   color: #a6e3a1 !important;
+}
+
+/* String escape & interpolation - pink */
+.highlight .se,
+.highlight .si {
+  color: #f5c2e7 !important;
 }
 
 /* Numbers - peach/orange */
@@ -3078,118 +3176,138 @@ code {
 
 /* Functions - blue */
 .highlight .nf,
-.highlight .f,
-.highlight .fu,
+.highlight .fm,
 .highlight .function {
   color: #89b4fa !important;
 }
 
 /* Classes/Types - yellow */
 .highlight .nc,
-.highlight .tc,
 .highlight .type,
 .highlight .class {
   color: #f9e2af !important;
   font-weight: 500 !important;
 }
 
-/* Variables/Names - sky blue */
-.highlight .na,
-.highlight .nb,
-.highlight .nc,
-.highlight .nd,
-.highlight .ne,
-.highlight .ni,
-.highlight .nn,
-.highlight .nt,
+/* Decorators */
+.highlight .nd {
+  color: #89b4fa !important;
+}
+
+/* Name.Attribute - sky */
+.highlight .na {
+  color: #89b4fa !important;
+}
+
+/* Name.Builtin - teal */
+.highlight .nb {
+  color: #94e2d5 !important;
+}
+
+/* Name.Constant */
+.highlight .no {
+  color: #fab387 !important;
+}
+
+/* Name.Entity */
+.highlight .ni {
+  color: #cdd6f4 !important;
+}
+
+/* Name.Exception - pink/red */
+.highlight .ne {
+  color: #f38ba8 !important;
+}
+
+/* Name.Label */
+.highlight .nl {
+  color: #89dceb !important;
+}
+
+/* Name.Namespace */
+.highlight .nn {
+  color: #f9e2af !important;
+}
+
+/* Name.Tag (HTML/XML) - pink */
+.highlight .nt {
+  color: #f38ba8 !important;
+}
+
+/* Name.Variable - light text */
 .highlight .nv,
 .highlight .vc,
 .highlight .vg,
-.highlight .vi,
-.highlight .no,
-.highlight .bp,
-.highlight .name,
-.highlight .n {
-  color: #89dceb !important;
+.highlight .vi {
+  color: #cdd6f4 !important;
 }
 
-/* Operators - cyan */
+/* Name.Builtin.Pseudo */
+.highlight .bp {
+  color: #94e2d5 !important;
+}
+
+/* Operators - teal, distinct from names */
 .highlight .o,
-.highlight .op,
-.highlight .operator,
-.highlight .p {
-  color: #89dceb !important;
+.highlight .ow {
+  color: #94e2d5 !important;
 }
 
-/* Errors - red */
-.highlight .err,
-.highlight .error {
+/* Punctuation - subdued lavender */
+.highlight .p {
+  color: #bac2de !important;
+}
+
+/* Plain text / generic name - default text */
+.highlight .n {
+  color: #cdd6f4 !important;
+}
+
+/* Errors - red with subtle bg */
+.highlight .err {
   color: #f38ba8 !important;
-  background: rgba(243, 139, 168, 0.1) !important;
+  background: rgba(243, 139, 168, 0.08) !important;
   border-radius: 2px !important;
   padding: 0 2px !important;
 }
 
 /* Builtins - aqua */
-.highlight .bu,
-.highlight .builtin {
+.highlight .bu {
   color: #94e2d5 !important;
 }
 
-/* Constants - peach */
-.highlight .kc,
-.highlight .constant {
-  color: #fab387 !important;
-}
-
-/* Tags (HTML/XML) - pink */
-.highlight .tag,
-.highlight .html {
+/* Deleted - red bg */
+.highlight .gd {
   color: #f38ba8 !important;
+  background: rgba(243, 139, 168, 0.12) !important;
 }
 
-/* Attributes - blue */
-.highlight .at,
-.highlight .attr,
-.highlight .attribute {
-  color: #89b4fa !important;
-}
-
-/* Deleted - red */
-.highlight .gd,
-.highlight .deleted {
-  color: #f38ba8 !important;
-  background: rgba(243, 139, 168, 0.15) !important;
-}
-
-/* Inserted - green */
-.highlight .gi,
-.highlight .inserted {
+/* Inserted - green bg */
+.highlight .gi {
   color: #a6e3a1 !important;
-  background: rgba(166, 227, 161, 0.15) !important;
+  background: rgba(166, 227, 161, 0.12) !important;
 }
 
-/* Generic - defaults */
-.highlight .ge,
-.highlight .gs,
-.highlight .gu,
-.highlight .gt,
-.highlight .gr,
-.highlight .go,
-.highlight .gp {
-  color: #cdd6f4 !important;
-}
-
-/* Punctuation */
-.highlight .p,
-.highlight .punctuation {
-  color: #bac2de !important;
-}
+/* Generic text rendering */
+.highlight .ge { color: #cdd6f4 !important; font-style: italic !important; }
+.highlight .gs { color: #cdd6f4 !important; font-weight: bold !important; }
+.highlight .gu { color: #94e2d5 !important; font-weight: 600 !important; }
+.highlight .gh { color: #89b4fa !important; font-weight: 600 !important; }
+.highlight .gt { color: #f38ba8 !important; }
+.highlight .gr { color: #f38ba8 !important; }
+.highlight .go { color: #a6adc8 !important; }
+.highlight .gp { color: #89b4fa !important; }
+.highlight .gl { text-decoration: underline !important; }
 
 /* Escape sequences */
 .highlight .esc,
 .highlight .ee {
   color: #f5c2e7 !important;
+}
+
+/* Whitespace */
+.highlight .w {
+  color: #585b70 !important;
 }
 
 /* Images in posts */
@@ -3247,3 +3365,131 @@ code {
   background: rgba(0, 255, 136, 0.05) !important;
   color: var(--term-text-dim) !important;
 }
+
+/* ========================================
+   SCROLL-REVEAL ANIMATIONS
+   ======================================== */
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========================================
+   DEMO BOX - Dark Terminal Theme
+   ======================================== */
+
+.demo-box {
+  background: linear-gradient(135deg, var(--term-bg-tertiary) 0%, var(--term-bg-secondary) 100%) !important;
+  border: 1px solid var(--term-border) !important;
+  border-radius: 12px !important;
+  padding: 1.5rem 1.2rem !important;
+  margin: 2rem 0 2.5rem 0 !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+  overflow-x: auto !important;
+}
+
+.demo-box:hover {
+  box-shadow: 0 8px 32px rgba(0, 217, 255, 0.1) !important;
+  border-color: var(--term-cyan) !important;
+}
+
+.demo-box-title {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: var(--term-cyan) !important;
+  margin-bottom: 0.7rem !important;
+  letter-spacing: 0.01em !important;
+  text-decoration: none !important;
+  display: block !important;
+}
+
+.demo-box-title:hover {
+  text-shadow: 0 0 15px var(--term-glow-cyan) !important;
+}
+
+.demo-box iframe {
+  width: 100% !important;
+  min-height: 400px !important;
+  border: 1px solid var(--term-border) !important;
+  border-radius: 8px !important;
+  background: var(--term-bg) !important;
+}
+
+/* ========================================
+   HEARTBEAT ANIMATION
+   ======================================== */
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.2); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.2); }
+  56% { transform: scale(1); }
+}
+
+.heart {
+  display: inline-block;
+  color: var(--term-pink) !important;
+  animation: heartbeat 2s ease-in-out infinite !important;
+}
+
+/* ========================================
+   NAV KEYBOARD SHORTCUT HINTS
+   ======================================== */
+
+.site-nav a::after {
+  font-size: 0.65rem;
+  color: var(--term-text-muted);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  margin-left: 4px;
+}
+
+.site-nav li:nth-child(1) a::after { content: '[1]'; }
+.site-nav li:nth-child(2) a::after { content: '[2]'; }
+.site-nav li:nth-child(3) a::after { content: '[3]'; }
+.site-nav li:nth-child(4) a::after { content: '[4]'; }
+
+.site-nav a:hover::after {
+  opacity: 1;
+}
+
+/* ========================================
+   SMOOTH SCROLL BEHAVIOR
+   ======================================== */
+
+html {
+  scroll-behavior: smooth !important;
+}
+
+/* ========================================
+   CODE BLOCK LINE HIGHLIGHT ON HOVER
+   ======================================== */
+
+.highlight pre::-webkit-scrollbar {
+  height: 6px !important;
+}
+
+.highlight pre::-webkit-scrollbar-track {
+  background: #0d0d18 !important;
+}
+
+.highlight pre::-webkit-scrollbar-thumb {
+  background: #2d2d5a !important;
+  border-radius: 3px !important;
+}
+
+.highlight pre::-webkit-scrollbar-thumb:hover {
+  background: var(--term-green) !important;
+  box-shadow: 0 0 8px var(--term-glow) !important;
+}
+
