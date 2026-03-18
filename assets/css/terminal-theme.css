@@ -50,6 +50,239 @@
   }
 }
 
+/* ========================================
+   SCANLINE OVERLAY - CRT Effect
+   ======================================== */
+
+.scanline-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  animation: scanline-flicker 0.1s infinite;
+}
+
+@keyframes scanline-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.98; }
+}
+
+/* ========================================
+   GLITCH TEXT EFFECT - Headings
+   ======================================== */
+
+.glitch-hover {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-hover:hover {
+  animation: glitch-text 0.3s ease-in-out;
+}
+
+@keyframes glitch-text {
+  0%, 100% { 
+    transform: translate(0);
+    text-shadow: none;
+  }
+  10% { 
+    transform: translate(-2px, 1px);
+    text-shadow: 2px 0 #ff6b9d, -2px 0 #00d9ff;
+  }
+  20% { 
+    transform: translate(2px, -1px);
+    text-shadow: -2px 0 #ff6b9d, 2px 0 #00d9ff;
+  }
+  30% { 
+    transform: translate(-1px, 2px);
+    text-shadow: 1px 0 #ff6b9d, -1px 0 #00d9ff;
+  }
+  40% { 
+    transform: translate(1px, -2px);
+    text-shadow: -1px 0 #ff6b9d, 1px 0 #00d9ff;
+  }
+  50% { 
+    transform: translate(-2px, 1px);
+    text-shadow: 2px 0 #ff6b9d, -2px 0 #00d9ff;
+  }
+  60% { 
+    transform: translate(2px, 1px);
+    text-shadow: -2px 0 #ff6b9d, 2px 0 #00d9ff;
+  }
+  70% { 
+    transform: translate(-1px, -1px);
+    text-shadow: 1px 0 #ff6b9d, -1px 0 #00d9ff;
+  }
+  80% { 
+    transform: translate(1px, 2px);
+    text-shadow: -1px 0 #ff6b9d, 1px 0 #00d9ff;
+  }
+  90% { 
+    transform: translate(-2px, -1px);
+    text-shadow: 2px 0 #ff6b9d, -2px 0 #00d9ff;
+  }
+}
+
+/* ========================================
+   TERMINAL SEARCH OVERLAY
+   ======================================== */
+
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 20, 0.95);
+  z-index: 10000;
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 15vh;
+  backdrop-filter: blur(10px);
+}
+
+.search-overlay.active {
+  display: flex;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 0 20px;
+}
+
+.search-input-wrapper {
+  background: #1a1a2e;
+  border: 1px solid #2d2d4a;
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.search-prompt {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  background: #252540;
+  border-bottom: 1px solid #2d2d4a;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.search-prompt span {
+  color: #00ff88;
+  margin-right: 10px;
+}
+
+.search-prompt span:first-child {
+  color: #6c7086;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 20px;
+  background: transparent;
+  border: none;
+  color: #e4e4e7;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #6c7086;
+}
+
+.search-results {
+  margin-top: 20px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  background: #1a1a2e;
+  border: 1px solid #2d2d4a;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+  border-color: #00ff88;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.search-result-item h4 {
+  color: #00d9ff;
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+}
+
+.search-result-item p {
+  color: #6c7086;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.search-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #6c7086;
+  font-size: 2rem;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.search-close:hover {
+  color: #ff6b9d;
+}
+
+/* Search trigger button */
+.search-trigger {
+  background: rgba(108, 112, 134, 0.1);
+  border: 1px solid rgba(108, 112, 134, 0.2);
+  border-radius: 6px;
+  color: #6c7086;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.search-trigger:hover {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+}
+
+.search-trigger kbd {
+  background: #252540;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+}
+
 /* Page title cursor */
 .page-title-cursor {
   display: inline-block;
@@ -2912,180 +3145,151 @@ a:hover .fa {
 }
 
 /* ========================================
-   CODE BLOCKS - Terminal Window Style
+   SITE HEADER & FOOTER - Consistent Backgrounds
    ======================================== */
 
-/* Terminal window wrapper for code blocks */
+.site-header {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%) !important;
+  border-bottom: 1px solid rgba(45, 45, 90, 0.8) !important;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.site-footer {
+  background: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%) !important;
+  border-top: 1px solid rgba(45, 45, 90, 0.8) !important;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ========================================
+   CODE BLOCKS - Terminal Window Style (FIXED)
+   ======================================== */
+
+/* Outer wrapper - the terminal window */
 div.highlighter-rouge,
-figure.highlight {
+figure.highlight,
+.highlight {
   background: #1a1a2e !important;
-  border: 1px solid rgba(45, 45, 90, 0.8) !important;
-  border-radius: 12px !important;
-  margin: 1.8rem 0 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  margin: 2rem 0 !important;
   overflow: hidden !important;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 4px 24px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
   position: relative !important;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
 }
 
-/* Hover glow effect on code blocks */
-div.highlighter-rouge:hover,
-figure.highlight:hover {
-  border-color: rgba(0, 255, 136, 0.15) !important;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(0, 255, 136, 0.1),
-    0 0 40px rgba(0, 255, 136, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Terminal header bar - only on outer wrapper */
+/* Terminal header bar */
 div.highlighter-rouge::before,
-figure.highlight::before {
+figure.highlight::before,
+.highlight:not(div)::before {
   content: '' !important;
   display: block !important;
-  background: linear-gradient(180deg, #252540 0%, #1e1e38 100%) !important;
-  padding: 14px 16px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  position: relative !important;
-  min-height: 40px !important;
+  height: 36px !important;
+  background: linear-gradient(180deg, #2d2d4a 0%, #252540 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Terminal traffic lights - only on outer wrapper */
+/* Terminal traffic lights */
 div.highlighter-rouge::after,
-figure.highlight::after {
+figure.highlight::after,
+.highlight:not(div)::after {
   content: '' !important;
   position: absolute !important;
-  top: 14px !important;
-  left: 16px !important;
+  top: 12px !important;
+  left: 14px !important;
   width: 12px !important;
   height: 12px !important;
   border-radius: 50% !important;
   background: #ff5f57 !important;
   box-shadow: 
     18px 0 0 #ffbd2e,
-    36px 0 0 #28ca41,
-    0 0 6px rgba(255, 95, 87, 0.4),
-    18px 0 6px rgba(255, 189, 46, 0.4),
-    36px 0 6px rgba(40, 202, 65, 0.4) !important;
-  display: block !important;
-  z-index: 2 !important;
+    36px 0 0 #28ca41 !important;
+  z-index: 10 !important;
 }
 
-/* Inner highlight div should NOT have pseudo-elements */
-div.highlighter-rouge div.highlight,
-figure.highlight div.highlight {
+/* Inner .highlight div - transparent, no pseudo elements */
+div.highlighter-rouge > div.highlight,
+figure.highlight > div.highlight {
   background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
   border: none !important;
   border-radius: 0 !important;
-  margin: 0 !important;
   box-shadow: none !important;
   position: static !important;
 }
 
-/* Hide any ::before or ::after on inner .highlight */
-div.highlighter-rouge div.highlight::before,
-div.highlighter-rouge div.highlight::after,
-figure.highlight div.highlight::before,
-figure.highlight div.highlight::after {
+div.highlighter-rouge > div.highlight::before,
+div.highlighter-rouge > div.highlight::after,
+figure.highlight > div.highlight::before,
+figure.highlight > div.highlight::after {
   display: none !important;
-  content: none !important;
 }
 
-/* Language label injected by JS */
+/* Pre element */
+div.highlighter-rouge pre,
+figure.highlight pre,
+.highlight pre {
+  background: #0f0f1a !important;
+  margin: 0 !important;
+  padding: 1.25rem 1.5rem !important;
+  overflow-x: auto !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Code element */
+div.highlighter-rouge code,
+figure.highlight code,
+.highlight code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-size: 0.875rem !important;
+  line-height: 1.7 !important;
+  color: #cdd6f4 !important;
+}
+
+/* Language label */
 .code-lang-label {
   position: absolute !important;
-  top: 10px !important;
+  top: 8px !important;
   right: 60px !important;
   color: #6c7086 !important;
-  font-size: 0.72rem !important;
+  font-size: 0.7rem !important;
   font-family: 'JetBrains Mono', monospace !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
-  z-index: 3 !important;
-  background: rgba(108, 112, 134, 0.12) !important;
-  padding: 2px 10px !important;
+  z-index: 10 !important;
+  background: rgba(108, 112, 134, 0.15) !important;
+  padding: 3px 10px !important;
   border-radius: 4px !important;
-  border: 1px solid rgba(108, 112, 134, 0.15) !important;
-  user-select: none !important;
-  pointer-events: none !important;
+  border: 1px solid rgba(108, 112, 134, 0.2) !important;
 }
 
-/* Copy to clipboard button */
+/* Copy button */
 .code-copy-btn {
   position: absolute !important;
-  top: 8px !important;
-  right: 12px !important;
+  top: 6px !important;
+  right: 10px !important;
   background: rgba(108, 112, 134, 0.1) !important;
   border: 1px solid rgba(108, 112, 134, 0.2) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   color: #6c7086 !important;
-  font-size: 0.75rem !important;
+  font-size: 0.7rem !important;
   font-family: 'JetBrains Mono', monospace !important;
   padding: 4px 10px !important;
   cursor: pointer !important;
-  z-index: 3 !important;
+  z-index: 10 !important;
   transition: all 0.2s ease !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
 }
 
 .code-copy-btn:hover {
   background: rgba(0, 255, 136, 0.15) !important;
   border-color: rgba(0, 255, 136, 0.3) !important;
   color: #00ff88 !important;
-  box-shadow: 0 0 12px rgba(0, 255, 136, 0.2) !important;
-}
-
-.code-copy-btn.copied {
-  background: rgba(0, 255, 136, 0.2) !important;
-  border-color: #00ff88 !important;
-  color: #00ff88 !important;
-}
-
-/* Language label in terminal header (old class, kept for compatibility) */
-div.highlighter-rouge .code-header,
-.highlight .code-header {
-  position: absolute !important;
-  top: 8px !important;
-  right: 16px !important;
-  color: #9ca3af !important;
-  font-size: 0.75rem !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  z-index: 1 !important;
-}
-
-/* Pre element inside highlight - ONLY the inner div.highlight pre should have this styling */
-div.highlighter-rouge pre,
-figure.highlight pre {
-  background: #0d0d18 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 1.25rem 1.5rem !important;
-  margin: 0 !important;
-  overflow-x: auto !important;
-  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
-  font-size: 0.875rem !important;
-  line-height: 1.7 !important;
-}
-
-/* Code element */
-.highlight code,
-.code-block-wrapper code,
-div.highlighter-rouge code,
-figure.highlight code {
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
-  font-size: inherit !important;
-  color: #cdd6f4 !important;
 }
 
 /* Inline code - distinct from blocks */

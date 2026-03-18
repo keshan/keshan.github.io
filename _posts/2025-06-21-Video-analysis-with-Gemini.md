@@ -24,6 +24,7 @@ pip install google-genai pydantic
 export GEMINI_API_KEY="your_api_key"
 ```
 * You have to then import the necessary modules
+
 ```python
 import os # This is necessary to get the environment variable
 
