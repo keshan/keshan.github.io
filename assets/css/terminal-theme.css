@@ -3604,6 +3604,7 @@ figure.highlight code {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
   gap: 2rem !important;
   margin-bottom: 2rem !important;
+  background: #1a1a2e !important;
 }
 
 .footer-wrapper {
@@ -3650,6 +3651,10 @@ figure.highlight code {
 .footer-nav a:hover {
   color: #00ff88 !important;
   padding-left: 0.5rem !important;
+}
+
+.social-links {
+  background: #141423 !important;
 }
 
 .social-links ul {
