@@ -3,8 +3,27 @@
 {% include head.html %}
 <body>
 
-  <div class="wrapper">
-    {{ content }}
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <button class="terminal-btn close"></button>
+        <button class="terminal-btn minimize"></button>
+        <button class="terminal-btn maximize"></button>
+      </div>
+      <div class="terminal-title">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
+      <div style="width: 68px;"></div>
+    </div>
+    <div class="terminal-body">
+      {{ content }}
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-left">Connected — session active</div>
+    <div class="status-right">
+      <span>bash {{site.time | date: '%H:%M'}}</span>
+      <span>{{site.posts.size}} posts</span>
+    </div>
   </div>
   
   {% include analytics.html %}
