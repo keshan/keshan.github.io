@@ -3694,7 +3694,7 @@ figure.highlight code {
 }
 
 .footer-about,
-.footer-content,
+.footer-connect,
 .footer-nav {
   background: rgba(15, 15, 26, 0.5) !important;
   border: 1px solid rgba(45, 45, 90, 0.5) !important;
@@ -3708,7 +3708,6 @@ figure.highlight code {
 }
 
 .post-card-meta {
-  background: rgba(15, 15, 26, 0.4) !important;
   border: 1px solid rgba(45, 45, 90, 0.4) !important;
   border-radius: 8px !important;
   padding: 1rem !important;
