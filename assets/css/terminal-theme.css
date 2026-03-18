@@ -5,10 +5,10 @@
 /* CSS Custom Properties - Vibrant Terminal Theme */
 :root {
   /* Terminal Colors - More Vibrant */
-  --term-bg: #0f0f23;
-  --term-bg-secondary: #1a1a2e;
-  --term-bg-tertiary: #16213e;
-  --term-bg-elevated: #1f1f3a;
+  --term-bg: #0f0f23 !important;
+  --term-bg-secondary: #1a1a2e !important;
+  --term-bg-tertiary: #16213e !important;
+  --term-bg-elevated: #1f1f3a !important;
   --term-green: #00ff88;
   --term-green-dim: #00cc6a;
   --term-green-muted: #0a9f5e;
@@ -36,6 +36,38 @@
   
   /* Effects */
   --scanline-opacity: 0.02;
+}
+
+/* ========================================
+   GLOBAL OVERRIDES - MUST BE AT TOP
+   ======================================== */
+
+html body,
+body,
+.wrapper,
+.main-content,
+.page-content,
+.container,
+.container-fluid,
+.site-wrapper,
+.content-area {
+  background-color: var(--term-bg) !important;
+  background: var(--term-bg) !important;
+  color: var(--term-text) !important;
+}
+
+/* All possible page containers */
+div, section, article, aside, main, header, footer, nav, 
+.page, .post, .article, .content, .container, .wrapper,
+.about-container, .contact-container, .publications-container, 
+.blog-tags, .tags-page {
+  background-color: var(--term-bg) !important;
+  background: var(--term-bg) !important;
+}
+
+/* All section/div containers */
+* {
+  border-color: var(--term-border) !important;
 }
 
 /* ========================================

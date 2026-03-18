@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include head.html %}
-<body>
+<body style="background-color: #0f0f23 !important; color: #e4e4e7 !important; font-family: 'JetBrains Mono', monospace !important;">
 
-  <div class="terminal-window">
-    <div class="terminal-header">
-      <div class="terminal-buttons">
-        <button class="terminal-btn close"></button>
-        <button class="terminal-btn minimize"></button>
-        <button class="terminal-btn maximize"></button>
+  <div class="terminal-window" style="background: #1a1a2e !important; min-height: 100vh;">
+    <div class="terminal-header" style="background: linear-gradient(180deg, #1f1f3a 0%, #16213e 100%) !important; padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d2d5a;">
+      <div class="terminal-buttons" style="display: flex; gap: 8px;">
+        <button class="terminal-btn close" style="width: 14px; height: 14px; border-radius: 50%; background: #ff5555; border: none;"></button>
+        <button class="terminal-btn minimize" style="width: 14px; height: 14px; border-radius: 50%; background: #ffdd57; border: none;"></button>
+        <button class="terminal-btn maximize" style="width: 14px; height: 14px; border-radius: 50%; background: #00ff88; border: none;"></button>
       </div>
-      <div class="terminal-title">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
+      <div class="terminal-title" style="color: #9ca3af; font-size: 0.85rem;">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
       <div style="width: 68px;"></div>
     </div>
-    <div class="terminal-body">
+    <div class="terminal-body" style="padding: 0;">
       {{ content }}
     </div>
   </div>
 
-  <div class="status-bar">
-    <div class="status-left">Connected — session active</div>
-    <div class="status-right">
+  <div class="status-bar" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1f1f3a; border-top: 1px solid #2d2d5a; padding: 0.4rem 1rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: #9ca3af; z-index: 100;">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span style="color: #00ff88;">●</span> Connected — session active
+    </div>
+    <div style="display: flex; gap: 1.5rem;">
       <span>bash {{site.time | date: '%H:%M'}}</span>
       <span>{{site.posts.size}} posts</span>
     </div>
