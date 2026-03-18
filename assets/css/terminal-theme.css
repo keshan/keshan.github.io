@@ -2911,16 +2911,11 @@ a:hover .fa {
   animation: heartbeat 1.5s ease-in-out infinite;
 }
 
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
 /* Inline code */
 code {
   font-family: var(--term-font) !important;
-  background: #0a0a15 !important;
-  color: #ffab70 !important;
+  background: var(--term-bg-tertiary) !important;
+  color: var(--term-orange) !important;
   padding: 0.2rem 0.5rem !important;
   border-radius: 4px !important;
   font-size: 0.9em !important;
@@ -2928,14 +2923,12 @@ code {
 }
 
 pre {
-  background: #0a0a15 !important;
+  background: var(--term-bg-tertiary) !important;
   border: 1px solid var(--term-border) !important;
   border-radius: 8px !important;
   padding: 1.25rem !important;
   overflow-x: auto !important;
-  box-shadow: 
-    inset 0 0 30px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(0, 255, 136, 0.1) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
 }
 
 pre code {
@@ -2947,236 +2940,75 @@ pre code {
   line-height: 1.6 !important;
 }
 
-/* ========================================
-   SYNTAX HIGHLIGHTING - Terminal Theme
-   ======================================== */
-
-.highlight,
-pre code,
-.code-block,
-.highlighter-rouge {
-  background: #0a0a15 !important;
-  border: 1px solid var(--term-border) !important;
-  border-radius: 8px !important;
-  padding: 1rem 1.25rem !important;
-  overflow-x: auto !important;
-  font-family: var(--term-font) !important;
-  font-size: 0.9rem !important;
-  line-height: 1.6 !important;
-  margin: 1.5rem 0 !important;
-  position: relative;
-  box-shadow: 
-    inset 0 0 30px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(0, 255, 136, 0.1) !important;
-}
-
-.highlight::before {
-  content: '> code';
-  position: absolute;
-  top: -10px;
-  left: 15px;
-  background: #0a0a15;
-  padding: 0 10px;
-  color: var(--term-text-muted);
-  font-size: 0.75rem;
-  font-family: var(--term-font);
-}
-
-.language-python.highlighter-rouge::before,
-.language-bash.highlighter-rouge::before,
-.language-javascript.highlighter-rouge::before,
-.language-ruby.highlighter-rouge::before,
-.language-css.highlighter-rouge::before,
-.language-html.highlighter-rouge::before,
-.language-yaml.highlighter-rouge::before,
-.language-json.highlighter-rouge::before {
-  content: attr(class);
-  position: absolute;
-  top: -10px;
-  left: 15px;
-  background: #0a0a15;
-  padding: 0 10px;
-  color: var(--term-text-muted);
-  font-size: 0.75rem;
-  font-family: var(--term-font);
-  text-transform: uppercase;
-}
-
-.highlight .c,
-.highlight .cm,
-.highlight .c1,
-.highlight .cp,
-.highlight .cs,
-.highlight .comment {
-  color: #6b7280 !important;
-  font-style: italic !important;
-}
-
-.highlight .err,
-.highlight .error {
-  color: #ff5555 !important;
-  background: rgba(255, 85, 85, 0.1) !important;
-}
-
+/* Basic syntax highlighting for code blocks */
 .highlight .k,
-.highlight .kn,
-.highlight .kd,
-.highlight .kc,
-.highlight .kr,
-.highlight .kp,
-.highlight .keyword {
-  color: #ff6b9d !important;
-  font-weight: 600 !important;
-}
-
-.highlight .o,
-.highlight .operator {
-  color: #ffdd57 !important;
-}
-
-.highlight .na,
+.highlight .keyword { color: var(--term-pink) !important; }
 .highlight .nb,
-.highlight .nc,
-.highlight .nd,
-.highlight .ne,
-.highlight .nf,
-.highlight .ni,
-.highlight .nn,
-.highlight .nt,
-.highlight .nv,
-.highlight .vc,
-.highlight .vg,
-.highlight .vi,
-.highlight .name {
-  color: #00d9ff !important;
-}
-
-.highlight .m,
-.highlight .mf,
-.highlight .mh,
-.highlight .mi,
-.highlight .mo,
-.highlight .ml,
-.highlight .literal {
-  color: #ffab70 !important;
-}
-
+.highlight .builtin { color: var(--term-cyan) !important; }
 .highlight .s,
-.highlight .sb,
-.highlight .sc,
-.highlight .sd,
-.highlight .s2,
-.highlight .s1,
-.highlight .se,
-.highlight .sh,
-.highlight .si,
-.highlight .sx,
-.highlight .sr,
-.highlight .ss,
-.highlight .string {
-  color: #00ff88 !important;
+.highlight .string { color: var(--term-green) !important; }
+.highlight .m,
+.highlight .number { color: var(--term-orange) !important; }
+.highlight .c,
+.highlight .comment { color: var(--term-text-muted) !important; font-style: italic; }
+.highlight .nc,
+.highlight .class { color: var(--term-purple) !important; }
+.highlight .nf,
+.highlight .function { color: var(--term-cyan) !important; }
+.highlight .err { color: var(--term-red) !important; }
+
+/* Images in posts */
+.post-content img,
+.article-content img,
+.article-page img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--term-border) !important;
+  margin: 1.5rem 0 !important;
+  display: block;
 }
 
-.highlight .p,
-.highlight .punctuation {
-  color: #9ca3af !important;
+/* Tables in posts */
+.post-content table,
+.article-content table,
+.article-page table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 1.5rem 0 !important;
 }
 
-.highlight .n,
-.highlight .variable {
-  color: #e4e4e7 !important;
+.post-content table th,
+.article-content table th,
+.article-page table th {
+  background: var(--term-bg-tertiary) !important;
+  color: var(--term-cyan) !important;
+  padding: 0.75rem !important;
+  border: 1px solid var(--term-border) !important;
+  text-align: left !important;
 }
 
-.highlight .f,
-.highlight .function {
-  color: #c792ea !important;
+.post-content table td,
+.article-content table td,
+.article-page table td {
+  padding: 0.75rem !important;
+  border: 1px solid var(--term-border) !important;
+  color: var(--term-text) !important;
 }
 
-.highlight .tp,
-.highlight .type {
-  color: #ffab70 !important;
+.post-content table tr:hover,
+.article-content table tr:hover,
+.article-page table tr:hover {
+  background: rgba(0, 255, 136, 0.05) !important;
 }
 
-.highlight .attr,
-.highlight .attribute {
-  color: #00d9ff !important;
-}
-
-.highlight .tag {
-  color: #ff6b9d !important;
-}
-
-.highlight .h,
-.highlight .heading,
-.highlight .title {
-  color: #00d9ff !important;
-  font-weight: 600 !important;
-}
-
-.highlight .dl,
-.highlight .doctag {
-  color: #00ff88 !important;
-}
-
-.highlight .bp,
-.highlight .builtin {
-  color: #ffab70 !important;
-}
-
-.highlight .x,
-.highlight .other {
-  color: #ff6b9d !important;
-}
-
-.highlight .w,
-.highlight .whitespace {
-  color: #4b5563 !important;
-}
-
-.highlight .gd,
-.highlight .deleted {
-  color: #ff5555 !important;
-  text-decoration: line-through !important;
-}
-
-.highlight .gi,
-.highlight .inserted {
-  color: #00ff88 !important;
-}
-
-.highlight .ge {
-  font-style: italic !important;
-}
-
-.highlight .gs {
-  font-weight: bold !important;
-}
-
-.highlight .gu {
-  color: #ffab70 !important;
-}
-
-.highlight .gt {
-  color: #ff5555 !important;
-}
-
-.highlight .gr {
-  color: #ff5555 !important;
-}
-
-.highlight .go {
-  color: #6b7280 !important;
-}
-
-.highlight .gp {
-  color: #9ca3af !important;
-}
-
-/* Line numbers (if enabled) */
-.highlight .lineno {
-  color: #4b5563 !important;
-  user-select: none;
-  padding-right: 1rem;
-  border-right: 1px solid #2d2d5a;
-  margin-right: 1rem;
+/* Blockquotes in posts */
+.post-content blockquote,
+.article-content blockquote,
+.article-page blockquote {
+  border-left: 3px solid var(--term-green) !important;
+  margin: 1.5rem 0 !important;
+  padding: 0.5rem 1.5rem !important;
+  background: rgba(0, 255, 136, 0.05) !important;
+  color: var(--term-text-dim) !important;
 }
