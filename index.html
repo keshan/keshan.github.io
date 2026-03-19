@@ -18,9 +18,9 @@ layout: main
   {% endif %}
 </div>
 
-  <div class="section-heading">
+<div class="section-heading">
   <h2>~/articles<span class="cursor-blink"></span></h2>
-  <p>// Explore my thoughts on Machine Learning, AI, and more</p>
+  <p>Explore my thoughts on Machine Learning, AI, and more</p>
 </div>
 
 <div class="posts-grid">
@@ -30,10 +30,9 @@ layout: main
     <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
       {% if post.img %}
       <div class="post-card-image">
-        <img src="{{"/assets/img/" | prepend: site.baseurl | append : post.img}}"
-  alt="Cover image for {{post.title}}"
-  srcset="{{'/assets/img/' | prepend: site.baseurl | append: post.img | replace: '.jpg', '.webp'}} 1x, {{'/assets/img/' | prepend: site.baseurl | append: post.img}} 2x"
-  loading="lazy">
+        <img src="{{" /assets/img/" | prepend: site.baseurl | append : post.img}}" alt="Cover image for {{post.title}}"
+          srcset="{{'/assets/img/' | prepend: site.baseurl | append: post.img | replace: '.jpg', '.webp'}} 1x, {{'/assets/img/' | prepend: site.baseurl | append: post.img}} 2x"
+          loading="lazy">
 
         {% if post.categories %}
         <div class="post-card-category">
@@ -48,13 +47,16 @@ layout: main
         <div class="post-card-meta">
           <div class="post-card-author">
             {% if site.author-img %}
-            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}} profile photo" class="author-image" loading="lazy">
+            <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}} profile photo"
+              class="author-image" loading="lazy">
             {% endif %}
             <span>{{site.author}}</span>
           </div>
           <div class="post-card-info">
             <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>&nbsp;&nbsp;
-            <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless %}</span>
+            <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{%
+              unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless
+              %}</span>
           </div>
         </div>
       </div>
@@ -83,14 +85,14 @@ layout: main
 
 <script>
   // Scroll-reveal animation for post cards
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     const cards = document.querySelectorAll('.post-card, .hero, .newsletter-section');
-    
-    const observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry, index) {
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry, index) {
         if (entry.isIntersecting) {
           // Staggered delay for cascading effect
-          setTimeout(function() {
+          setTimeout(function () {
             entry.target.classList.add('revealed');
           }, index * 80);
           observer.unobserve(entry.target);
@@ -100,11 +102,10 @@ layout: main
       threshold: 0.1,
       rootMargin: '0px 0px -40px 0px'
     });
-    
-    cards.forEach(function(card) {
+
+    cards.forEach(function (card) {
       card.classList.add('scroll-reveal');
       observer.observe(card);
     });
   });
 </script>
-
