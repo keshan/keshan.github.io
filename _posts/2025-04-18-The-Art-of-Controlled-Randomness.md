@@ -6,6 +6,7 @@ description: "A Deep Dive into Sampling Techniques in LLMs"
 img: controlled_randomness.jpg
 fig-caption: # Add figcaption (optional)
 tags: [JAX, Flax, LLM, Generation, Sampling]
+toc: true
 ---
 
 Large Language Models (LLMs) are powerful predictors. Given a sequence of text, they excel at calculating the likelihood of *every possible next token* (or word) in their vast vocabulary. These likelihoods start as raw scores called **logits**. But how do we turn a bunch of potential next words into a coherent, creative, and controlled stream of text?
