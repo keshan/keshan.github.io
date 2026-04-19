@@ -83,10 +83,12 @@ layout: main
     </div>
     {% endunless %}
     
+    {% if page.toc == true %}
     <div class="table-of-contents">
       <h3><i class="fa fa-list" aria-hidden="true"></i> Table of Contents</h3>
       <div class="toc-content" id="toc"></div>
     </div>
+    {% endif %}
     
     <div class="post-content">
       {{content | markdownify}}
@@ -187,6 +189,7 @@ layout: main
 <script>
   // Table of Contents Generator
   document.addEventListener('DOMContentLoaded', function() {
+    {% if page.toc == true %}
     const headings = document.querySelectorAll('.post-content h2, .post-content h3');
     const toc = document.getElementById('toc');
     
@@ -217,6 +220,7 @@ layout: main
     } else {
       document.querySelector('.table-of-contents').style.display = 'none';
     }
+    {% endif %}
     
     // Reading Progress Bar
     const progressBar = document.querySelector('.progress-indicator');

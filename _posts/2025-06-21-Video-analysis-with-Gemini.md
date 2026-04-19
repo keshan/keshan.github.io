@@ -5,6 +5,7 @@ date: 2025-06-21
 description: "This guide demonstrates how to build a secure and reliable Python pipeline for video analysis using the Google Gemini API."
 img: video_analysis.png
 tags: [Gemini, Video Analysis, Computer Vision, LLM]
+toc: true
 ---
 
 In today’s data-driven world, video content is everywhere—from security surveillance and industrial monitoring to social media and entertainment. Manually reviewing hours of footage is not only tedious but also prone to human error and inconsistency. This growing challenge has made automated video analysis an essential tool for organizations seeking timely, actionable insights from their video data.
