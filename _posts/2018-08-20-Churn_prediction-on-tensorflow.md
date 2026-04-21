@@ -6,6 +6,7 @@ description: Customer churn prediction on a telco dataset with Pandas and Keras.
 img: churn.png # Add image post (optional)
 fig-caption: # Add figcaption (optional)
 tags: [Machine learning, Tensorflow, Data analysis, pandas]
+toc: true
 ---
 
 Customer churn or customer attrition is the loss of existing customers from a service or a company and that is a vital part of many businesses to understand in order to provide more relevant and quality services and retain the valuable customers to increase their profitability. In this post we will try to predict customer churn for a telco operator. We will be using [a dataset from IBM Watson analytics community](https://community.watsonanalytics.com/wp-content/uploads/2015/03/WA_Fn-UseC_-Telco-Customer-Churn.csv)

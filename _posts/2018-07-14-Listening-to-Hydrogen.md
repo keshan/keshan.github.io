@@ -6,6 +6,7 @@ description: # Add post description (optional)
 img: hydrogen.png # Add image post (optional)
 fig-caption: # Add figcaption (optional)
 tags: [physics]
+toc: true
 ---
 
 In a previous [post](https://keshan.github.io/Unraveling-Gravitational-waves/) I was able to get an “audible” gravitational wave even though gravitational waves are not sound waves. I learnt that this process of mapping non audio data and interpreting them in an auditory manner is called sonification. So, I thought of sonifying hydrogen and see the outcome.

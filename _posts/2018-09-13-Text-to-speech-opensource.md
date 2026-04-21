@@ -6,6 +6,7 @@ description: How to build a text to speech voice with open source tools and data
 img: tts.jpg # Add image post (optional)
 fig-caption: # Add figcaption (optional)
 tags: [Deep learning, Machine learning, Artificial intelligence, text-to-speech]
+toc: true
 ---
 Speech synthesize has become more human like within last few years and gained a higher momentum in research specially at tech giants. New techniques like [DeepMind's WaveNet](https://deepmind.com/blog/wavenet-generative-model-raw-audio/) has almost achieved human level naturalness. In this post we are not going to talk about such techniques instead we will be looking at available resources, tools and novel ways to build text to speech voices for languages which don't have lot of resources available for such researches or languages which are not in the priority list of many tech companies due to small number of native speakers or due to low market value.
 

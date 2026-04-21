@@ -6,6 +6,7 @@ description: Gravitational waves analysis with Python # Add post description (op
 img: gravity.gif # Add image post (optional)
 fig-caption: # Add figcaption (optional)
 tags: [Data analysis, physics, astrophysics]
+toc: true
 ---
 
 In 1916 the great mind of Albert Einstein predicted a phenomenon called Gravitational waves based on his masterpiece, The General theory of Relativity. Yet the technology wasn’t complex enough to prove any evidence of gravitational waves until 2016. Thanks to Nobel prize winning trio and their teams at **LIGO**, The Laser Interferometer Gravitational-Wave Observatory humans finally discovered the first evidence of gravitational waves.
