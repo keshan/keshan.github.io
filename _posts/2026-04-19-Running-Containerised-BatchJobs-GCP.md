@@ -11,7 +11,7 @@ tags: [GCP, Batch, Docker, Cloud Storage]
 
 I needed to OCR tens of thousands of Sri Lankan Hansard PDFs each over 100 pages, quickly, reliably and without managing infrastructure. This guide walks through how I used GCP Batch to build a fully parallel, fault-tolerant pipeline.
 
-**Google Cloud credits are provided for this project.**
+> **Google Cloud credits are provided for this project.**
 
 ---
 
@@ -43,25 +43,7 @@ I needed to OCR tens of thousands of Sri Lankan Hansard PDFs each over 100 pages
 
 ### How it works
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        GCP Batch Job                            │
-│                                                                 │
-│   TaskGroup (1 task per file)                                   │
-│   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
-│   │ Task  0  │  │ Task  1  │  │ Task  2  │  │ Task  N  │ ...  │
-│   │ (file_0) │  │ (file_1) │  │ (file_2) │  │ (file_N) │      │
-│   └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘      │
-│        │              │              │              │            │
-│        ▼              ▼              ▼              ▼            │
-│  Docker Container (your worker image, one per VM)               │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ reads / writes
-         ┌─────────────────┴──────────────────┐
-         │         Cloud Storage (GCS)         │
-         │  input_files/   outputs/            │
-         └────────────────────────────────────┘
-```
+![GCP Batch Architecture](../assets/img/gcp/gcp_batch_flow.png)
 
 Each **task** gets a unique `BATCH_TASK_INDEX` environment variable (0, 1, 2, …, N−1). Your worker uses this index to look up which file it should process from a **manifest** stored in GCS.
 
