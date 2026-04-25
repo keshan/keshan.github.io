@@ -4,7 +4,6 @@ title: Tensorflow - Graphs and sessions
 date: 2018-08-12
 description: An introduction to graphs and sessions in Tensorflow. # Add post description (optional)
 img: tf_graph.png # Add image post (optional)
-fig-caption: # Add figcaption (optional)
 tags: [Machine learning, Tensorflow, artificial intelligence]
 toc: true
 ---

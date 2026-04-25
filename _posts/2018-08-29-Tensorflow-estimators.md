@@ -4,7 +4,6 @@ title: Estimators; An easy way to work with Tensorflow
 date: 2018-08-31
 description: How to use Tensorflow Estimators. # Add post description (optional)
 img: tf_estimators.png # Add image post (optional)
-fig-caption: # Add figcaption (optional)
 tags: [Tensorflow, Machine learning, Data analysis, Deep learning]
 toc: true
 ---

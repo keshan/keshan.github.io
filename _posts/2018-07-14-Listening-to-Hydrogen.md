@@ -4,7 +4,6 @@ title: Listening to Hydrogen
 date: 2018-07-14
 description: # Add post description (optional)
 img: hydrogen.png # Add image post (optional)
-fig-caption: # Add figcaption (optional)
 tags: [physics]
 toc: true
 ---

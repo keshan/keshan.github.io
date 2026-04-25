@@ -4,7 +4,6 @@ title: "The Art of Controlled Randomness: A Deep Dive into Sampling techniques i
 date: 2025-04-18
 description: "A Deep Dive into Sampling Techniques in LLMs"
 img: controlled_randomness.jpg
-fig-caption: # Add figcaption (optional)
 tags: [JAX, Flax, LLM, Generation, Sampling]
 toc: true
 ---

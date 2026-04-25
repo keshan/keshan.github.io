@@ -4,7 +4,6 @@ title: Unraveling Gravitational waves with LIGO data
 date: 2017-11-25
 description: Gravitational waves analysis with Python # Add post description (optional)
 img: gravity.gif # Add image post (optional)
-fig-caption: # Add figcaption (optional)
 tags: [Data analysis, physics, astrophysics]
 toc: true
 ---

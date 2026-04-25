@@ -4,7 +4,6 @@ title: List of open source tools and resources for building a voice
 date: 2018-09-13
 description: How to build a text to speech voice with open source tools and data. # Add post description (optional)
 img: tts.jpg # Add image post (optional)
-fig-caption: # Add figcaption (optional)
 tags: [Deep learning, Machine learning, Artificial intelligence, text-to-speech]
 toc: true
 ---

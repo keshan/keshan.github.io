@@ -4,7 +4,6 @@ title: Customer churn prediction with Pandas and Keras
 date: 2018-08-20
 description: Customer churn prediction on a telco dataset with Pandas and Keras. # Add post description (optional)
 img: churn.png # Add image post (optional)
-fig-caption: # Add figcaption (optional)
 tags: [Machine learning, Tensorflow, Data analysis, pandas]
 toc: true
 ---
