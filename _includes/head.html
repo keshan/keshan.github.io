@@ -121,23 +121,18 @@
         tags: 'ams'
       },
       svg: { fontCache: 'global' },
-      options: {
-        renderActions: {
-          /* Process <script type="math/tex"> tags output by kramdown */
-          findScript: [10, function (doc) {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(function(node) {
-              var display = !!node.type.match(/; *mode=display/);
-              var math = new doc.options.MathItem(
-                node.textContent, doc.inputJax[0], display
-              );
-              var text = document.createTextNode('');
-              node.parentNode.insertBefore(text, node);
-              math.start = { node: text, delim: '', n: 0 };
-              math.end   = { node: text, delim: '', n: 0 };
-              doc.math.push(math);
-              node.parentNode.removeChild(node);
-            });
-          }, '']
+      startup: {
+        ready() {
+          /* Convert kramdown's <script type="math/tex"> output to plain
+             delimited text so MathJax v3 can find and typeset it. */
+          document.querySelectorAll('script[type^="math/tex"]').forEach(function(node) {
+            var isDisplay = !!node.type.match(/;\s*mode=display/);
+            var delimited = isDisplay
+              ? '\n$$' + node.textContent + '$$\n'
+              : '$' + node.textContent + '$';
+            node.parentNode.replaceChild(document.createTextNode(delimited), node);
+          });
+          MathJax.startup.defaultReady();
         }
       }
     };
