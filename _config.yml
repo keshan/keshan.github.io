@@ -25,6 +25,9 @@ analytics: UA-122765133-1 # Google Analytics
 
 # Build Settings
 markdown: kramdown
+kramdown:
+  math_engine: null        # Let MathJax v3 handle $$ directly; kramdown's default
+                           # outputs <script type="math/tex"> which MathJax v3 ignores.
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
