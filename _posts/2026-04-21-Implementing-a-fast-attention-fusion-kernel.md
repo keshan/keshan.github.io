@@ -2,14 +2,16 @@
 layout: post
 title: "Implementing a Fast Attention Fusion Kernel"
 date: 2026-04-21
-description: "A complete, beginner-friendly guide to processing large datasets in parallel using GCP Batch, Docker, and Cloud Storage from zero to a running job."
-img: gcpbatch.png
-tags: [GCP, TPU, Pallas, kernel, JAX]
+description: "Building a fused FlashAttention kernel on TPUs with JAX Pallas — from understanding the hardware to writing a working kernel that never materializes the attention matrix."
+img: fast-attention-hero.png
+tags: [TPU, Pallas, kernel, JAX, FlashAttention]
 toc: true
+math: true
 ---
 # Writing Fast Attention on TPU — From Naive Kernel to Fused FlashAttention with Pallas
 
 *Part 1 of the KernelForge series on writing, profiling, and optimizing custom TPU kernels in Python.*
+> **Google Cloud credits are provided for this project.**
 
 ---
 
