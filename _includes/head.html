@@ -115,19 +115,34 @@
   <script>
     MathJax = {
       tex: {
-        inlineMath: [['$', '$']],
-        displayMath: [['$$', '$$']],
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
         processEscapes: true,
         tags: 'ams'
       },
       svg: { fontCache: 'global' },
       options: {
         renderActions: {
-          addMenu: []
+          /* Process <script type="math/tex"> tags output by kramdown */
+          findScript: [10, function (doc) {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(function(node) {
+              var display = !!node.type.match(/; *mode=display/);
+              var math = new doc.options.MathItem(
+                node.textContent, doc.inputJax[0], display
+              );
+              var text = document.createTextNode('');
+              node.parentNode.insertBefore(text, node);
+              math.start = { node: text, delim: '', n: 0 };
+              math.end   = { node: text, delim: '', n: 0 };
+              doc.math.push(math);
+              node.parentNode.removeChild(node);
+            });
+          }, '']
         }
       }
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
   {% endif %}
+
 </head>
