@@ -120,21 +120,7 @@
         processEscapes: true,
         tags: 'ams'
       },
-      svg: { fontCache: 'global' },
-      startup: {
-        ready() {
-          /* Convert kramdown's <script type="math/tex"> output to plain
-             delimited text so MathJax v3 can find and typeset it. */
-          document.querySelectorAll('script[type^="math/tex"]').forEach(function(node) {
-            var isDisplay = !!node.type.match(/;\s*mode=display/);
-            var delimited = isDisplay
-              ? '\n$$' + node.textContent + '$$\n'
-              : '$' + node.textContent + '$';
-            node.parentNode.replaceChild(document.createTextNode(delimited), node);
-          });
-          MathJax.startup.defaultReady();
-        }
-      }
+      svg: { fontCache: 'global' }
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>

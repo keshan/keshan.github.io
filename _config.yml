@@ -25,6 +25,8 @@ analytics: UA-122765133-1 # Google Analytics
 
 # Build Settings
 markdown: kramdown
+kramdown:
+  math_engine: null
 
 plugins:
   - jekyll-feed
