@@ -70,9 +70,9 @@ Every kernel you write is either **compute-bound** (the MXU is the bottleneck an
 
 The dividing line is the **ridge point**:
 
-$$
-\text{Ridge Point} = \frac{\text{Peak FLOP/s}}{\text{Peak Bandwidth}} = \frac{197 \text{ TFLOP/s}}{819 \text{ GB/s}} \approx 240 \text{ FLOPs/byte}
-$$
+<div>
+$$\text{Ridge Point} = \frac{\text{Peak FLOP/s}}{\text{Peak Bandwidth}} = \frac{197 \text{ TFLOP/s}}{819 \text{ GB/s}} \approx 240 \text{ FLOPs/byte}$$
+</div>
 
 If your kernel's **arithmetic intensity** (FLOPs per byte transferred) is above 240, you're compute-bound. Below it, you're memory-bound. Spoiler: most naive kernels — including naive attention — land deep in memory-bound territory.
 
@@ -202,9 +202,9 @@ At `seq_len = 16,384` and `head_dim = 128`:
 
 The FLOPs are dominated by two matmuls: `Q @ K^T` and `P @ V`, totaling approximately `4 × seq² × d ≈ 137 GFLOP`. The arithmetic intensity comes out to roughly:
 
-$$
-\text{Intensity} = \frac{137 \text{ GFLOP}}{3.2 \text{ GB}} \approx 43 \text{ FLOPs/byte}
-$$
+<div>
+$$\text{Intensity} = \frac{137 \text{ GFLOP}}{3.2 \text{ GB}} \approx 43 \text{ FLOPs/byte}$$
+</div>
 
 That's **5.6× below the ridge point** of 240 FLOPs/byte. The MXU is starving — it spends most of its time just waiting for data to bounce back and forth through HBM. What a waste.
 
@@ -218,9 +218,9 @@ The core idea behind FlashAttention (Dao et al., 2022) is deceptively simple: **
 
 The standard softmax formula for a row $x = [x_1, \ldots, x_n]$ is:
 
-$$
-\text{softmax}(x_i) = \frac{e^{x_i - m}}{\sum_{j=1}^{n} e^{x_j - m}}, \quad m = \max(x)
-$$
+<div>
+$$\text{softmax}(x_i) = \frac{e^{x_i - m}}{\sum_{j=1}^{n} e^{x_j - m}}, \quad m = \max(x)$$
+</div>
 
 Computing this requires two passes over the data:
 1. **Pass 1**: Find the maximum $m$.
@@ -238,29 +238,29 @@ The key observation is that you can *update* a partial softmax when new data arr
 
 When the next KV block $j$ arrives, the update rules are:
 
-$$
-m^{(j)} = \max\left(m^{(j-1)},\; \max_k(S^{(j)}_k)\right)
-$$
+<div>
+$$m^{(j)} = \max\left(m^{(j-1)},\; \max_k(S^{(j)}_k)\right)$$
+</div>
 
-$$
-\alpha = e^{m^{(j-1)} - m^{(j)}} \qquad \text{(correction factor)}
-$$
+<div>
+$$\alpha = e^{m^{(j-1)} - m^{(j)}} \qquad \text{(correction factor)}$$
+</div>
 
-$$
-l^{(j)} = \alpha \cdot l^{(j-1)} + \sum_k e^{S^{(j)}_k - m^{(j)}}
-$$
+<div>
+$$l^{(j)} = \alpha \cdot l^{(j-1)} + \sum_k e^{S^{(j)}_k - m^{(j)}}$$
+</div>
 
-$$
-O^{(j)}_{\text{acc}} = \alpha \cdot O^{(j-1)}_{\text{acc}} + P^{(j)} \cdot V^{(j)}
-$$
+<div>
+$$O^{(j)}_{\text{acc}} = \alpha \cdot O^{(j-1)}_{\text{acc}} + P^{(j)} \cdot V^{(j)}$$
+</div>
 
 where $P^{(j)}_k = e^{S^{(j)}_k - m^{(j)}}$ are the unnormalized attention weights for block $j$.
 
 At the end, after all KV blocks are processed:
 
-$$
-O = \frac{O^{(\text{final})}_{\text{acc}}}{l^{(\text{final})}}
-$$
+<div>
+$$O = \frac{O^{(\text{final})}_{\text{acc}}}{l^{(\text{final})}}$$
+</div>
 
 ### 5.3 Why This Works
 
