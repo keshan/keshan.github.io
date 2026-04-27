@@ -13,6 +13,7 @@ math: true
 *Part 2 of the KernelForge series on writing, profiling, and optimizing custom TPU kernels in Python.*
 
 > **Google Cloud credits are provided for this project.**
+
 ---
 
 At the end of [Article 1](https://blog.keshan.dev/Implementing-a-fast-attention-fusion-kernel/), we had a working fused FlashAttention kernel. It computes exact attention without materializing the full score matrix, and it incorporates three targeted fusions — pre-scaling, precision management, and improved scratch layout.
@@ -24,6 +25,7 @@ You can't answer these questions by staring at source code. You need **profiling
 This article covers the complete profiling stack for TPU kernels: how to capture and read XProf traces, how to interpret the roofline model as a quantitative decision framework, and how to decode HLO compiler output. By the end, you'll have a systematic protocol for diagnosing *why* a kernel is slow — not just *that* it's slow.
 
 This article builds on the fused FlashAttention kernel from the previous post and introduces the concepts behind a benchmarking harness to analyze and improve the performance of the kernel.
+
 ---
 
 ## 1. The Profiling Stack
