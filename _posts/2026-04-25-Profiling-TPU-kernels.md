@@ -11,10 +11,11 @@ math: true
 # Deep-Dive into TPU Profiling — XProf, HLO, and the Roofline Model
 
 *Part 2 of the KernelForge series on writing, profiling, and optimizing custom TPU kernels in Python.*
+
 > **Google Cloud credits are provided for this project.**
 ---
 
-At the end of Article 1, we had a working fused FlashAttention kernel. It computes exact attention without materializing the full score matrix, and it incorporates three targeted fusions — pre-scaling, precision management, and improved scratch layout.
+At the end of [Article 1](https://blog.keshan.dev/Implementing-a-fast-attention-fusion-kernel/), we had a working fused FlashAttention kernel. It computes exact attention without materializing the full score matrix, and it incorporates three targeted fusions — pre-scaling, precision management, and improved scratch layout.
 
 But "working" and "fast" are different things. Right now, our kernel runs — but how efficiently? Is the MXU sitting idle for half the execution time? Is the HBM bus saturated? Is the compiler silently inserting copies that waste bandwidth?
 
