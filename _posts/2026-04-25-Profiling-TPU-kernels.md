@@ -498,6 +498,7 @@ The Utilization Viewer translates raw hardware counters into percentages for eac
 - **HBM read/write %**: Fraction of time the HBM bus is actively transferring data.
 
 Key interpretation:
+
 | TC% | HBM% | Meaning |
 |-----|------|---------|
 | High | Low | Compute-bound, efficient — ideal for matmul-heavy kernels |
