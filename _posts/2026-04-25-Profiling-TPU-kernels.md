@@ -274,22 +274,7 @@ XProf now includes a built-in **Roofline Model** tool, available under the Tools
 
 The roofline plots achievable performance (TFLOP/s) against arithmetic intensity (FLOPs/byte):
 
-```
-TFLOP/s
- 197 ───────────────────────────────── compute ceiling (MXU peak)
-      │
-      │     * your kernel
-  100 │  /
-      │ /
-   50 │/
-      /   ridge point (~240 FLOPs/byte)
-     /│
-    / │
-   /──│─────────────────────────────── memory ceiling (819 GB/s × intensity)
-      │
-      └──────────────────────────────── Arithmetic Intensity (FLOPs/byte)
-           50   100   240   500  1000
-```
+![Roofline](/assets/img/fast-attention/roofline.png)
 
 - **Left of the ridge point** (intensity < 240): You're **memory-bound**. The MXU can process data faster than HBM can deliver it. Performance is limited by bandwidth.
 - **Right of the ridge point** (intensity > 240): You're **compute-bound**. HBM can deliver data faster than the MXU can consume it. Performance is limited by FLOP/s.
@@ -417,6 +402,8 @@ Row: "Fused Ops"    — Compute operations on the MXU/VPU (your matmuls, exp, et
 Row: "Custom Calls"  — DMA transfers between HBM and VMEM
 Row: "Host"          — Python/JAX dispatch on the CPU
 ```
+
+![TPU Trace Viewer](/assets/img/fast-attention/xprof_trace.png)
 
 Each row contains blocks representing operations, with time progressing left to right.
 
