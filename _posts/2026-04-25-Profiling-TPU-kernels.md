@@ -79,12 +79,6 @@ pip install "setuptools<70" && pip install xprof
 ```bash
 pip install "protobuf>=5.29.0" 
 ```
-For Cloud TPU VM users, Google also provides the `xprofiler` CLI, which wraps XProf with streamlined VM-aware profile collection:
-
-```bash
-# Recommended on Cloud TPU VMs
-pip install xprofiler
-```
 
 ### 2.2 Capturing a Profile from `prepare.py`
 
