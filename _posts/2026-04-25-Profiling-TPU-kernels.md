@@ -281,7 +281,9 @@ The roofline plots achievable performance (TFLOP/s) against arithmetic intensity
 
 The ridge point for TPU v5e is:
 
+<div>
 $$\text{Ridge} = \frac{197 \times 10^{12} \text{ FLOP/s}}{819 \times 10^{9} \text{ B/s}} \approx 240 \text{ FLOPs/byte}$$
+</div>
 
 ### 3.2 How `prepare.py` Computes Each Number
 
@@ -335,7 +337,10 @@ Actual time:       measured median latency      =               2.12 ms
 
 The **Gap** is defined as:
 
+<<divdiv>
 $$\text{Gap} = \text{Actual} - \max(\text{Compute-only}, \text{Memory-only})$$
+</div>
+
 
 In this example: `2.12 - 0.70 = 1.42 ms`. A large gap means **something beyond raw compute and memory access is consuming time**. The likely culprits, in order of probability:
 
