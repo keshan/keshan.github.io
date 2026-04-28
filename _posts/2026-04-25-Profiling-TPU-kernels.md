@@ -12,6 +12,10 @@ math: true
 
 *Part 2 of the KernelForge series on writing, profiling, and optimizing custom TPU kernels in Python.*
 
+Part 1: [Implementing a Fast Attention Fusion Kernel](https://blog.keshan.dev/Implementing-a-fast-attention-fusion-kernel/)
+
+Part 3: [The Ratchet Loop — Systematically Optimizing a TPU Kernel to the Hardware Ceiling](https://blog.keshan.dev/The-Ratchet-Loop/)
+
 > **Google Cloud credits are provided for this project.**
 
 ---

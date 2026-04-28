@@ -11,6 +11,11 @@ math: true
 # Writing Fast Attention on TPU — From Naive Kernel to Fused FlashAttention with Pallas
 
 *Part 1 of the KernelForge series on writing, profiling, and optimizing custom TPU kernels in Python.*
+
+Part 2: [Mastering TPU Performance Profiling](https://blog.keshan.dev/Profiling-TPU-kernels/)
+
+Part 3: [The Ratchet Loop — Systematically Optimizing a TPU Kernel to the Hardware Ceiling](https://blog.keshan.dev/The-Ratchet-Loop/)
+
 > **Google Cloud credits are provided for this project.**
 
 ---
