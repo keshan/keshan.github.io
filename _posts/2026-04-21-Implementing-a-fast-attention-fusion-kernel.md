@@ -234,7 +234,7 @@ The key observation is that you can *update* a partial softmax when new data arr
 
 - $m^{(j-1)}$: running maximum of all scores seen so far (scalar per query row)
 - $l^{(j-1)}$: running sum of exponentials: $\sum_{i=1}^{(j-1) \cdot B_{KV}} e^{s_i - m^{(j-1)}}$
-- $O^{(j-1)}_{\text{acc}}$: running output accumulator: $\sum_{i=1}^{(j-1) \cdot B_{KV}} e^{s_i - m^{(j-1)}} \cdot V_i$
+- $O_{\text{acc}}^{(j-1)}$: running output accumulator: $\sum_{i=1}^{(j-1) \cdot B_{KV}} e^{s_i - m^{(j-1)}} \cdot V_i$
 
 When the next KV block $j$ arrives, the update rules are:
 
