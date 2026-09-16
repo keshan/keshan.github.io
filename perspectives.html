@@ -1,0 +1,75 @@
+---
+layout: main
+title: Perspectives
+permalink: /perspectives/
+---
+
+<div class="section-heading">
+  <h2>~/perspectives<span class="cursor-blink"></span></h2>
+  <p>// Personal journeys, community stories, and reflections beyond the code</p>
+</div>
+
+<div class="posts-grid">
+  {% assign count = 0 %}
+  {% for post in site.posts %}
+    {% if post.category == 'perspectives' or post.categories contains 'perspectives' or post.category == 'perspective' or post.categories contains 'perspective' or post.tags contains 'perspectives' or post.tags contains 'perspective' %}
+      {% assign count = count | plus: 1 %}
+      <article class="post-card">
+        <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
+          {% if post.img %}
+          <div class="post-card-image">
+            <img src="{{ '/assets/img/' | prepend: site.baseurl | append : post.img }}"
+                 alt="Cover image for {{post.title}}"
+                 srcset="{{'/assets/img/' | prepend: site.baseurl | append: post.img | replace: '.jpg', '.webp'}} 1x, {{'/assets/img/' | prepend: site.baseurl | append: post.img}} 2x"
+                 loading="lazy">
+
+            {% if post.categories %}
+            <div class="post-card-category" style="background: var(--term-purple, #c792ea); color: #0f0f23;">
+              <span>{{ post.categories | first }}</span>
+            </div>
+            {% elsif post.tags %}
+            <div class="post-card-category" style="background: var(--term-purple, #c792ea); color: #0f0f23;">
+              <span>{{ post.tags | first }}</span>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          <div class="post-card-content">
+            {% unless post.img %}
+              {% if post.categories %}
+              <div style="margin-bottom: 0.75rem;">
+                <span style="display: inline-block; background: rgba(199, 146, 234, 0.15); color: #c792ea; border: 1px solid rgba(199, 146, 234, 0.4); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">{{ post.categories | first }}</span>
+              </div>
+              {% elsif post.tags %}
+              <div style="margin-bottom: 0.75rem;">
+                <span style="display: inline-block; background: rgba(199, 146, 234, 0.15); color: #c792ea; border: 1px solid rgba(199, 146, 234, 0.4); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">{{ post.tags | first }}</span>
+              </div>
+              {% endif %}
+            {% endunless %}
+            <h2 class="post-card-title">{{post.title}}</h2>
+            <p class="post-card-excerpt">{% if post.description %}{{ post.description }}{% else %}{{ post.content | strip_html | truncatewords: 18 }}{% endif %}</p>
+            <div class="post-card-meta">
+              <div class="post-card-author">
+                {% if site.author-img %}
+                <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}} profile photo" class="author-image" loading="lazy">
+                {% endif %}
+                <span>{{site.author}}</span>
+              </div>
+              <div class="post-card-info">
+                <span class="post-card-date">{{post.date | date: '%b %d, %Y'}}</span>&nbsp;&nbsp;
+                <span class="post-card-read-time">{% capture words %}{{ post.content | number_of_words }}{% endcapture %}{% unless words contains "-" %}{{ words | plus: 250 | divided_by: 250 | append: " min read" }}{% endunless %}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </article>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% if count == 0 %}
+<div class="glass-card" style="padding: 2.5rem; text-align: center; margin: 2rem 0; border: 1px dashed #2d2d5a; border-radius: 8px;">
+  <p style="color: #9ca3af; margin-bottom: 0.5rem; font-size: 1.05rem;">&gt; [INFO] No perspective dispatches published yet.</p>
+  <p style="color: #6b7280; font-size: 0.85rem;">// First piece incoming: My GDG Journey...</p>
+</div>
+{% endif %}

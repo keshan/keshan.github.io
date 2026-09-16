@@ -10,7 +10,7 @@
         <button class="terminal-btn minimize" style="width: 14px; height: 14px; border-radius: 50%; background: #ffdd57; border: none;"></button>
         <button class="terminal-btn maximize" style="width: 14px; height: 14px; border-radius: 50%; background: #00ff88; border: none;"></button>
       </div>
-      <div class="terminal-title" style="color: #9ca3af; font-size: 0.85rem;">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
+      <div class="terminal-title" style="color: #9ca3af; font-size: 0.85rem;">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/perspectives/' %}cat ~/perspectives.log{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
       <div style="width: 68px;"></div>
     </div>
     <div class="terminal-body" style="padding: 0;">

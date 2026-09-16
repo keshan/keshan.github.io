@@ -15,8 +15,9 @@ layout: default
     <nav class="site-nav">
       <ul>
         <li><a href="{{site.baseurl}}/" class="{% if page.url == '/' %}active{% endif %}">~/home</a></li>
-        <li><a href="{{site.baseurl}}/about/" class="{% if page.url contains '/about/' %}active{% endif %}">~/about</a></li>
+        <li><a href="{{site.baseurl}}/perspectives/" class="{% if page.url contains '/perspectives/' %}active{% endif %}">~/perspectives</a></li>
         <li><a href="{{site.baseurl}}/publications/" class="{% if page.url contains '/publications/' %}active{% endif %}">~/publications</a></li>
+        <li><a href="{{site.baseurl}}/about/" class="{% if page.url contains '/about/' %}active{% endif %}">~/about</a></li>
         {% if site.social-email %}
         <li><a href="{{site.baseurl}}/contact/" class="{% if page.url contains '/contact/' %}active{% endif %}">~/contact</a></li>
         {% endif %}
@@ -41,8 +42,9 @@ layout: default
         <h3>~/nav</h3>
         <ul>
           <li><a href="{{site.baseurl}}/">home</a></li>
-          <li><a href="{{site.baseurl}}/about/">about</a></li>
+          <li><a href="{{site.baseurl}}/perspectives/">perspectives</a></li>
           <li><a href="{{site.baseurl}}/publications/">publications</a></li>
+          <li><a href="{{site.baseurl}}/about/">about</a></li>
           {% if site.social-email %}
           <li><a href="{{site.baseurl}}/contact/">contact</a></li>
           {% endif %}
