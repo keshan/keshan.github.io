@@ -48,7 +48,7 @@ Back then, GSoC was a dream for many of us, and turning our meetups into a launc
 
 It was small, local, and intimate. But inside those four walls, we were learning how to share knowledge, how to bring people together, and most importantly, how to keep a community alive with nothing more than passion.
 
-<img src="/assets/img/gdg/initial_cre.jpg" alt="Initial Crew of GTUG Sri Lanka" style="max-width: 100%;" />
+<img src="/assets/img/gdg/initial_crew.jpg" alt="Initial Crew of GTUG Sri Lanka" style="max-width: 100%;" />
 <p align="center" style="margin-top: -1rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Initial crew was from left: Chathura De Silva, Udaya Shamendra, Chathika, Thenuka, me, Charith, Tharidu Fernando and Kalana Supun.</em></small></p>
 
 Gradually, our quiet efforts on campus began to ripple outwards. We started helping Google with a few regional dogfooding projects—testing early software and providing real-world feedback from a local perspective. We were simply happy to be useful.
@@ -63,7 +63,7 @@ For years, we had operated with zero budget and whatever scraps of time we could
 
 That single dinner changed our trajectory. It was the moment GTUG Sri Lanka grew from a tight-knit campus circle into a fully supported developer movement.
 
-<img src="/assets/img/gdg/barcamp.jpg" alt="Barcamp Sri Lanka 2012" style="max-width: 100%;" />
+<img src="/assets/img/gdg/barcamp2.jpg" alt="Barcamp Sri Lanka 2012" style="max-width: 100%;" />
 
 If the earlier years were about finding our footing, 2012 was the year everything accelerated.
 
@@ -152,8 +152,8 @@ That era also sparked our most ambitious journey yet: taking GDG truly nationwid
 We refused to remain an urban club. We packed our slides and gears and traveled across the island, bringing workshops and mentorship directly to students. We went from Colombo and Moratuwa out into the heartlands—to Rajarata University in Mihintale, Uva Wellassa University in Badulla, Sabaragamuwa University amidst the hills of Belihuloya, and down south to the University of Ruhuna in Matara. Standing in those packed auditoriums, looking at hundreds of students who were hungry to build despite having far fewer resources than their peers in the capital, was one of the most humbling experiences of my life.
 
 <img src="/assets/img/gdg/rajarata.jpg" alt="GDG at Rajarata University" style="max-width: 100%;" />
-<img src="/assets/img/gdg/uni_ruhunu.jpg" alt="GDG at Ruhuna University" style="max-width: 100%;" />
-<img src="/assets/img/gdg/uwawellassa.jpg" alt="GDG at Uva Wellassa University" style="max-width: 100%;" />
+<img src="/assets/img/gdg/uni_ruhuna.jpg" alt="GDG at Ruhuna University" style="max-width: 100%;" />
+<img src="/assets/img/gdg/uvawellassa.jpg" alt="GDG at Uva Wellassa University" style="max-width: 100%;" />
 <img src="/assets/img/gdg/campus_week.jpg" alt="GDG Campus Week" style="max-width: 100%;" />
 
 But we didn't stop at universities. Through our GCollege initiative, we took that same spark into rural schools. I still remember traveling up to the cool hills of Bandarawela to run an event for school kids who had never seen a working Googler up close. Watching their eyes light up when they realized that technology wasn't some distant magic, but something they too could master, reminded us why we started this journey in the first place.  
