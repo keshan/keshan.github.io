@@ -3,7 +3,7 @@ layout: post
 title: "The Ratchet Loop — Systematically Optimizing a TPU Kernel to the Hardware Ceiling"
 date: 2026-04-28
 description: "A git-backed, hypothesis-driven optimization methodology that turns kernel tuning from art into science."
-img: ratchet-loop-hero.png
+img: fast-attention-hero.png
 tags: [TPU, Pallas, kernel, optimization, profiling]
 toc: true
 math: true
