@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "In Search of Fellow Travellers"
-date: 2026-09-16
+date: 2026-09-19
 category: perspectives
 categories: [perspectives]
 tags: [gdg, community, leadership, google-developer-groups, reflections]
