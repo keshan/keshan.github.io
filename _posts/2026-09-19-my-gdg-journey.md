@@ -164,6 +164,7 @@ In our high-growth years, it was tempting to measure impact on a scoreboard: reg
 
 In 2014, our international footprint reached another milestone: we hosted the Google Asia Community Summit right here in Sri Lanka. Welcoming community leaders, regional organizers, and Googlers from across the Asia-Pacific region to our shores was a surreal feather in our cap. It proved to the world—and to ourselves—that a small island with big dreams could host and inspire the best in Asia.
 
+<img src="/assets/img/gdg/googleasiasummit.jpg" alt="Google Asia Community Summit" style="max-width: 100%;" />
 <img src="/assets/img/gdg/asiasummit.jpg" alt="GDG Asia Community Summit" style="max-width: 100%;" />
 
 As time went on, the baton kept moving through a relay of dedicated hands—passing from Sandun and Dushantha, Roshan to Udaya and Tharaka, then to Raveen, Milindu, Pamuditha, Pasindu (de Silva), Shafraz (who played a pivotal role in organizing Google IO extended in a grand level since 2015), Dilini, Pasan, Sumedha, Chamath, Pasindu (Marasinghe), Michela, Anusha, Uthpala, and many others and currently to Suresh, Dilanka, Chamod, Nuwini, Damsara and others. Each generation brought its own distinct flavor, its own hunger, and a fresh wave of imagination. The community never stagnated because each new team was brave enough to reinvent it. 
