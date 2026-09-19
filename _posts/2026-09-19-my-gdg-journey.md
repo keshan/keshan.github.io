@@ -164,7 +164,9 @@ In 2014, our international footprint reached another milestone: we hosted the Go
 
 <img src="/assets/img/gdg/asiasummit.jpg" alt="GDG Asia Community Summit" style="max-width: 100%;" />
 
-As time went on, the baton kept moving through a relay of dedicated hands—passing from Sandun and Dushantha, Roshan to Udaya and Tharaka, then to Raveen, Milindu, Pamuditha, Dilini, Pasan, Sumedha, Chamath, Michela, Anusha, Uthpala, and many others and currently to Suresh, Dilanka, Chamod, Nuwini, Damsara and others. Each generation brought its own distinct flavor, its own hunger, and a fresh wave of imagination. The community never stagnated because each new team was brave enough to reinvent it.
+As time went on, the baton kept moving through a relay of dedicated hands—passing from Sandun and Dushantha, Roshan to Udaya and Tharaka, then to Raveen, Milindu, Pamuditha, Pasindu (de Silva), Shafraz (who played a pivotal role in organizing Google IO extended in a grand level since 2015), Dilini, Pasan, Sumedha, Chamath, Pasindu (Marasinghe), Michela, Anusha, Uthpala, and many others and currently to Suresh, Dilanka, Chamod, Nuwini, Damsara and others. Each generation brought its own distinct flavor, its own hunger, and a fresh wave of imagination. The community never stagnated because each new team was brave enough to reinvent it. 
+
+None of that growth happened in isolation. Along every step of the road, we had the incredible faith and backing of champions inside Google who believed in our island—mentors like Erwan Mace, Divon Lan, Van Riper, Stephanie, Chelle, Erica, Ola, Uttam, Mani and countless others across the global DevRel team who opened doors, guided us, and backed our wildest ambitions.
 
 Looking back, the developer community was never merely a group of engineers sitting in rooms talking about code. It was a living, breathing organism that grew alongside the pulse of the island itself.
 
