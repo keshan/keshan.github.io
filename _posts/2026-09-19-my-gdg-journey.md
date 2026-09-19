@@ -11,10 +11,9 @@ toc: false
 math: false
 ---
 
-<div class="perspective-disclaimer">
-  <i class="fa fa-info-circle disclaimer-icon" aria-hidden="true"></i>
-  <span><strong>Disclosure:</strong> This article was written by me, with AI assistance used only for grammar, spelling checks, and phrasing and language improvements. All views and experiences shared are entirely my own.</span>
-</div>
+# In Search of Fellow Travellers
+
+> Disclaimer: This article was written by me, with AI assistance used only for grammar, spelling checks, and phrasing and language improvements. All views and experiences shared are entirely my own.
 
 ## My GDG Journey — From the First Meetup to Building a Community
 

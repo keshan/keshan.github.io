@@ -1,11 +1,7 @@
 ---
 layout: main
 ---
-{% assign is_perspective = false %}
-{% if page.category == 'perspectives' or page.categories contains 'perspectives' or page.category == 'perspective' or page.categories contains 'perspective' or page.tags contains 'perspectives' or page.tags contains 'perspective' %}
-  {% assign is_perspective = true %}
-{% endif %}
-<article class="post{% if is_perspective %} post-perspective{% endif %}">
+<article class="post">
   {% if page.img %}
   <div class="post-hero" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('{{site.baseurl}}/assets/img/{{page.img}}')">
     <div class="post-hero-content">
@@ -39,7 +35,7 @@ layout: main
       {% if page.categories %}
       <div class="post-categories">
         {% for category in page.categories %}
-          <span class="post-category cat-{{ category | slugify }}">{{ category }}</span>
+          <span class="post-category">{{ category }}</span>
         {% endfor %}
       </div>
       {% endif %}
@@ -80,7 +76,7 @@ layout: main
       {% if page.categories %}
       <div class="post-categories">
         {% for category in page.categories %}
-          <span class="post-category cat-{{ category | slugify }}">{{ category }}</span>
+          <span class="post-category">{{ category }}</span>
         {% endfor %}
       </div>
       {% endif %}
