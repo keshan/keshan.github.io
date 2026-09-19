@@ -13,7 +13,7 @@ math: false
 
 # In Search of Fellow Travellers
 
-> Disclaimer: This article was written by me, with AI assistance used only for grammar, spelling checks, and phrasing and language improvements. All views and experiences shared are entirely my own.
+> Disclaimer: This article was written by me, with AI assistance used only for grammar, spelling checks, phrasing and language improvements. All views and experiences shared are entirely my own.
 
 ## My GDG Journey — From the First Meetup to Building a Community
 
@@ -160,6 +160,8 @@ But we didn't stop at universities. Through our GCollege initiative, we took tha
 
 <img src="/assets/img/gdg/gcollege_bandarawela_crew.jpg" alt="GDG at Bandarawela" style="max-width: 100%;" />
 
+In our high-growth years, it was tempting to measure impact on a scoreboard: registration counts, auditorium capacities, Twitter trends. But looking back, real impact is never statistical it is deeply personal. It’s the student from a regional university who had never seen a working engineer, who caught a spark in that hall, learned Git, got into open source, and is now leading teams across the world. You don’t build a community for crowds, you build it for the few whose lives will pivot because they walked through that door.
+
 In 2014, our international footprint reached another milestone: we hosted the Google Asia Community Summit right here in Sri Lanka. Welcoming community leaders, regional organizers, and Googlers from across the Asia-Pacific region to our shores was a surreal feather in our cap. It proved to the world—and to ourselves—that a small island with big dreams could host and inspire the best in Asia.
 
 <img src="/assets/img/gdg/asiasummit.jpg" alt="GDG Asia Community Summit" style="max-width: 100%;" />
@@ -194,7 +196,7 @@ There is an indescribable peace in watching something you once dreamed up on a c
 
 We started this voyage seventeen years ago simply looking for a few fellow travellers who shared a spark of curiosity. What we found was a family, a nationwide movement, and lifelong companions who still walk beside me long after the projectors have cooled down.
 
-The road goes on, the technology will keep reinventing itself, and the caravan will continue to roll. And to every fellow traveller who shared a seat, a stage, or a Saturday along the way—thank you for the ride.
+The road goes on, the technology will keep reinventing itself, and the caravan will continue to roll. And to every fellow traveller who shared a seat, a stage, or a Sunday along the way.... thank you for the ride.
 
 <img src="/assets/img/gdg/fun_devfest14.jpg" alt="GDG DevFest" style="max-width: 100%;" />
 <img src="/assets/img/gdg/funtrip.jpg" alt="GDG Trip" style="max-width: 100%;" />
