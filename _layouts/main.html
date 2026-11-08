@@ -9,10 +9,24 @@ layout: default
         {% if site.author-img %}
         <img src="{{site.baseurl}}/assets/img/{{site.author-img}}" alt="{{site.author}}" class="logo-image">
         {% endif %}
-        <span>{{site.title}}</span>
+        <span class="logo-name">{{site.author}}</span>
       </a>
     </div>
-    <nav class="site-nav">
+
+    <div class="header-actions">
+      <button class="nav-search-btn" id="search-toggle-btn" aria-label="Search" title="Search articles (Press /)">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <span class="search-kbd-hint">/</span>
+      </button>
+
+      <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="nav-bar"></span>
+        <span class="nav-bar"></span>
+        <span class="nav-bar"></span>
+      </button>
+    </div>
+
+    <nav class="site-nav" id="site-nav">
       <ul>
         <li><a href="{{site.baseurl}}/" class="{% if page.url == '/' %}active{% endif %}">~/home</a></li>
         <li><a href="{{site.baseurl}}/perspectives/" class="{% if page.url contains '/perspectives/' %}active{% endif %}">~/perspectives</a></li>
@@ -56,16 +70,16 @@ layout: default
         <div class="social-links">
           <ul>
             {% if site.social-twitter %}
-              <li><a href="https://twitter.com/{{ site.social-twitter }}" target="_blank" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+              <li><a href="https://twitter.com/{{ site.social-twitter }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-huggingface %}
-              <li><a href="https://huggingface.com/{{ site.social-huggingface }}" target="_blank" aria-label="Hugging Face"><i class="fa fa-code" aria-hidden="true"></i></a></li>
+              <li><a href="https://huggingface.com/{{ site.social-huggingface }}" target="_blank" rel="noopener noreferrer" aria-label="Hugging Face"><i class="fa fa-code" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-github %}
-              <li><a href="http://github.com/{{site.social-github}}" target="_blank" aria-label="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+              <li><a href="http://github.com/{{site.social-github}}" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-linkedin %}
-              <li><a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+              <li><a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-email %}
               <li><a href="mailto:{{site.social-email}}" aria-label="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></a></li>

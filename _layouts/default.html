@@ -1,33 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include head.html %}
-<body style="background-color: #0f0f23 !important; color: #e4e4e7 !important; font-family: 'JetBrains Mono', monospace !important;">
+<body>
 
-  <div class="terminal-window" style="background: #1a1a2e !important; min-height: 100vh;">
-    <div class="terminal-header" style="background: linear-gradient(180deg, #1f1f3a 0%, #16213e 100%) !important; padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d2d5a;">
-      <div class="terminal-buttons" style="display: flex; gap: 8px;">
-        <button class="terminal-btn close" style="width: 14px; height: 14px; border-radius: 50%; background: #ff5555; border: none;"></button>
-        <button class="terminal-btn minimize" style="width: 14px; height: 14px; border-radius: 50%; background: #ffdd57; border: none;"></button>
-        <button class="terminal-btn maximize" style="width: 14px; height: 14px; border-radius: 50%; background: #00ff88; border: none;"></button>
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-buttons" aria-hidden="true">
+        <span class="terminal-btn close"></span>
+        <span class="terminal-btn minimize"></span>
+        <span class="terminal-btn maximize"></span>
       </div>
-      <div class="terminal-title" style="color: #9ca3af; font-size: 0.85rem;">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/perspectives/' %}cat ~/perspectives.log{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
-      <div style="width: 68px;"></div>
+      <div class="terminal-title">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/perspectives/' %}cat ~/perspectives.log{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
+      <div class="terminal-header-right">
+        <span class="pulse-dot"></span>
+        <span class="session-label">live</span>
+      </div>
     </div>
-    <div class="terminal-body" style="padding: 0;">
+    
+    <div class="terminal-body">
       {{ content }}
     </div>
   </div>
 
-  <div class="status-bar" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1f1f3a; border-top: 1px solid #2d2d5a; padding: 0.4rem 1rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: #9ca3af; z-index: 100;">
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
-      <span style="color: #00ff88;">●</span> Connected — session active
+  <div class="status-bar" role="contentinfo">
+    <div class="status-left">
+      <span class="status-indicator">●</span>
+      <span class="status-text">Connected — session active</span>
     </div>
-    <div style="display: flex; gap: 1.5rem;">
-      <span>bash {{site.time | date: '%H:%M'}}</span>
+    <div class="status-right">
+      <span>zsh {{site.time | date: '%H:%M'}}</span>
       <span>{{site.posts.size}} posts</span>
     </div>
   </div>
+
+  <!-- Search Modal -->
+  <div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+    <div class="search-modal-backdrop"></div>
+    <div class="search-modal-container glass-card">
+      <div class="search-modal-header">
+        <div class="search-prompt">
+          <span class="prompt-host">keshan@blog</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-char">$</span>
+          <span class="prompt-cmd">grep -ri</span>
+        </div>
+        <input type="text" id="search-input" class="search-input" placeholder="Search posts, topics, systems..." autocomplete="off" spellcheck="false">
+        <button id="search-close-btn" class="search-close-btn" aria-label="Close search">&times;</button>
+      </div>
+      <div id="search-results" class="search-results">
+        <div class="search-placeholder">Type to search across all {{site.posts.size}} articles...</div>
+      </div>
+      <div class="search-modal-footer">
+        <span><kbd>ESC</kbd> to close</span>
+        <span><kbd>↑</kbd> <kbd>↓</kbd> to navigate</span>
+        <span><kbd>ENTER</kbd> to open</span>
+      </div>
+    </div>
+  </div>
   
+  {% include javascripts.html %}
   {% include analytics.html %}
 </body>
 </html>

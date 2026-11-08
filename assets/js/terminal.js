@@ -1,210 +1,285 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const style = document.createElement('style');
-  style.textContent = `
-    .cursor-blink {
-      display: inline-block;
-      width: 10px;
-      height: 1.2em;
-      background: #00ff88;
-      margin-left: 4px;
-      animation: cursor-blink 1s step-end infinite;
-      vertical-align: text-bottom;
-    }
-    @keyframes cursor-blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.7; }
-    }
-  `;
-  document.head.appendChild(style);
+/**
+ * terminal.js - Interactive behaviors for keshan.github.io
+ * Search, Publication Filtering, Mobile Navigation, and Code Enhancements
+ */
 
-  const terminalTitle = document.querySelector('.terminal-title');
-  if (terminalTitle && !terminalTitle.querySelector('.cursor-blink')) {
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor-blink';
-    terminalTitle.appendChild(cursor);
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+
+  // ========================================
+  // 1. INSTANT SEARCH (Cmd+K or /)
+  // ========================================
+  const searchModal = document.getElementById('search-modal');
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+  const searchToggleBtn = document.getElementById('search-toggle-btn');
+  const searchCloseBtn = document.getElementById('search-close-btn');
+  let searchData = null;
+  let selectedIndex = -1;
+
+  async function loadSearchData() {
+    if (searchData) return searchData;
+    try {
+      const response = await fetch('/search.json');
+      if (!response.ok) throw new Error('Failed to load search index');
+      searchData = await response.json();
+      return searchData;
+    } catch (e) {
+      console.warn('Search index load error:', e);
+      return [];
+    }
   }
 
-  document.querySelectorAll('h1, h2, h3, .post-card-title, .hero h1').forEach(el => {
-    el.classList.add('glitch-hover');
-  });
-
-  const codeBlocks = document.querySelectorAll('div.highlighter-rouge, figure.highlight');
-  codeBlocks.forEach(block => {
-    const classList = block.className;
-    const langMatch = classList.match(/language-(\w+)/);
-    if (langMatch && langMatch[1] && !block.querySelector('.code-lang-label')) {
-      const label = document.createElement('span');
-      label.className = 'code-lang-label';
-      label.textContent = langMatch[1];
-      block.appendChild(label);
-    }
-    if (!block.querySelector('.code-copy-btn')) {
-      const btn = document.createElement('button');
-      btn.className = 'code-copy-btn';
-      btn.textContent = 'copy';
-      btn.onclick = function(e) {
-        e.stopPropagation();
-        const code = block.querySelector('code');
-        if (code) {
-          navigator.clipboard.writeText(code.textContent).then(() => {
-            btn.textContent = 'copied!';
-            btn.classList.add('copied');
-            setTimeout(() => {
-              btn.textContent = 'copy';
-              btn.classList.remove('copied');
-            }, 2000);
-          });
-        }
-      };
-      block.appendChild(btn);
-    }
-  });
-
-  const searchOverlay = document.createElement('div');
-  searchOverlay.className = 'search-overlay';
-  searchOverlay.innerHTML = `
-    <button class="search-close">&times;</button>
-    <div class="search-container">
-      <div class="search-input-wrapper">
-        <div class="search-prompt"><span>keshan@blog:~$</span><span>grep</span></div>
-        <input type="text" class="search-input" placeholder="Search posts..." autofocus>
-      </div>
-      <div class="search-results"></div>
-    </div>
-  `;
-  document.body.appendChild(searchOverlay);
-
-  const searchInput = searchOverlay.querySelector('.search-input');
-  const searchResults = searchOverlay.querySelector('.search-results');
-
-  const searchData = [
-    { title: 'The Art of Controlled Randomness', url: '/The-Art-of-Controlled-Randomness/', excerpt: 'A Deep Dive into Sampling Techniques in LLMs' },
-    { title: 'Video Analysis with Gemini', url: '/Video-analysis-with-Gemini/', excerpt: 'From Video to Structured Insight' },
-    { title: 'Tensorflow Graphs and Sessions', url: '/Tensorflow-Graphs-and-Sessions/', excerpt: 'Introduction to graphs and sessions' },
-    { title: 'Churn Prediction on Tensorflow', url: '/Churn-prediction-on-tensorflow/', excerpt: 'Building ML models with TensorFlow' },
-    { title: 'Tensorflow Estimators', url: '/Tensorflow-Estimators/', excerpt: 'Using pre-made estimators' },
-    { title: 'Listening to Hydrogen', url: '/Listening-to-Hydrogen/', excerpt: 'Speech technology exploration' },
-    { title: 'Unraveling Gravitational Waves', url: '/Unraveling-Gravitational-waves/', excerpt: 'LIGO data analysis' },
-  ];
-
-  searchInput.addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    searchResults.innerHTML = '';
-    if (query.length > 0) {
-      const results = searchData.filter(post => 
-        post.title.toLowerCase().includes(query) || post.excerpt.toLowerCase().includes(query)
-      );
-      results.forEach(post => {
-        const item = document.createElement('a');
-        item.href = post.url;
-        item.className = 'search-result-item';
-        item.innerHTML = `<h4>${post.title}</h4><p>${post.excerpt}</p>`;
-        searchResults.appendChild(item);
-      });
-      if (results.length === 0) {
-        searchResults.innerHTML = '<p style="color: #6c7086; text-align: center;">No results found</p>';
+  function openSearch() {
+    if (!searchModal) return;
+    searchModal.classList.add('active');
+    searchModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    loadSearchData();
+    setTimeout(() => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+        renderResults([]);
       }
-    }
-  });
+    }, 50);
+  }
 
-  searchOverlay.querySelector('.search-close').addEventListener('click', () => {
-    searchOverlay.classList.remove('active');
+  function closeSearch() {
+    if (!searchModal) return;
+    searchModal.classList.remove('active');
+    searchModal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
-  });
-
-  searchOverlay.addEventListener('click', (e) => {
-    if (e.target === searchOverlay) {
-      searchOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-
-  const siteNav = document.querySelector('.site-nav');
-  if (siteNav) {
-    const searchBtn = document.createElement('button');
-    searchBtn.className = 'search-trigger';
-    searchBtn.innerHTML = 'search <kbd>/</kbd>';
-    searchBtn.onclick = () => {
-      searchOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      searchInput.focus();
-    };
-    siteNav.appendChild(searchBtn);
+    selectedIndex = -1;
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === '/' && !searchOverlay.classList.contains('active')) {
-      e.preventDefault();
-      searchOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      searchInput.focus();
+  function renderResults(results) {
+    if (!searchResults) return;
+    selectedIndex = -1;
+
+    if (!searchInput.value.trim()) {
+      searchResults.innerHTML = '<div class="search-placeholder">Type to search articles by title, topic, or keyword...</div>';
+      return;
     }
-    if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
-      searchOverlay.classList.remove('active');
-      document.body.style.overflow = '';
+
+    if (results.length === 0) {
+      searchResults.innerHTML = '<div class="search-empty"><span class="search-empty-icon">∅</span> No matching articles found.</div>';
+      return;
     }
-  });
 
-  const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9997;';
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  let mouseX = 0, mouseY = 0;
+    const html = results.map((item, index) => {
+      const tags = (item.tags || []).map(t => `<span class="search-result-tag">#${t}</span>`).join(' ');
+      return `
+        <a href="${item.url}" class="search-result-item" data-index="${index}">
+          <div class="search-result-header">
+            <span class="search-result-title">${escapeHtml(item.title)}</span>
+            <span class="search-result-date">${item.date || ''}</span>
+          </div>
+          ${item.description ? `<p class="search-result-desc">${escapeHtml(item.description)}</p>` : ''}
+          ${tags ? `<div class="search-result-tags">${tags}</div>` : ''}
+        </a>
+      `;
+    }).join('');
 
-  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+    searchResults.innerHTML = html;
+  }
 
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    for (let i = 0; i < 2; i++) {
-      particles.push({
-        x: mouseX, y: mouseY,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        life: 1, size: Math.random() * 3 + 1
-      });
+  function performSearch(query) {
+    if (!searchData) return;
+    const cleanQuery = query.toLowerCase().trim();
+    if (!cleanQuery) {
+      renderResults([]);
+      return;
     }
-  });
 
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles = particles.filter(p => p.life > 0);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.life -= 0.02;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0, 255, 136, ${p.life * 0.6})`;
-      ctx.fill();
+    const matches = searchData.filter(item => {
+      const titleMatch = (item.title || '').toLowerCase().includes(cleanQuery);
+      const descMatch = (item.description || '').toLowerCase().includes(cleanQuery);
+      const tagMatch = (item.tags || []).some(t => String(t).toLowerCase().includes(cleanQuery));
+      const catMatch = (item.categories || []).some(c => String(c).toLowerCase().includes(cleanQuery));
+      return titleMatch || descMatch || tagMatch || catMatch;
     });
-    requestAnimationFrame(animate);
-  }
-  animate();
 
-  const cards = document.querySelectorAll('.post-card, .publication-item, .skill-item');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
+    renderResults(matches);
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  if (searchToggleBtn) {
+    searchToggleBtn.addEventListener('click', openSearch);
+  }
+
+  if (searchCloseBtn) {
+    searchCloseBtn.addEventListener('click', closeSearch);
+  }
+
+  if (searchModal) {
+    const backdrop = searchModal.querySelector('.search-modal-backdrop');
+    if (backdrop) backdrop.addEventListener('click', closeSearch);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      performSearch(this.value);
+    });
+
+    searchInput.addEventListener('keydown', function (e) {
+      const items = searchResults ? searchResults.querySelectorAll('.search-result-item') : [];
+      if (items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % items.length;
+        updateActiveResult(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+        updateActiveResult(items);
+      } else if (e.key === 'Enter') {
+        if (selectedIndex >= 0 && items[selectedIndex]) {
+          e.preventDefault();
+          items[selectedIndex].click();
+        }
       }
     });
-  }, { threshold: 0.1 });
+  }
 
-  cards.forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`;
-    observer.observe(card);
+  function updateActiveResult(items) {
+    items.forEach((item, idx) => {
+      if (idx === selectedIndex) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+  }
+
+  // Keyboard shortcut: Press / or Cmd+K / Ctrl+K
+  document.addEventListener('keydown', function (e) {
+    const isEditing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable;
+    
+    if ((e.key === '/' && !isEditing) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
+      e.preventDefault();
+      if (searchModal && searchModal.classList.contains('active')) {
+        closeSearch();
+      } else {
+        openSearch();
+      }
+    } else if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
+      closeSearch();
+    }
+  });
+
+  // Pre-load search index in the background after idle
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => loadSearchData());
+  } else {
+    setTimeout(loadSearchData, 2000);
+  }
+
+  // ========================================
+  // 2. PUBLICATION FILTERING
+  // ========================================
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const pubItems = document.querySelectorAll('.publication-item');
+
+  if (filterButtons.length > 0 && pubItems.length > 0) {
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const filter = this.getAttribute('data-filter') || 'all';
+
+        pubItems.forEach(item => {
+          const itemType = item.getAttribute('data-type');
+          if (filter === 'all' || itemType === filter) {
+            item.style.display = '';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  // ========================================
+  // 3. MOBILE NAVIGATION TOGGLE
+  // ========================================
+  const navToggle = document.getElementById('mobile-nav-toggle');
+  const siteNav = document.getElementById('site-nav');
+
+  if (navToggle && siteNav) {
+    navToggle.addEventListener('click', function () {
+      const expanded = this.getAttribute('aria-expanded') === 'true' || false;
+      this.setAttribute('aria-expanded', !expanded);
+      siteNav.classList.toggle('nav-open');
+      this.classList.toggle('active');
+    });
+
+    // Close nav on click outside
+    document.addEventListener('click', function (e) {
+      if (!navToggle.contains(e.target) && !siteNav.contains(e.target) && siteNav.classList.contains('nav-open')) {
+        siteNav.classList.remove('nav-open');
+        navToggle.classList.remove('active');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // ========================================
+  // 4. CODE COPY BUTTON (Global Fallback)
+  // ========================================
+  document.querySelectorAll('div.highlighter-rouge, figure.highlight').forEach(block => {
+    if (block.querySelector('.code-copy-btn')) return; // already added
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'code-copy-btn';
+    copyBtn.innerHTML = '⎘ copy';
+    copyBtn.title = 'Copy code to clipboard';
+
+    copyBtn.addEventListener('click', function () {
+      const codeEl = block.querySelector('code');
+      if (!codeEl) return;
+      const text = codeEl.textContent;
+
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.innerHTML = '✓ copied';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.innerHTML = '⎘ copy';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          copyBtn.innerHTML = '✓ copied';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.innerHTML = '⎘ copy';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        } catch (err) {}
+        document.body.removeChild(textarea);
+      });
+    });
+
+    block.appendChild(copyBtn);
   });
 });

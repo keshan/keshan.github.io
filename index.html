@@ -4,35 +4,37 @@ layout: main
 
 {% assign latest_post = site.posts.first %}
 
+{% if paginator.page == 1 %}
 <div class="hero glass-card">
   <div class="hero-content">
     {% if latest_post.categories %}
     <span class="hero-category">{{ latest_post.categories | first }}</span>
     {% endif %}
     <h1>{{ latest_post.title }}<span class="cursor-blink"></span></h1>
-    <p>{{ latest_post.content | strip_html | truncatewords: 30 }}</p>
+    <p>{{ latest_post.description | default: latest_post.content | strip_html | truncatewords: 30 }}</p>
     <a href="{{ latest_post.url | prepend: site.baseurl }}" class="hero-button">./read_more.sh</a>
   </div>
   {% if latest_post.img %}
   <div class="hero-background" style="background-image: url('{{site.baseurl}}/assets/img/{{latest_post.img}}')"></div>
   {% endif %}
 </div>
+{% endif %}
 
 <div class="section-heading">
   <h2>~/articles</h2>
-  <p>Explore my thoughts on Machine Learning, AI, and more</p>
+  <p>Explore my thoughts on Machine Learning, AI, and Systems Engineering</p>
 </div>
 
 <div class="posts-grid">
   {% for post in paginator.posts %}
-  {% if forloop.index > 1 %}
+  {% if paginator.page == 1 and forloop.index == 1 %}
+    {% continue %}
+  {% endif %}
   <article class="post-card">
     <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
       {% if post.img %}
       <div class="post-card-image">
-        <img src="{{" /assets/img/" | prepend: site.baseurl | append : post.img}}" alt="Cover image for {{post.title}}"
-          srcset="{{'/assets/img/' | prepend: site.baseurl | append: post.img | replace: '.jpg', '.webp'}} 1x, {{'/assets/img/' | prepend: site.baseurl | append: post.img}} 2x"
-          loading="lazy">
+        <img src="{{ '/assets/img/' | prepend: site.baseurl | append: post.img }}" alt="Cover image for {{post.title}}" loading="lazy">
 
         {% if post.categories %}
         <div class="post-card-category">
@@ -43,7 +45,7 @@ layout: main
       {% endif %}
       <div class="post-card-content">
         <h2 class="post-card-title">{{post.title}}</h2>
-        <p class="post-card-excerpt">{{ post.content | strip_html | truncatewords: 15 }}</p>
+        <p class="post-card-excerpt">{% if post.description %}{{ post.description | truncatewords: 24 }}{% else %}{{ post.content | strip_html | truncatewords: 20 }}{% endif %}</p>
         <div class="post-card-meta">
           <div class="post-card-author">
             {% if site.author-img %}
@@ -62,7 +64,6 @@ layout: main
       </div>
     </a>
   </article>
-  {% endif %}
   {% endfor %}
 </div>
 

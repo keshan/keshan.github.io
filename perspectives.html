@@ -18,9 +18,8 @@ permalink: /perspectives/
         <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
           {% if post.img %}
           <div class="post-card-image">
-            <img src="{{ '/assets/img/' | prepend: site.baseurl | append : post.img }}"
+            <img src="{{ '/assets/img/' | prepend: site.baseurl | append: post.img }}"
                  alt="Cover image for {{post.title}}"
-                 srcset="{{'/assets/img/' | prepend: site.baseurl | append: post.img | replace: '.jpg', '.webp'}} 1x, {{'/assets/img/' | prepend: site.baseurl | append: post.img}} 2x"
                  loading="lazy">
 
             {% if post.categories %}

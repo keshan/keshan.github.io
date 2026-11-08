@@ -1,3 +1,5 @@
 .vscode/
 vendor/
 .DS_Store
+
+.tpu-agent-suite/
