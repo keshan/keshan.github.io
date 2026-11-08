@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Keyboard shortcut: Press / or Cmd+K / Ctrl+K
   document.addEventListener('keydown', function (e) {
     const isEditing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable;
-    
+
     if ((e.key === '/' && !isEditing) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
       e.preventDefault();
       if (searchModal && searchModal.classList.contains('active')) {
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
             copyBtn.innerHTML = '⎘ copy';
             copyBtn.classList.remove('copied');
           }, 2000);
-        } catch (err) {}
+        } catch (err) { }
         document.body.removeChild(textarea);
       });
     });

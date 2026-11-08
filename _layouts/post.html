@@ -3,7 +3,8 @@ layout: main
 ---
 <article class="post">
   {% if page.img %}
-  <div class="post-hero" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('{{site.baseurl}}/assets/img/{{page.img}}')">
+  <div class="post-hero"
+    style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('{{site.baseurl}}/assets/img/{{page.img}}')">
     <div class="post-hero-content">
       <h1 class="post-title">{{page.title}}</h1>
       <div class="post-meta">
@@ -13,21 +14,22 @@ layout: main
           {% endif %}
           <span class="post-author">
             {% if page.author %}
-              {{page.author}}
+            {{page.author}}
             {% else %}
-              {{site.author}}
+            {{site.author}}
             {% endif %}
           </span>
         </div>
         <div class="post-details">
-          <span class="post-date"><i class="fa fa-calendar" aria-hidden="true"></i> {{page.date | date: '%b %d, %Y'}}</span>&nbsp;
+          <span class="post-date"><i class="fa fa-calendar" aria-hidden="true"></i> {{page.date | date: '%b %d,
+            %Y'}}</span>&nbsp;
           <span class="post-read-time">
-            <i class="fa fa-clock-o" aria-hidden="true"></i> 
+            <i class="fa fa-clock-o" aria-hidden="true"></i>
             {% capture words %}
-              {{ page.content | number_of_words }}
+            {{ page.content | number_of_words }}
             {% endcapture %}
             {% unless words contains "-" %}
-              {{ words | plus: 250 | divided_by: 250 | append: " min read" }}
+            {{ words | plus: 250 | divided_by: 250 | append: " min read" }}
             {% endunless %}
           </span>
         </div>
@@ -35,14 +37,14 @@ layout: main
       {% if page.categories %}
       <div class="post-categories">
         {% for category in page.categories %}
-          <span class="post-category">{{ category }}</span>
+        <span class="post-category">{{ category }}</span>
         {% endfor %}
       </div>
       {% endif %}
     </div>
   </div>
   {% endif %}
-  
+
   <div class="post-container">
     {% unless page.img %}
     <div class="post-header">
@@ -54,21 +56,22 @@ layout: main
           {% endif %}
           <span class="post-author">
             {% if page.author %}
-              {{page.author}}
+            {{page.author}}
             {% else %}
-              {{site.author}}
+            {{site.author}}
             {% endif %}
           </span>
         </div>
         <div class="post-details">
-          <span class="post-date"><i class="fa fa-calendar" aria-hidden="true"></i> {{page.date | date: '%b %d, %Y'}}</span>&nbsp;
+          <span class="post-date"><i class="fa fa-calendar" aria-hidden="true"></i> {{page.date | date: '%b %d,
+            %Y'}}</span>&nbsp;
           <span class="post-read-time">
-            <i class="fa fa-clock-o" aria-hidden="true"></i> 
+            <i class="fa fa-clock-o" aria-hidden="true"></i>
             {% capture words %}
-              {{ page.content | number_of_words }}
+            {{ page.content | number_of_words }}
             {% endcapture %}
             {% unless words contains "-" %}
-              {{ words | plus: 250 | divided_by: 250 | append: " min read" }}
+            {{ words | plus: 250 | divided_by: 250 | append: " min read" }}
             {% endunless %}
           </span>
         </div>
@@ -76,43 +79,49 @@ layout: main
       {% if page.categories %}
       <div class="post-categories">
         {% for category in page.categories %}
-          <span class="post-category">{{ category }}</span>
+        <span class="post-category">{{ category }}</span>
         {% endfor %}
       </div>
       {% endif %}
     </div>
     {% endunless %}
-    
+
     {% if page.toc == true %}
     <div class="table-of-contents">
       <h3><i class="fa fa-list" aria-hidden="true"></i> Table of Contents</h3>
       <div class="toc-content" id="toc"></div>
     </div>
     {% endif %}
-    
+
     <div class="post-content">
       {{content}}
     </div>
-    
+
     <div class="post-footer">
       <div class="post-tags">
         <h4>Tags</h4>
         {% for tag in page.tags %}
-          <a href="{{site.baseurl}}/tags#{{tag}}" class="tag"><i class="fa fa-tag" aria-hidden="true"></i> {{ tag }}</a>
+        <a href="{{site.baseurl}}/tags#{{tag}}" class="tag"><i class="fa fa-tag" aria-hidden="true"></i> {{ tag }}</a>
         {% endfor %}
       </div>
-      
+
       <div class="post-share">
         <h4>Share This Post</h4>
         <div class="share-buttons">
-          <a href="https://twitter.com/intent/tweet?text={{ page.title }}&url={{ site.url }}{{ page.url }}" title="Share on Twitter" rel="nofollow" target="_blank" class="twitter-share"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-          <a href="https://facebook.com/sharer.php?u={{ site.url }}{{ page.url }}" title="Share on Facebook" rel="nofollow" target="_blank" class="facebook-share"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-          <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ site.url }}{{ page.url }}&title={{ page.title }}" title="Share on LinkedIn" rel="nofollow" target="_blank" class="linkedin-share"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-          <a href="mailto:?subject={{ page.title }}&body=Check out this post: {{ site.url }}{{ page.url }}" title="Share via Email" class="email-share"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+          <a href="https://twitter.com/intent/tweet?text={{ page.title }}&url={{ site.url }}{{ page.url }}"
+            title="Share on Twitter" rel="nofollow" target="_blank" class="twitter-share"><i class="fa fa-twitter"
+              aria-hidden="true"></i></a>
+          <a href="https://facebook.com/sharer.php?u={{ site.url }}{{ page.url }}" title="Share on Facebook"
+            rel="nofollow" target="_blank" class="facebook-share"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ site.url }}{{ page.url }}&title={{ page.title }}"
+            title="Share on LinkedIn" rel="nofollow" target="_blank" class="linkedin-share"><i class="fa fa-linkedin"
+              aria-hidden="true"></i></a>
+          <a href="mailto:?subject={{ page.title }}&body=Check out this post: {{ site.url }}{{ page.url }}"
+            title="Share via Email" class="email-share"><i class="fa fa-envelope" aria-hidden="true"></i></a>
         </div>
       </div>
     </div>
-    
+
     <div class="author-bio">
       <div class="author-image-container">
         {% if site.author-img %}
@@ -124,63 +133,66 @@ layout: main
         <p>{{site.about-author}}</p>
         <div class="author-social">
           {% if site.social-twitter %}
-          <a href="https://twitter.com/{{ site.social-twitter }}" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+          <a href="https://twitter.com/{{ site.social-twitter }}" target="_blank"><i class="fa fa-twitter"
+              aria-hidden="true"></i></a>
           {% endif %}
           {% if site.social-github %}
-          <a href="http://github.com/{{site.social-github}}" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+          <a href="http://github.com/{{site.social-github}}" target="_blank"><i class="fa fa-github"
+              aria-hidden="true"></i></a>
           {% endif %}
           {% if site.social-linkedin %}
-          <a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+          <a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank"><i class="fa fa-linkedin"
+              aria-hidden="true"></i></a>
           {% endif %}
         </div>
       </div>
     </div>
-    
+
     <div class="related-posts">
       <h3>You Might Also Like</h3>
       <div class="related-posts-grid">
         {% assign maxRelated = 3 %}
         {% assign minCommonTags = 1 %}
         {% assign maxRelatedCounter = 0 %}
-        
+
         {% for post in site.posts %}
-          {% assign sameTagCount = 0 %}
-          
-          {% for tag in post.tags %}
-            {% if post.url != page.url %}
-              {% if page.tags contains tag %}
-                {% assign sameTagCount = sameTagCount | plus: 1 %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          
-          {% if sameTagCount >= minCommonTags %}
-            <a href="{{ post.url | prepend: site.baseurl }}" class="related-post-card">
-              {% if post.img %}
-              <div class="related-post-image">
-                <img src="{{ "/assets/img/" | prepend: site.baseurl | append: post.img }}" alt="{{ post.title }}">
-              </div>
-              {% endif %}
-              <div class="related-post-content">
-                <h4>{{ post.title }}</h4>
-                <span class="related-post-date">{{ post.date | date: '%b %d, %Y' }}</span>
-              </div>
-            </a>
-            
-            {% assign maxRelatedCounter = maxRelatedCounter | plus: 1 %}
-            {% if maxRelatedCounter >= maxRelated %}
-              {% break %}
-            {% endif %}
+        {% assign sameTagCount = 0 %}
+
+        {% for tag in post.tags %}
+        {% if post.url != page.url %}
+        {% if page.tags contains tag %}
+        {% assign sameTagCount = sameTagCount | plus: 1 %}
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% if sameTagCount >= minCommonTags %}
+        <a href="{{ post.url | prepend: site.baseurl }}" class="related-post-card">
+          {% if post.img %}
+          <div class="related-post-image">
+            <img src="{{ " /assets/img/" | prepend: site.baseurl | append: post.img }}" alt="{{ post.title }}">
+          </div>
           {% endif %}
+          <div class="related-post-content">
+            <h4>{{ post.title }}</h4>
+            <span class="related-post-date">{{ post.date | date: '%b %d, %Y' }}</span>
+          </div>
+        </a>
+
+        {% assign maxRelatedCounter = maxRelatedCounter | plus: 1 %}
+        {% if maxRelatedCounter >= maxRelated %}
+        {% break %}
+        {% endif %}
+        {% endif %}
         {% endfor %}
       </div>
     </div>
-    
+
     {% if site.discus-identifier %}
-      {% include disqus.html %}
+    {% include disqus.html %}
     {% endif %}
   </div>
-  
+
   <div class="progress-bar" aria-hidden="true">
     <div class="progress-indicator"></div>
   </div>
@@ -188,49 +200,49 @@ layout: main
 
 <script>
   // Table of Contents Generator
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     {% if page.toc == true %}
     const headings = document.querySelectorAll('.post-content h2, .post-content h3');
     const toc = document.getElementById('toc');
-    
+
     if (headings.length > 0) {
       const tocList = document.createElement('ul');
-      
-      headings.forEach(function(heading, index) {
+
+      headings.forEach(function (heading, index) {
         if (!heading.id) {
           heading.id = 'heading-' + index;
         }
-        
+
         const listItem = document.createElement('li');
         const link = document.createElement('a');
         link.href = '#' + heading.id;
         // Clean up heading text
         let text = heading.textContent.replace(/^#{1,6}\s*/, '').trim();
         link.textContent = text;
-        
+
         if (heading.tagName === 'H3') {
           listItem.classList.add('toc-subitem');
         }
-        
+
         listItem.appendChild(link);
         tocList.appendChild(listItem);
       });
-      
+
       toc.appendChild(tocList);
     } else {
       const tocBox = document.querySelector('.table-of-contents');
       if (tocBox) tocBox.style.display = 'none';
     }
     {% endif %}
-    
+
     // Reading Progress Bar Fallback (if native CSS scroll-timeline is unsupported)
     if (!window.CSS || !CSS.supports('animation-timeline', 'scroll()')) {
       const progressEl = document.querySelector('.progress-indicator');
       if (progressEl) {
         let ticking = false;
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
           if (!ticking) {
-            window.requestAnimationFrame(function() {
+            window.requestAnimationFrame(function () {
               const scrollTop = window.scrollY || document.documentElement.scrollTop;
               const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
               if (scrollHeight > 0) {
@@ -251,11 +263,11 @@ layout: main
 
     // Language label + Copy button for code blocks
     const codeBlocks = document.querySelectorAll('div.highlighter-rouge, figure.highlight');
-    
-    codeBlocks.forEach(function(block) {
+
+    codeBlocks.forEach(function (block) {
       // Extract language from class name (e.g., "language-python" -> "python")
       let lang = '';
-      block.classList.forEach(function(cls) {
+      block.classList.forEach(function (cls) {
         if (cls.startsWith('language-')) {
           lang = cls.replace('language-', '');
         }
@@ -274,19 +286,19 @@ layout: main
       copyBtn.className = 'code-copy-btn';
       copyBtn.innerHTML = '⎘ copy';
       copyBtn.title = 'Copy to clipboard';
-      
-      copyBtn.addEventListener('click', function() {
+
+      copyBtn.addEventListener('click', function () {
         const codeEl = block.querySelector('code');
         if (codeEl) {
           const text = codeEl.textContent;
-          navigator.clipboard.writeText(text).then(function() {
+          navigator.clipboard.writeText(text).then(function () {
             copyBtn.innerHTML = '✓ copied';
             copyBtn.classList.add('copied');
-            setTimeout(function() {
+            setTimeout(function () {
               copyBtn.innerHTML = '⎘ copy';
               copyBtn.classList.remove('copied');
             }, 2000);
-          }).catch(function() {
+          }).catch(function () {
             // Fallback for older browsers
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -298,24 +310,24 @@ layout: main
               document.execCommand('copy');
               copyBtn.innerHTML = '✓ copied';
               copyBtn.classList.add('copied');
-              setTimeout(function() {
+              setTimeout(function () {
                 copyBtn.innerHTML = '⎘ copy';
                 copyBtn.classList.remove('copied');
               }, 2000);
-            } catch(e) {}
+            } catch (e) { }
             document.body.removeChild(textarea);
           });
         }
       });
-      
+
       block.appendChild(copyBtn);
     });
 
     // ========================================
     // SMOOTH SCROLL FOR TOC LINKS
     // ========================================
-    document.querySelectorAll('.table-of-contents a').forEach(function(link) {
-      link.addEventListener('click', function(e) {
+    document.querySelectorAll('.table-of-contents a').forEach(function (link) {
+      link.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
@@ -325,4 +337,3 @@ layout: main
     });
   });
 </script>
-

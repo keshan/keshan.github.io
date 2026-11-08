@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include head.html %}
+
 <body>
 
   <div class="terminal-window">
@@ -10,13 +11,16 @@
         <span class="terminal-btn minimize"></span>
         <span class="terminal-btn maximize"></span>
       </div>
-      <div class="terminal-title">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/' %}cat ~/about.md{% elsif page.url contains '/perspectives/' %}cat ~/perspectives.log{% elsif page.url contains '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{ page.title | slugify }}.sh{% endif %}</div>
+      <div class="terminal-title">keshan@blog:~$ {% if page.url == '/' %}./home.sh{% elsif page.url contains '/about/'
+        %}cat ~/about.md{% elsif page.url contains '/perspectives/' %}cat ~/perspectives.log{% elsif page.url contains
+        '/publications/' %}ls ~/publications/{% elsif page.url contains '/contact/' %}mail -s "Hello"{% else %}{{
+        page.title | slugify }}.sh{% endif %}</div>
       <div class="terminal-header-right">
         <span class="pulse-dot"></span>
         <span class="session-label">live</span>
       </div>
     </div>
-    
+
     <div class="terminal-body">
       {{ content }}
     </div>
@@ -34,15 +38,18 @@
   </div>
 
   <!-- Search Modal -->
-  <div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+  <div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="search-modal-title">
     <div class="search-modal-backdrop"></div>
     <div class="search-modal-container glass-card">
       <div class="search-modal-header">
         <div class="search-prompt">
-          <span class="prompt-host">keshan@blog</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-char">$</span>
+          <span class="prompt-host">keshan@blog</span><span class="prompt-sep">:</span><span
+            class="prompt-path">~</span><span class="prompt-char">$</span>
           <span class="prompt-cmd">grep -ri</span>
         </div>
-        <input type="text" id="search-input" class="search-input" placeholder="Search posts, topics, systems..." autocomplete="off" spellcheck="false">
+        <input type="text" id="search-input" class="search-input" placeholder="Search posts, topics, systems..."
+          autocomplete="off" spellcheck="false">
         <button id="search-close-btn" class="search-close-btn" aria-label="Close search">&times;</button>
       </div>
       <div id="search-results" class="search-results">
@@ -55,8 +62,9 @@
       </div>
     </div>
   </div>
-  
+
   {% include javascripts.html %}
   {% include analytics.html %}
 </body>
+
 </html>

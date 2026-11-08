@@ -29,11 +29,15 @@ layout: default
     <nav class="site-nav" id="site-nav">
       <ul>
         <li><a href="{{site.baseurl}}/" class="{% if page.url == '/' %}active{% endif %}">~/home</a></li>
-        <li><a href="{{site.baseurl}}/perspectives/" class="{% if page.url contains '/perspectives/' %}active{% endif %}">~/perspectives</a></li>
-        <li><a href="{{site.baseurl}}/publications/" class="{% if page.url contains '/publications/' %}active{% endif %}">~/publications</a></li>
-        <li><a href="{{site.baseurl}}/about/" class="{% if page.url contains '/about/' %}active{% endif %}">~/about</a></li>
+        <li><a href="{{site.baseurl}}/perspectives/"
+            class="{% if page.url contains '/perspectives/' %}active{% endif %}">~/perspectives</a></li>
+        <li><a href="{{site.baseurl}}/publications/"
+            class="{% if page.url contains '/publications/' %}active{% endif %}">~/publications</a></li>
+        <li><a href="{{site.baseurl}}/about/" class="{% if page.url contains '/about/' %}active{% endif %}">~/about</a>
+        </li>
         {% if site.social-email %}
-        <li><a href="{{site.baseurl}}/contact/" class="{% if page.url contains '/contact/' %}active{% endif %}">~/contact</a></li>
+        <li><a href="{{site.baseurl}}/contact/"
+            class="{% if page.url contains '/contact/' %}active{% endif %}">~/contact</a></li>
         {% endif %}
       </ul>
     </nav>
@@ -51,7 +55,7 @@ layout: default
         <h3>~/about</h3>
         <p>{{site.about-author}}</p>
       </div>
-      
+
       <div class="footer-nav">
         <h3>~/nav</h3>
         <ul>
@@ -64,33 +68,40 @@ layout: default
           {% endif %}
         </ul>
       </div>
-      
+
       <div class="footer-connect">
         <h3>~/connect</h3>
         <div class="social-links">
           <ul>
             {% if site.social-twitter %}
-              <li><a href="https://twitter.com/{{ site.social-twitter }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+            <li><a href="https://twitter.com/{{ site.social-twitter }}" target="_blank" rel="noopener noreferrer"
+                aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-huggingface %}
-              <li><a href="https://huggingface.com/{{ site.social-huggingface }}" target="_blank" rel="noopener noreferrer" aria-label="Hugging Face"><i class="fa fa-code" aria-hidden="true"></i></a></li>
+            <li><a href="https://huggingface.com/{{ site.social-huggingface }}" target="_blank"
+                rel="noopener noreferrer" aria-label="Hugging Face"><i class="fa fa-code" aria-hidden="true"></i></a>
+            </li>
             {% endif %}
             {% if site.social-github %}
-              <li><a href="http://github.com/{{site.social-github}}" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+            <li><a href="http://github.com/{{site.social-github}}" target="_blank" rel="noopener noreferrer"
+                aria-label="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-linkedin %}
-              <li><a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+            <li><a href="https://in.linkedin.com/in/{{site.social-linkedin}}" target="_blank" rel="noopener noreferrer"
+                aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
             {% endif %}
             {% if site.social-email %}
-              <li><a href="mailto:{{site.social-email}}" aria-label="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></a></li>
+            <li><a href="mailto:{{site.social-email}}" aria-label="Email"><i class="fa fa-envelope-o"
+                  aria-hidden="true"></i></a></li>
             {% endif %}
           </ul>
         </div>
       </div>
     </div>
-    
+
     <div class="copyright">
-      <p>© {{site.time | date: '%Y'}} <span>{{site.author}}</span> — <i class="fa fa-heart heart" aria-hidden="true"></i> &amp; Jekyll</p>
+      <p>© {{site.time | date: '%Y'}} <span>{{site.author}}</span> — <i class="fa fa-heart heart"
+          aria-hidden="true"></i> &amp; Jekyll</p>
     </div>
   </div>
 </footer>

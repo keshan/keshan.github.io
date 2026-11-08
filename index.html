@@ -28,13 +28,14 @@ layout: main
 <div class="posts-grid">
   {% for post in paginator.posts %}
   {% if paginator.page == 1 and forloop.index == 1 %}
-    {% continue %}
+  {% continue %}
   {% endif %}
   <article class="post-card">
     <a class="post-card-link" href="{{post.url | prepend: site.baseurl}}">
       {% if post.img %}
       <div class="post-card-image">
-        <img src="{{ '/assets/img/' | prepend: site.baseurl | append: post.img }}" alt="Cover image for {{post.title}}" loading="lazy">
+        <img src="{{ '/assets/img/' | prepend: site.baseurl | append: post.img }}" alt="Cover image for {{post.title}}"
+          loading="lazy">
 
         {% if post.categories %}
         <div class="post-card-category">
@@ -45,7 +46,8 @@ layout: main
       {% endif %}
       <div class="post-card-content">
         <h2 class="post-card-title">{{post.title}}</h2>
-        <p class="post-card-excerpt">{% if post.description %}{{ post.description | truncatewords: 24 }}{% else %}{{ post.content | strip_html | truncatewords: 20 }}{% endif %}</p>
+        <p class="post-card-excerpt">{% if post.description %}{{ post.description | truncatewords: 24 }}{% else %}{{
+          post.content | strip_html | truncatewords: 20 }}{% endif %}</p>
         <div class="post-card-meta">
           <div class="post-card-author">
             {% if site.author-img %}
