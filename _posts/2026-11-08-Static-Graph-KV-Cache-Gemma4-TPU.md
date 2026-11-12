@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Unlocking 51x Faster Gemma 4 Inference on a Free TPU"
+title: "From 3.17 to 1,850 tok/s: Unlocking 583x Faster Gemma 4 Inference on a Free TPU"
 date: 2026-11-08
 description: "How dissecting Gemma 4 E2B-it's 20 KV-shared layers cut KV-cache memory by 57.1%, eliminated 432 XLA recompilations via device-tensor indexing in PyTorch (161.9 tok/s, 51.1x) and pure JAX lax.scan + dynamic_update_slice (1,849.7 tok/s, 583.5x), fixed a 15 GB GPU vLLM OOM crash, and preserved 100% bit-exact quality."
 img: gemma4-kv-hero.png
@@ -11,7 +11,7 @@ math: true
 
 > **Note:** This article was written with the support of Google Antigravity and Gemini 4 Argon.
 
-# Unlocking 51x Faster Gemma 4 Inference on a Free TPU
+# From 3.17 to 1,850 tok/s: Unlocking 583x Faster Gemma 4 Inference on a Free TPU
 
 There is a humbling moment almost every ML engineer runs into when testing a brand-new open-weights model.
 
