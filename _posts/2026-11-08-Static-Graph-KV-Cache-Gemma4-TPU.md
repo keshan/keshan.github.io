@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "From 3.17 to 1,850 tok/s: Unlocking 583x Faster Gemma 4 Inference on a Free TPU"
+title: "From 3.6 to 1,850 tok/s: Unlocking 508x Faster Gemma 4 Inference on a Free TPU"
 date: 2026-11-08
-description: "How dissecting Gemma 4 E2B-it's 20 KV-shared layers cut KV-cache memory by 57.1%, eliminated 432 XLA recompilations via device-tensor indexing in PyTorch (161.9 tok/s TPU, 395.0 tok/s T4) and pure JAX lax.scan + dynamic_update_slice (1,849.7 tok/s, 583.5x), unlocked vLLM 0.33.0 on Turing T4 via TRITON_ATTN tile=16 (461.9 tok/s), and preserved 100% bit-exact quality."
+description: "Across multi-run Cloud TPU v5e-1 and Tesla T4 benchmarks, dissecting Gemma 4 E2B-it's 20 KV-shared layers cuts KV memory by 57.1%, eliminates 432 HF XLA recompilations (3.64 -> 152.73 tok/s mean in PyTorch, 1,780.83 -> 1,849.66 tok/s mean in pure JAX, 508.5x), unlocks vLLM 0.33.0 on T4 via tile=16 (468.48 tok/s mean vs 381.72 tok/s StaticEngine), and keeps 100% bit-exact parity."
 img: gemma4-kv-hero.png
 tags: [TPU, Gemma-4, KV-Cache, XLA, JAX, vLLM, PyTorch, LLM-Inference, Optimization]
 toc: false
@@ -11,13 +11,13 @@ math: true
 
 > **Note:** This article was written with the support of Google Antigravity and Gemini 4 Argon.
 
-# From 3.17 to 1,850 tok/s: Unlocking 583x Faster Gemma 4 Inference on a Free TPU
+# From 3.6 to 1,850 tok/s: Unlocking 508x Faster Gemma 4 Inference on a Free TPU
 
 There is a humbling moment almost every ML engineer runs into when testing a brand-new open-weights model.
 
-You spin up a free **Google Colab Cloud TPU `v5e-1`**. On paper, this chip is a monster: **197 TFLOP/s** of `bfloat16` matrix compute and **819 GB/s** of High Bandwidth Memory (HBM). You load **Gemma 4 E2B-it** (`unsloth/gemma-4-E2B-it`), call Hugging Face's standard `model.generate()`, and watch the terminal crawl at **3.17 tokens per second**.
+You spin up a free **Google Colab Cloud TPU `v5e-1`**. On paper, this chip is a monster: **197 TFLOP/s** of `bfloat16` matrix compute and **819 GB/s** of High Bandwidth Memory (HBM). You load **Gemma 4 E2B-it** (`unsloth/gemma-4-E2B-it`), call Hugging Face's standard `model.generate()`, and watch the terminal crawl at **3–4 tokens per second** (`3.17–3.89 tok/s`, averaging **`3.64 tok/s`** across four independent TPU runs).
 
-Wait... *3.17 tokens per second* on a 197 TFLOP/s TPU?
+Wait... *3.64 tokens per second on average* on a 197 TFLOP/s TPU — over **3x slower** than a free T4 GPU (`12.22 tok/s` average)?
 
 Even on a free **15 GB NVIDIA Tesla T4 GPU** (`sm_75`), running stock **`vLLM` (`0.33.0`)** out of the box hits a hardware wall on Gemma 4's heterogeneous attention geometry (`head_dim = 512` global layers): `FlashAttention` and `FlashInfer` require Ampere (`sm >= 8.0`), `FlexAttention` rejects KV-shared models, and stock `TRITON_ATTN` crashes in `kernel_unified_attention` trying to allocate `98,304` bytes of shared memory against Turing's `65,536`-byte SM limit:
 
@@ -29,13 +29,13 @@ Why do standard serving stacks struggle with Gemma 4 across both accelerators?
 
 Because **both treat Gemma 4 like a standard 35-layer Transformer** — unaware that Gemma 4 actually **freezes its Key-Value (KV) cache after Layer 14** (`num_kv_shared_layers = 20`) and mixes `head_dim = 256` sliding layers with `head_dim = 512` full-attention layers (`L04, L09, L14, L19, L24, L29, L34`). Meanwhile on TPU, default token-by-token decoding mutates tensor shapes (or bakes Python integer slice offsets into the graph) on every step, forcing the XLA compiler to **recompile the 35-layer model 432 times** during a single answer.
 
-In this post, we pop the hood on Gemma 4 E2B-it, look at the exact code and measurements behind every finding, and build [`StaticGemma4Engine`](https://github.com/keshan/LMArchiExperiments/tree/main/gemma4_surgery) alongside our **Turing `tile=16` `vLLM 0.33.0` fix** and **Pure JAX `JaxStaticGemma4Engine`**:
+In this post, we pop the hood on Gemma 4 E2B-it, look at the exact code and multi-run measurements behind every finding, and build [`StaticGemma4Engine`](https://github.com/keshan/LMArchiExperiments/tree/main/gemma4_surgery) alongside our **Turing `tile=16` `vLLM 0.33.0` fix** and **Pure JAX `JaxStaticGemma4Engine`** (reporting arithmetic means and min–max ranges across repeated standalone and Colab runs):
 
 1. **Cuts KV-cache memory by `57.14%`** (`1,344 MB -> 576 MB` at batch 32, sequence length 1,024) by allocating KV cache buffers only for the **15 layers that actually build Keys and Values (`L0–L14`)**.
-2. **Eliminates 100% of XLA graph recompilations (`432 -> 0`)** by replacing dynamic `torch.cat` and Python integer slicing (`buf[:, :, i:i+1]`) with **device-tensor indexing (`buf.index_copy_(2, pos_tensor, k_new)`)**. This gives a **48.0x kernel speedup** (`0.576s -> 0.012s`) and takes end-to-end TPU `v5e-1` generation from **`3.17 tok/s` to `154.63 tok/s` (`48.8x` faster)**.
-3. **Benchmarks `StaticGemma4Engine` cleanly head-to-head against `vLLM 0.33.0` on a single 15 GB Tesla T4 GPU**: By clearing PyTorch cuBLAS workspaces (`torch._C._cuda_clearCublasWorkspaces()` $\to$ `14.43 GiB` free), running `VLLM_ENABLE_V1_MULTIPROCESSING=0`, and clamping `TRITON_ATTN`'s prefill tile on `head_dim >= 512` to `16`, both engines run in the same notebook kernel in native `float16` with `48/48` bit-exact greedy parity — reaching **`395.01 tok/s` ($B=32$, `10.16 GiB` peak) in PyTorch `StaticGemma4Engine`** and **`461.88 tok/s` ($B=32$, `12.76 GiB` peak) in `vLLM 0.33.0`**.
-4. **Keeps `100%` bit-for-bit identical outputs (`0.00%` quality loss)** at `48.8x` speedup across 512 benchmark problems (`GSM8K`, `ARC-Challenge`, `MMLU-Pro STEM`, and `MBPP Python`), and reaches **`161.90 tok/s` (`51.1x` speedup)** when we skip dormant layers (`L30–L32`) using a simple **`layer_scalar` rescaling rule**.
-5. **Pushes the exact same free TPU `v5e-1` another `11.5x–13.1x` further in pure JAX (`JaxStaticGemma4Engine`)**: By translating every one of our PyTorch optimizations into pure JAX (`jax.lax.dynamic_update_slice` + `donate_argnums` + nested `jax.lax.scan`), we eliminate PyTorch/XLA's `~170–188 ms/step` CPU LazyTensor tracing bottleneck, taking single-stream ($B=1$) speed from `5.44` to **`71.32 tok/s` (`22.5x` faster than HF)** and batch-32 speed to **`1,780.74 tok/s` (`561.7x` faster than HF, `2.7x` faster than `vLLM` TPU)** — or **`1,849.65 tok/s` (`583.5x` speedup)** with zero-recompile `L30–L32` layer bypass!
+2. **Eliminates warm XLA graph recompilations (`432 -> 0` inside `StaticGemma4Engine`)** by replacing dynamic `torch.cat` and Python integer slicing (`buf[:, :, i:i+1]`) with **device-tensor indexing (`buf.index_copy_(2, pos_tensor, k_new)`)**. Across four independent TPU `v5e-1` runs, end-to-end batch-32 throughput jumps from HF's **`3.64 tok/s` mean (`3.17–3.89`)** to **`152.73 tok/s` mean (`149.67–154.63`, `42.0x` average speedup; up to `48.8x` over the `3.17` baseline)**.
+3. **Benchmarks `StaticGemma4Engine` cleanly head-to-head against `vLLM 0.33.0` on a single 15 GB Tesla T4 GPU**: By clearing PyTorch cuBLAS workspaces (`torch._C._cuda_clearCublasWorkspaces()` $\to$ `14.25–14.46 GiB` free), running `VLLM_ENABLE_V1_MULTIPROCESSING=0` with default utilization (`0.92`), and clamping `TRITON_ATTN`'s prefill tile on `head_dim >= 512` to `16`, both engines run in the same notebook kernel in native `float16` with `48/48` bit-exact greedy parity. Averaged across repeated runs, **`StaticGemma4Engine` reaches `381.72 tok/s` ($n=2$, `368.42–395.01` at `10.16 GiB` peak)** while **`vLLM 0.33.0` reaches `468.48 tok/s` ($n=3$, `461.88–471.97` at `12.76–12.86 GiB` peak)** (`+22.7%` peak batch-32 throughput in `vLLM`, `~2.6 GiB` lower VRAM in `StaticGemma4Engine`).
+4. **Keeps `100%` bit-for-bit identical outputs (`0.00%` quality loss)** at `42.0x` mean speedup across 512 benchmark problems (`GSM8K`, `ARC-Challenge`, `MMLU-Pro STEM`, and `MBPP Python`), and reaches **`161.90 tok/s` (`44.5x` vs HF mean)** in PyTorch when skipping dormant layers (`L30–L32`) using a simple **`layer_scalar` rescaling rule**.
+5. **Pushes the exact same free TPU `v5e-1` another `11.7x–14.3x` further in pure JAX (`JaxStaticGemma4Engine`)**: By translating every optimization into pure JAX (`jax.lax.dynamic_update_slice` + `donate_argnums` + nested `jax.lax.scan`, achieving `0` loop recompiles even on pass 1 and `0.535 ms` 16-step kernel mean), we eliminate PyTorch/XLA's `~186–192 ms/step` CPU LazyTensor overhead. Across two full TPU `v5e-1` runs (`<0.02%` run-to-run variance), single-stream ($B=1$) speed jumps from `5.00` to **`71.32 tok/s` (`19.6x` vs HF mean)** and batch-32 speed averages **`1,780.83 tok/s` (`489.6x` vs HF mean, `3.80x` faster than T4 `vLLM`'s `468.48 tok/s` mean)** — or **`1,849.66 tok/s` (`508.5x` vs HF mean, `3.95x` vs T4 `vLLM`)** with zero-recompile `L30–L32` layer bypass!
 
 Every claim below comes with the exact Python (PyTorch and JAX) code we ran on free Colab TPU `v5e-1` and Tesla T4 GPU runtimes so you can reproduce or adapt it yourself.
 
@@ -335,7 +335,7 @@ else:
         )
 ```
 
-So why does calling `MODEL.generate()` on our Cloud TPU `v5e-1` still crawl at **`3.17 tokens/sec`**?
+So why does calling `MODEL.generate()` on our Cloud TPU `v5e-1` crawl at **`3.64 tokens/sec` on average** (`3.17–3.89 tok/s` across four independent runs)?
 
 Let's measure the TPU's XLA compilation counter (`torch.tpu._get_cache_stats()`) during a single 96-token `MODEL.generate()` call:
 
@@ -358,12 +358,12 @@ print(f"HF MODEL.generate (96 tokens): {96 / dt_hf:.2f} tok/s | XLA Recompilatio
 ```
 
 ```text
-HF MODEL.generate (96 tokens): 3.17 tok/s | XLA Recompilations: 432
+HF MODEL.generate (96 tokens): 3.17–3.89 tok/s (mean: 3.64 tok/s, n=4) | XLA Recompilations: 432
 ```
 
-**432 XLA compilations** just to generate 96 tokens!
+Wait—what about the variance between `3.17 tok/s` and `3.71–3.89 tok/s`? Every single instrumented run triggered the **exact same 432 XLA compilations** (`24.66–30.31 s`, averaging **`26.56 s` / `3.64 tok/s`**), with the slight spread coming purely from Colab host CPU JIT compilation speed across independent VM sessions (`3.17`, `3.71`, `3.78`, `3.89 tok/s`). In every run, generating just 96 tokens spends almost the entire runtime compiling 432 single-use XLA graphs!
 
-Why? On an NVIDIA GPU, PyTorch runs in eager mode: when `DynamicCache` appends a new token via `torch.cat([key_cache, key_states], dim=-2)`, the CPU simply asks the CUDA driver to launch a tiny copy kernel (`~10 µs` overhead), running at **`11.29 tok/s`** ($B=1$ on Tesla T4).
+Why? On an NVIDIA GPU, PyTorch runs in eager mode: when `DynamicCache` appends a new token via `torch.cat([key_cache, key_states], dim=-2)`, the CPU simply asks the CUDA driver to launch a tiny copy kernel (`~10 µs` overhead), averaging **`12.22 tok/s`** ($B=1$ on Tesla T4 across `11.83` and `12.61 tok/s`, or **`3.36x` faster** than HF on TPU!).
 
 On a **TPU**, however, PyTorch/XLA compiles the entire forward pass into a single **StableHLO whole-program graph**. The cache key for that compiled program includes the **exact shape of every tensor** in the graph. Because `DynamicCache` grows the sequence length from $S \to S+1 \to S+2$ on every token, every single token has a brand-new shape, misses the XLA cache, and stalls behind the XLA compiler! Even when we tried Hugging Face's `StaticCache(config=cfg, max_cache_len=256)`, dynamic mask slicing and Python integer offsets inside the loop still triggered **56 cold XLA compilations (`0.29 tok/s` cold)**.
 
@@ -371,8 +371,8 @@ On a **TPU**, however, PyTorch/XLA compiles the entire forward pass into a singl
 
 Next, we benchmarked **`vLLM` (`0.33.0`)** (`gemma4_surgery/benchmarks/bench_vllm_gemma4.py`) on both our Cloud TPU `v5e-1` and our 14.56 GiB NVIDIA Tesla T4 GPU (`sm_75`):
 
-1. **On Cloud TPU `v5e-1`**: Importing stock PyPI `vLLM` raises an `ImportError` unless Google's out-of-tree `tpu_inference` runtime (`vllm-tpu`) is installed alongside PJRT.
-2. **On the 14.56 GiB NVIDIA Tesla T4 GPU (`sm_75`)**: Even after loading the `float16` multimodal weights (`9.85 GiB`, allocating `2.36 GiB` / `131,814` tokens of KV cache across 5 hybrid block groups `(32, 32, 32, 32, 16)`), stock `vLLM 0.33.0` selects `TRITON_ATTN` (`FLASH_ATTN` & `FLASHINFER` require `sm >= 8.0`, and `FLEX_ATTENTION` rejects Gemma 4's KV sharing with `NotImplementedError: FlexAttention does not support kv sharing yet.`) — and immediately crashes at first decode on Gemma 4's `head_dim = 512` global attention layers (`L04, L09, L14, L19, L24, L29, L34`):
+1. **On Cloud TPU `v5e-1`**: Importing stock PyPI `vLLM` fails (`tpu_inference` / `vllm-tpu` missing), so `vLLM` could not be benchmarked directly on the TPU VM.
+2. **On the 14.56 GiB NVIDIA Tesla T4 GPU (`sm_75`)**: Even after loading the `float16` multimodal weights (`9.85 GiB`, allocating `2.34–2.36 GiB` of KV cache across 5 hybrid block groups `(32, 32, 32, 32, 16)`), stock `vLLM 0.33.0` selects `TRITON_ATTN` (`FLASH_ATTN` & `FLASHINFER` require `sm >= 8.0`, and `FLEX_ATTENTION` rejects Gemma 4's KV sharing with `NotImplementedError: FlexAttention does not support kv sharing yet.`) — and immediately crashes at first decode on Gemma 4's `head_dim = 512` global attention layers (`L04, L09, L14, L19, L24, L29, L34`):
    ```text
    (EngineCore) INFO [config.py:364] Gemma4 model has heterogeneous head dimensions {'sliding_attention': 256, 'full_attention': 512}. FA4 not available, forcing TRITON_ATTN backend.
    (EngineCore) INFO [utils.py:381] Using LBNHC KV cache layout.
@@ -403,7 +403,7 @@ KV-Freeze Aware (15 Layers):      960.00 MB  (Saves 1280.00 MB / 57.14%)
 
 To run Hugging Face `DynamicCache`, `StaticGemma4Engine`, and `vLLM 0.33.0` sequentially inside the **exact same Colab T4 kernel** without restarting the runtime, three concrete fixes are required:
 
-1. **Clear PyTorch + cuBLAS Workspaces (`14.43 / 14.56 GiB` Free)**: Calling `del model` and `torch.cuda.empty_cache()` alone can leave cuBLAS workspaces pinned on T4 (`~9.5 GiB` reserved). Calling `torch._C._cuda_clearCublasWorkspaces()` before `empty_cache()`, `ipc_collect()`, and `libc.malloc_trim(0)` restores **`14.43 / 14.56 GiB`** of free VRAM (`0.00 GiB` allocated/reserved).
+1. **Clear PyTorch + cuBLAS Workspaces (`14.25–14.46 / 14.56 GiB` Free)**: Calling `del model` and `torch.cuda.empty_cache()` alone can leave cuBLAS workspaces pinned on T4 (`~9.5 GiB` reserved). Calling `torch._C._cuda_clearCublasWorkspaces()` before `empty_cache()`, `ipc_collect()`, and `libc.malloc_trim(0)` restores **`14.25–14.46 / 14.56 GiB`** of free VRAM (`0.00–0.18 GiB` allocated/reserved), allowing `vLLM` to use its default `gpu_memory_utilization` (`0.92`) cleanly with no manual cap needed.
 2. **In-Process `V1` Engine (`VLLM_ENABLE_V1_MULTIPROCESSING=0`)**: Once CUDA is already initialized inside a Jupyter/Colab kernel, spawning a separate `EngineCore` child process can stall or fragment context memory; running the `vLLM V1` engine in-process works deterministically.
 3. **Turing `sm_75` `TRITON_ATTN` Tile Clamp (`_get_tile_size(head_size>=512) -> 16`) + Native `float16`**: By default `triton_unified_attention._get_tile_size` selects `TILE_SIZE_PREFILL = 32` for 512-dim heads, requiring `98,304 B` of shared memory (`> 65,536 B` limit on T4). Clamping `head_size >= 512` to tile size `16` (with `dtype="half"` on `sm < 8.0`) fits comfortably inside T4 shared memory and achieves `48/48` greedy token equivalence:
 
@@ -411,7 +411,7 @@ To run Hugging Face `DynamicCache`, `StaticGemma4Engine`, and `vLLM 0.33.0` sequ
 import os, ctypes, gc, torch
 os.environ["VLLM_ENABLE_V1_MULTIPROCESSING"] = "0"
 
-# Step 1: Release HF/PyTorch weights + cuBLAS workspaces -> 14.43 / 14.56 GiB free
+# Step 1: Release HF/PyTorch weights + cuBLAS workspaces -> 14.25–14.46 / 14.56 GiB free
 gc.collect()
 torch.cuda.synchronize()
 torch._C._cuda_clearCublasWorkspaces()
@@ -432,14 +432,14 @@ llm = LLM(model="unsloth/gemma-4-E2B-it", dtype="half", max_model_len=512, enfor
 ```
 
 ```text
-(MainProcess) INFO [gpu_worker.py:772] Available KV cache memory: 2.36 GiB
-(MainProcess) INFO [kv_cache_utils.py:1147] GPU KV cache size: 131,814 tokens, Maximum concurrency for 512 tokens per request: 257.45x
+(MainProcess) INFO [gpu_worker.py:772] Available KV cache memory: 2.34–2.36 GiB
+(MainProcess) INFO [kv_cache_utils.py:1147] GPU KV cache size: ~131,814 tokens (max concurrency @ 512: ~257x)
 (MainProcess) INFO [kv_cache_utils.py:865] kv cache group sizes (32, 32, 32, 32, 16)
 HF vs vLLM 48-token greedy match: 48/48
-vLLM B=1:  15.19 tok/s (12.71 GiB peak) | B=8: 125.00 tok/s | B=16: 230.24 tok/s | B=32: 461.88 tok/s (12.76 GiB peak)
+vLLM Mean (n=3 runs) -> B=1: 15.40 tok/s (15.19–15.63) | B=8: 109.38 tok/s (steady 127.71) | B=16: 240.96 tok/s (230.24–248.12) | B=32: 468.48 tok/s (461.88–471.97, 12.76–12.86 GiB peak)
 ```
 
-Notice the clean architectural contrast on T4: with native `float16` enabled on `sm_75`, our custom `StaticGemma4Engine` scales cleanly from **`14.14 tok/s` ($B=1$) to `100.92` ($B=8$), `195.53` ($B=16$), and `395.01 tok/s` ($B=32$)** while peaking at **`9.53–10.16 GiB` VRAM** (`~2.6 GiB` less than `vLLM` at `12.76 GiB`), because it allocates KV buffers only for `L0–L14`, prunes `vision_tower`/`audio_tower` (`-0.80 GB`), and skips the `0.79 GiB` 8,192-token multimodal encoder warmup!
+Notice the clean architectural contrast across repeated T4 runs: with native `float16` enabled on `sm_75`, our custom `StaticGemma4Engine` averages **`13.75 tok/s` ($B=1$), `101.72` ($B=8$), `200.33` ($B=16$), and `381.72 tok/s` ($B=32$, `368.42–395.01`)** while peaking at **`9.53–10.16 GiB` VRAM** (`~2.6–2.7 GiB` less than `vLLM` at `12.76–12.86 GiB`), because it allocates KV buffers only for `L0–L14`, prunes `vision_tower`/`audio_tower` (`-0.80 GB`), and skips the `0.79 GiB` 8,192-token multimodal encoder warmup. Conversely, `vLLM`'s fused kernels give **`+22.7%` higher average `B=32` throughput (`468.48` vs `381.72 tok/s`)**!
 
 ---
 
@@ -509,28 +509,31 @@ def run_update_microbenchmark(dev: torch.device):
     print(f"3. Device-Tensor (index_copy_)    | Compiles: {comp_idx:2d} | Time: {time_idx:.3f} s ({time_cat/time_idx:.1f}x)")
 ```
 
-Running this on our Colab TPU `v5e-1` prints:
+Across three independent Cloud TPU `v5e-1` runs (`n = 3` across standalone and Colab notebook sessions), passing `torch_tpu` through this 16-step loop behaves as follows:
 
 ```text
-1. Dynamic Cat (torch.cat)        | Compiles: 54 | Time: 0.576 s (1.0x)
-2. Python Slice (buf[:,:,i:i+1])  | Compiles: 18 | Time: 0.316 s (1.8x)
-3. Device-Tensor (index_copy_)    | Compiles:  0 | Time: 0.012 s (48.0x)
+1. Dynamic Cat (torch.cat)        | Compiles: 48–54 | Mean: 639.6 ms (541.5–801.0 ms) | 1.00x
+2. Python Slice (buf[:,:,i:i+1])  | Compiles: 16–18 | Mean: 433.6 ms (312.9–671.7 ms) | 1.48x
+3. Loop index_copy_ (pos_tensors) | Compiles: 16–18 | Mean: 379.1 ms (291.5–549.1 ms) | 1.69x
+   -> Inside compiled StaticGemma4Engine (warm decode graph): 0 recompiles!
 ```
 
-| KV Update Implementation (16 Decode Steps on TPU `v5e-1`) | Tensor Shape | Slice Index Type | XLA Compilations | Elapsed Time | Relative Speedup |
+| KV Update Implementation (16 Decode Steps on TPU `v5e-1`, `n=3`) | Tensor Shape | Slice Index Type | XLA Compilations | Mean Elapsed (`Min–Max`) | Relative Speedup |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Method 1**: Dynamic Concat `torch.cat([k_cache, k_new], dim=2)` | Growing `1..16` | — | `54` recompiles | `0.576 s` | `1.0x` (Baseline) |
-| **Method 2**: Python Integer Slice `buf[:, :, i:i+1] = k_new` | Static `S_max` | Python `int` literal | `18` recompiles | `0.316 s` | `1.8x` |
-| **Method 3**: Device-Tensor `buf.index_copy_(2, pos_tensor, k_new)` | Static `S_max` | Device `Tensor[1]` | **`0` recompiles** | **`0.012 s`** | **`48.0x` Faster** |
+| **Method 1**: Dynamic Concat `torch.cat([k_cache, k_new], dim=2)` | Growing `1..16` | — | `48–54` recompiles | `639.6 ms` (`541.5–801.0 ms`) | `1.00x` (Baseline) |
+| **Method 2**: Python Integer Slice `buf[:, :, i:i+1] = k_new` | Static `S_max` | Python `int` literal | `16–18` recompiles | `433.6 ms` (`312.9–671.7 ms`) | `1.48x` |
+| **Method 3**: Device-Tensor `buf.index_copy_(2, pos_tensor, k_new)` | Static `S_max` | Device `Tensor[1]` | `16–18` isolated loop / **`0` warm in engine** | **`379.1 ms`** (`291.5–549.1 ms`) | **`1.69x`** *(end-to-end: `42.0x`)* |
+
+> **Why does the isolated Python microbenchmark still show `16–18` compiles for `index_copy_`?** In this stripped-down loop, `pos_tensors[i]` triggers fresh `aten::select` LazyTensor IR traces on pass 1 over the host loop. Once `index_copy_` is lifted into the full 35-layer `StaticGemma4Engine` forward pass (`Section 4.2`), the warm decode graph settles to **`0` XLA recompilations** across all batch steps. To eliminate even the host Python loop completely, we turn to **Pure JAX** next.
 
 #### 4.1.1 How Does the Exact Same KV Update Microbenchmark Look in Pure JAX?
 
-If we write the same 16-step KV-cache update microbenchmark in **pure JAX** (`jax==0.11.2`) on the exact same Cloud TPU `v5e-1`, the same three traps show up — plus a fourth **whole-loop compiled `jax.lax.scan` pattern** that goes even further (`gemma4_surgery/benchmarks/jax_fast_infer.py`):
+If we write the same 16-step KV-cache update microbenchmark in **pure JAX** (`jax==0.11.2`) on the exact same Cloud TPU `v5e-1` (`n = 3` independent runs), the same three traps show up — plus a fourth **whole-loop compiled `jax.lax.scan` pattern** that goes even further (`gemma4_surgery/benchmarks/jax_fast_infer.py`):
 
-1. **Method 1 (`jnp.concatenate([k_dyn, k_new], axis=2)` inside `@jax.jit`)**: Just like `torch.cat`, the sequence dimension grows (`4 -> 5 -> ... -> 20`), triggering **16 XLA compilations** (`833.22 ms`).
-2. **Method 2 (`buf.at[:, :, i:i+1, :].set(k_new)` with `static_argnums=(2,)`)**: Because JAX requires dynamic slice bounds (`i:i+1`) to be compile-time constants (`static_argnums`), passing Python integer `i` bakes the slice offset into StableHLO metadata — triggering **16 XLA compilations** (`620.87 ms`).
-3. **Method 3 (`jax.lax.dynamic_update_slice(buf, k_new, (0, 0, pos, 0))` with `donate_argnums=(0,)`)**: This is the direct 1-to-1 JAX analogue of PyTorch's `buf.index_copy_(2, pos_tensor, k_new)`. Because `pos` is a traced scalar `int32` JAX array on the TPU and `donate_argnums=(0,)` tells XLA it can overwrite `buf`'s HBM buffer in place without allocating a copy, a 16-step Python loop triggers **0 recompilations** and finishes in **`17.88 ms` (`46.6x` faster than dynamic JAX)**.
-4. **Method 4 (Fused `jax.lax.scan` + `jax.lax.dynamic_update_slice` + `donate_argnums=(0,)`)**: In PyTorch, the CPU still steps through the Python `for i in range(16):` loop. In JAX, wrapping those 16 steps inside `jax.lax.scan` fuses the entire 16-step loop into a **single XLA kernel call** with zero Python loop overhead — finishing all 16 steps in **`0.583 ms` (`1,429x` faster than dynamic JAX and `20.6x` faster than PyTorch `index_copy_`'s `12.0 ms`)**!
+1. **Method 1 (`jnp.concatenate([k_dyn, k_new], axis=2)` inside `@jax.jit`)**: Just like `torch.cat`, the sequence dimension grows (`4 -> 5 -> ... -> 20`), triggering **16 XLA compilations** (**`785.62 ms` mean**, `715.59–833.22 ms`).
+2. **Method 2 (`buf.at[:, :, i:i+1, :].set(k_new)` with `static_argnums=(2,)`)**: Because JAX requires dynamic slice bounds (`i:i+1`) to be compile-time constants (`static_argnums`), passing Python integer `i` bakes the slice offset into StableHLO metadata — triggering **16 XLA compilations** (**`733.71 ms` mean**, `620.87–835.28 ms`).
+3. **Method 3 (`jax.lax.dynamic_update_slice(buf, k_new, (0, 0, pos, 0))` with `donate_argnums=(0,)`)**: This is the direct 1-to-1 JAX analogue of PyTorch's `buf.index_copy_(2, pos_tensor, k_new)`. Because `pos` is a traced scalar `int32` JAX array on the TPU and `donate_argnums=(0,)` tells XLA it can overwrite `buf`'s HBM buffer in place without allocating a copy, a 16-step Python loop triggers **0 recompilations** and finishes in **`17.40 ms` mean (`16.65–17.88 ms`, `45.2x` faster than dynamic JAX)**.
+4. **Method 4 (Fused `jax.lax.scan` + `jax.lax.dynamic_update_slice` + `donate_argnums=(0,)`)**: In PyTorch, the CPU still steps through the Python `for i in range(16):` loop. In JAX, wrapping those 16 steps inside `jax.lax.scan` fuses the entire 16-step loop into a **single XLA kernel call** with zero Python loop overhead — finishing all 16 steps in **`0.535 ms` mean (`0.505–0.583 ms`, `1,468x` faster than dynamic JAX and `1,195x` faster than PyTorch `torch.cat`!)**.
 
 Here is the exact JAX microbenchmark we ran on our Cloud TPU `v5e-1` (`gemma4_surgery/benchmarks/jax_fast_infer.py`):
 
@@ -616,7 +619,7 @@ def run_jax_kv_update_microbenchmark(steps: int = 16):
     print(f"4. JAX Fused lax.scan + dynamic_update_slice | Compiles:  0 | Time: {t_scan_ms:7.3f} ms ({t_concat_ms/t_scan_ms:.0f}x!)")
 ```
 
-Running that on our Cloud TPU `v5e-1` (`jax_throughput_report.json`) prints:
+In a single standalone Cloud TPU `v5e-1` run (`jax_throughput_report.json`), that prints:
 
 ```text
 1. JAX Dynamic Concat (jnp.concatenate)      | Compiles: 16 | Time:  833.22 ms (1.0x)
@@ -625,17 +628,17 @@ Running that on our Cloud TPU `v5e-1` (`jax_throughput_report.json`) prints:
 4. JAX Fused lax.scan + dynamic_update_slice | Compiles:  0 | Time:    0.583 ms (1429x!)
 ```
 
-Putting the PyTorch and JAX 16-step microbenchmarks side by side tells the whole story of XLA on TPUs:
+Across **all three independent TPU `v5e-1` runs (`n = 3`)**, putting the PyTorch and Pure JAX 16-step microbenchmarks side by side tells the whole story of XLA on TPUs:
 
-| Framework & 16-Step KV Update Pattern | Buffer Shape | Index Mechanism | XLA Recompiles | 16-Step Wall Time | Speedup vs. Dynamic |
+| Framework & 16-Step KV Update Pattern | Buffer Shape | Index Mechanism | XLA Compiles (`n=3`) | Mean 16-Step Wall Time (`Min–Max`) | Speedup vs. Dynamic |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **PyTorch** Dynamic `torch.cat([k_dyn, k_new], dim=2)` | Growing | — | `16–54` | `576–5,431 ms` | `1.0x` |
-| **JAX** Dynamic `jnp.concatenate([k_dyn, k_new], axis=2)` | Growing | — | `16` | `833.22 ms` | `1.0x` (JAX Base) |
-| **JAX** Python Slice `buf.at[:, :, i:i+1].set(k_new)` | Static `S_max` | Python `int` (`static_argnums`) | `16` | `620.87 ms` | `1.3x` |
-| **PyTorch** Python Slice `buf[:, :, i:i+1] = k_new` | Static `S_max` | Python `int` literal | `16–18` | `316–4,724 ms` | `1.8x` |
-| **JAX** `lax.dynamic_update_slice` (Python step loop) | Static `S_max` | Device `int32` + `donate_argnums` | **`0`** | **`17.88 ms`** | **`46.6x`** |
-| **PyTorch** `buf.index_copy_(2, pos_tensor, k_new)` (`sync=4`) | Static `S_max` | Device `int64 Tensor[1]` | **`0`** | **`12.00 ms`** | **`48.0x`** |
-| **JAX Fused `lax.scan` + `lax.dynamic_update_slice`** | **Static `S_max`** | **Device `int32` + `donate_argnums` + `scan`** | **`0`** | **`0.583 ms`** | **`1,429x` (`20.6x` vs PT `index_copy_`)** |
+| **JAX** Dynamic `jnp.concatenate([k_dyn, k_new], axis=2)` | Growing | — | `16` | `785.62 ms` (`715.59–833.22 ms`) | `1.00x` (JAX Base) |
+| **JAX** Python Slice `buf.at[:, :, i:i+1].set(k_new)` | Static `S_max` | Python `int` (`static_argnums`) | `16` | `733.71 ms` (`620.87–835.28 ms`) | `1.07x` |
+| **PyTorch** Dynamic `torch.cat([k_dyn, k_new], dim=2)` | Growing | — | `48–54` | `639.6 ms` (`541.5–801.0 ms`) | `1.00x` (PT Base) |
+| **PyTorch** Python Slice `buf[:, :, i:i+1] = k_new` | Static `S_max` | Python `int` literal | `16–18` | `433.6 ms` (`312.9–671.7 ms`) | `1.48x` |
+| **PyTorch** Loop `buf.index_copy_(2, pos_tensors[i], k_new)` | Static `S_max` | Device `int64 Tensor[1]` | `16–18` (loop) / **`0` warm (engine)** | `379.1 ms` (`291.5–549.1 ms`) | `1.69x` *(engine: `42.0x`)* |
+| **JAX** `lax.dynamic_update_slice` (Python step loop) | Static `S_max` | Device `int32` + `donate_argnums` | **`0`** | **`17.40 ms`** (`16.65–17.88 ms`) | **`45.2x`** |
+| **JAX Fused `lax.scan` + `lax.dynamic_update_slice`** | **Static `S_max`** | **Device `int32` + `donate_argnums` + `scan`** | **`0`** | **`0.535 ms`** (`0.505–0.583 ms`) | **`1,468x` JAX (`32.5x` vs step-loop, `1,195x` vs PT `cat`)** |
 
 ### 4.2 Implementing `Gemma4StaticKVCache` (15 Layers Only + `index_copy_`)
 
@@ -763,57 +766,58 @@ for B, max_new in [(1, 97), (16, 129), (32, 129)]:
 Looking at Figure 4 and Figure 5 explains the difference between the two chips right away:
 1. **At Batch Size 1 ($B=1$) — Memory Bandwidth & Launch Overhead**:
    - Generating 1 token requires reading all `~9.26 GB` of text weights from memory.
-   - On the **Tesla T4 GPU** (`float16`), PyTorch launches pre-compiled CUDA kernels one by one (`~10 µs` overhead), getting **`11.83 tok/s`** with `DynamicCache`, **`14.14 tok/s`** with `StaticGemma4Engine`, and **`15.19 tok/s`** with `vLLM 0.33.0`.
-   - On the **Cloud TPU `v5e-1`**, locking the XLA graph drops recompilations from `432` to **`0`** and boosts PyTorch $B=1$ speed by **`+71.6%` (`3.17 -> 5.44 tok/s`)**, while Pure JAX `JaxStaticGemma4Engine` eliminates PyTorch LazyTensor CPU overhead to reach **`71.32 tok/s`** at $B=1$.
+   - On the **Tesla T4 GPU** (`float16`), PyTorch launches pre-compiled CUDA kernels one by one (`~10 µs` overhead), averaging **`12.22 tok/s` (`11.83–12.61`, `n=2`)** with `DynamicCache`, **`13.75 tok/s` (`13.36–14.14`, `n=2`)** with `StaticGemma4Engine`, and **`15.40 tok/s` (`15.19–15.63`, `n=3`)** with `vLLM 0.33.0`.
+   - On the **Cloud TPU `v5e-1`**, locking the XLA graph drops recompilations from `432` to **`0`** and boosts PyTorch $B=1$ speed by **`+37.4%` on average (`3.64 -> 5.00 tok/s` mean across `n=5` runs, `4.69–5.44 tok/s`)**, while Pure JAX `JaxStaticGemma4Engine` eliminates PyTorch LazyTensor CPU overhead to reach **`71.32 tok/s` (`71.32–71.33`, `n=2`)** at $B=1$.
 2. **At Batch Size 16 & 32 ($B=16 \to 32$) — VRAM Budget vs. TPU `128×128` MXU Roofline**:
-   - On the **14.56 GiB Tesla T4 GPU** (native `float16`, after releasing cuBLAS workspaces), **`StaticGemma4Engine`** scales from **`100.92 tok/s` ($B=8$) to `195.53 tok/s` ($B=16$) and `395.01 tok/s` ($B=32$)** while peaking at **`9.53–10.16 GiB` VRAM** (`-57.14%` KV layers, no multimodal towers). With our `sm_75` `TRITON_ATTN` `tile=16` clamp, **`vLLM 0.33.0`** scales cleanly from **`125.00 tok/s` ($B=8$) to `230.24 tok/s` ($B=16$) and `461.88 tok/s` ($B=32$)** (`471.97 tok/s` in the executed Colab notebook) using **`12.71–12.76 GiB` peak VRAM**.
-   - On the **Cloud TPU `v5e-1`**, increasing the batch size to `16` and `32` feeds 32 sequences into the 128×128 `MXU` every time a weight matrix is loaded from `819 GB/s` HBM. PyTorch `StaticGemma4Engine` jumps from **`3.17 tok/s` to `89.37 tok/s` ($B=16$, `28.2x`) and `154.63 tok/s` ($B=32$, `48.8x` speedup)** — or **`161.90 tok/s` (`51.1x` speedup)** with `L30–L32` bypass — while Pure JAX hits **`1,780.74 -> 1,849.65 tok/s` (`3.8x–4.0x` faster than T4 `vLLM` at $B=32$)**!
+   - On the **14.56 GiB Tesla T4 GPU** (native `float16`, after releasing cuBLAS workspaces), **`StaticGemma4Engine`** scales across `n=2` independent runs from **`101.72 tok/s` ($B=8$, `100.92–102.52`) to `200.33 tok/s` ($B=16$, `195.53–205.14`) and `381.72 tok/s` ($B=32$, `368.42–395.01`)** while peaking at **`9.53–10.16 GiB` VRAM** (`-57.14%` KV layers, no multimodal towers). With our `sm_75` `TRITON_ATTN` `tile=16` clamp, **`vLLM 0.33.0`** scales across `n=3` runs from **`109.38 tok/s` ($B=8$, `127.71` steady) to `240.96 tok/s` ($B=16$, `230.24–248.12`) and `468.48 tok/s` ($B=32$, `461.88–471.97`)** using **`12.71–12.86 GiB` peak VRAM**.
+   - On the **Cloud TPU `v5e-1`**, increasing the batch size to `16` and `32` feeds 32 sequences into the 128×128 `MXU` every time a weight matrix is loaded from `819 GB/s` HBM. PyTorch `StaticGemma4Engine` averages **`78.93 tok/s` ($B=16$, `73.17–89.37`, `21.7x` vs. HF mean) and `152.73 tok/s` ($B=32$, `149.67–154.63`, `42.0x` average speedup; `48.8x` over `3.17`)** — or **`161.90 tok/s` (`44.5x` vs. HF mean)** with `L30–L32` bypass — while Pure JAX reaches **`1,780.83 -> 1,849.66 tok/s` mean (`3.80x–3.95x` faster than T4 `vLLM` mean at $B=32$)**!
 
 <img src="/assets/img/gemma4-kv/tpu_gpu_vllm_throughput_and_memory.png" alt="Cloud TPU v5e-1 vs Tesla T4 GPU StaticGemma4Engine and vLLM 0.33.0 Empirical Throughput and KV Cache Memory Footprint" style="max-width: 100%;" />
-<p align="center" style="margin-top: -0.5rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Figure 5: Live benchmark results across Cloud TPU v5e-1 (left), Tesla T4 GPU comparing HF DynamicCache, StaticGemma4Engine, and vLLM 0.33.0 with Turing tile=16 (center), and KV-cache HBM scaling at Batch Size 32 across context lengths S = 512..8,192 (right).</em></small></p>
+<p align="center" style="margin-top: -0.5rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Figure 5: Multi-run mean benchmark results (min–max error bars) across Cloud TPU v5e-1 (left), Tesla T4 GPU comparing HF DynamicCache, StaticGemma4Engine, and vLLM 0.33.0 with Turing tile=16 (center), and KV-cache HBM scaling at Batch Size 32 across context lengths S = 512..8,192 (right).</em></small></p>
 
-Here is the complete summary table across both hardware platforms (`exp2_fast_engine_report.json`, `exp2b_sync4_and_bypass_speed.json`, `static_graph_kv_cache_summary.json`, and sequential same-kernel T4 verification `t4_same_kernel_e2e.json`):
+Here is the complete multi-run summary table across both hardware platforms (`exp2_fast_engine_report.json`, `exp2b_sync4_and_bypass_speed.json`, `static_graph_kv_cache_summary.json`, `vllm_t4_gpu_report.json`, `t4_same_kernel_e2e.json`, and the executed Colab TPU & T4 notebooks):
 
-| Engine / Configuration | Hardware Platform | Batch ($B$) | KV Layers Allocated | KV Cache HBM ($S=1024$) | XLA Recompiles | Greedy Token Match | Throughput (`tok/s`) | Speedup / Memory Profile |
+| Engine / Configuration | Hardware Platform | Batch ($B$) | KV Layers Allocated | KV Cache HBM ($S=1024$) | Warm XLA Recompiles | Greedy Token Match | Mean Throughput (`Min–Max`, `tok/s`) | Speedup vs. Platform Mean / Memory |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **HF `MODEL.generate` (`DynamicCache`)** | **Cloud TPU `v5e-1`** | `1` | 35 (Dynamic) | Dynamic | `432` | Reference | `3.17–3.89 tok/s` | `1.00x` (Baseline) |
-| **HF `StaticCache` (Cold Trace)** | **Cloud TPU `v5e-1`** | `1` | 15 (Static) | `18 MB` | `56` | 100% Exact | `0.29 tok/s` | `0.09x` (Compile stall) |
-| **`StaticGemma4Engine` (Cold Compile)** | **Cloud TPU `v5e-1`** | `1` | **15 (`L0–L14`)** | **`18 MB` (`-57.1%`)** | `2` (Prefill+1st step) | **100% Bit-Exact** | `3.55–3.62 tok/s` | `1.14x` |
-| **`StaticGemma4Engine` (Warm)** | **Cloud TPU `v5e-1`** | `1` | **15 (`L0–L14`)** | **`18 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`5.05–5.44 tok/s`** | **`1.72x` (`+71.6%`)** |
-| **`StaticGemma4Engine` (Warm)** | **Cloud TPU `v5e-1`** | `16` | **15 (`L0–L14`)** | **`288 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`79.29–89.37 tok/s`** | **`25.0x–28.2x`** |
-| **`StaticGemma4Engine` (Warm, `sync=4`)** | **Cloud TPU `v5e-1`** | `32` | **15 (`L0–L14`)** | **`576 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`152.81–154.63 tok/s`** | **`48.2x–48.8x`** |
-| **`StaticGemma4Engine` + `L30–L32` Bypass** | **Cloud TPU `v5e-1`** | `32` | **15 (`L0–L14`)** | **`576 MB` (`-57.1%`)** | **`0`** | Surgical (`-169.8M` params) | **`161.90 tok/s`** | **`51.1x`** |
+| **HF `MODEL.generate` (`DynamicCache`, `n=4`)** | **Cloud TPU `v5e-1`** | `1` | 35 (Dynamic) | Dynamic | `432` | Reference | `3.64 tok/s` (`3.17–3.89`) | `1.00x` (TPU Baseline) |
+| **HF `StaticCache` (Cold Trace, `n=1`)** | **Cloud TPU `v5e-1`** | `1` | 15 (Static) | `18 MB` | `56` | 100% Exact | `0.29 tok/s` | `0.08x` (Compile stall) |
+| **`StaticGemma4Engine` (Cold Compile, `n=4`)** | **Cloud TPU `v5e-1`** | `1` | **15 (`L0–L14`)** | **`18 MB` (`-57.1%`)** | `2` (Prefill+1st step) | **100% Bit-Exact** | `3.52 tok/s` (`3.43–3.62`) | `0.97x` |
+| **`StaticGemma4Engine` (Warm, `n=5`)** | **Cloud TPU `v5e-1`** | `1` | **15 (`L0–L14`)** | **`18 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`5.00 tok/s`** (`4.69–5.44`) | **`1.37x` (`+37.4%`)** |
+| **`StaticGemma4Engine` (Warm, `n=1`)** | **Cloud TPU `v5e-1`** | `8` | **15 (`L0–L14`)** | **`144 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`38.93 tok/s`** | **`10.7x`** |
+| **`StaticGemma4Engine` (Warm, `n=4`)** | **Cloud TPU `v5e-1`** | `16` | **15 (`L0–L14`)** | **`288 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`78.93 tok/s`** (`73.17–89.37`) | **`21.7x`** |
+| **`StaticGemma4Engine` (Warm, `sync=4`, `n=4`)** | **Cloud TPU `v5e-1`** | `32` | **15 (`L0–L14`)** | **`576 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`152.73 tok/s`** (`149.67–154.63`) | **`42.0x`** *(up to `48.8x`)* |
+| **`StaticGemma4Engine` + `L30–L32` Bypass (`n=1`)** | **Cloud TPU `v5e-1`** | `32` | **15 (`L0–L14`)** | **`576 MB` (`-57.1%`)** | **`0`** | Surgical (`-169.8M` params) | **`161.90 tok/s`** | **`44.5x`** *(up to `51.1x`)* |
 | **vLLM (`0.19.0`, Stock PyPI)** | **Cloud TPU `v5e-1`** | — | — | — | — | Import Error | `0.00 tok/s` | Missing `tpu_inference` |
 | **vLLM (`0.33.0`, Stock `TRITON_ATTN` on `sm_75`)** | **Tesla T4 GPU (`15 GB`)** | `1..32` | 35 (`LBNHC` Pool) | `2.36 GiB` (`131,814` toks) | `0` | Crashes on `head_dim=512` | `0.00 tok/s` | `98,304 > 65,536 B` SMEM |
-| **vLLM (`0.33.0`, Turing `tile=16`, `half`)** | **Tesla T4 GPU (`15 GB`)** | `1` / `16` / `32` | 5 Hybrid Groups `(32,32,32,32,16)` | `2.36 GiB` (`131,814` toks) | `0` | **100% (`48/48` Match)** | **`15.19` / `230.24` / `461.88 tok/s`** | **`12.71–12.76 GiB` Peak** |
-| **HF `MODEL.generate` (`DynamicCache`, `fp16`)** | **Tesla T4 GPU (`15 GB`)** | `1` | 15 (Dynamic) | `18 MB` | `0` (CUDA Eager) | Reference | `11.83 tok/s` | `1.00x` (GPU Baseline) |
-| **HF `StaticCache` (`torch.compile` Warm)** | **Tesla T4 GPU (`15 GB`)** | `1` | 15 (Static) | `18 MB` | `0` (`261.4s` cold) | 100% Exact | `7.28 tok/s` | `0.64x` |
-| **`StaticGemma4Engine` (Warm, `fp16`)** | **Tesla T4 GPU (`15 GB`)** | `1` | **15 (`L0–L14`)** | **`18 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`14.14 tok/s`** | **`9.53 GiB` Peak (`1.20x`)** |
-| **`StaticGemma4Engine` (Warm, `fp16`)** | **Tesla T4 GPU (`15 GB`)** | `8` | **15 (`L0–L14`)** | **`144 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`100.92 tok/s`** | **`9.67 GiB` Peak (`8.53x`)** |
-| **`StaticGemma4Engine` (Warm, `fp16`)** | **Tesla T4 GPU (`15 GB`)** | `16` / `32` | **15 (`L0–L14`)** | **`288` / `576 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`195.53` / `395.01 tok/s`** | **`9.80–10.16 GiB` (`33.4x`)** |
+| **vLLM (`0.33.0`, Turing `tile=16`, `half`, `n=3`)** | **Tesla T4 GPU (`15 GB`)** | `1` / `16` / `32` | 5 Hybrid Groups `(32,32,32,32,16)` | `2.34–2.36 GiB` | `0` | **100% (`48/48` Match)** | **`15.40` / `240.96` / `468.48 tok/s`** | **`12.71–12.86 GiB` Peak** (`B=32: 461.88–471.97`) |
+| **HF `MODEL.generate` (`DynamicCache`, `fp16`, `n=2`)** | **Tesla T4 GPU (`15 GB`)** | `1` | 15 (Dynamic) | `18 MB` | `0` (CUDA Eager) | Reference | `12.22 tok/s` (`11.83–12.61`) | `1.00x` (GPU Baseline) |
+| **HF `StaticCache` (`torch.compile` Warm, `n=1`)** | **Tesla T4 GPU (`15 GB`)** | `1` | 15 (Static) | `18 MB` | `0` (`261.4s` cold) | 100% Exact | `7.28 tok/s` | `0.60x` |
+| **`StaticGemma4Engine` (Warm, `fp16`, `n=2`)** | **Tesla T4 GPU (`15 GB`)** | `1` | **15 (`L0–L14`)** | **`18 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`13.75 tok/s`** (`13.36–14.14`) | **`9.53 GiB` Peak (`1.13x`)** |
+| **`StaticGemma4Engine` (Warm, `fp16`, `n=2`)** | **Tesla T4 GPU (`15 GB`)** | `8` | **15 (`L0–L14`)** | **`144 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`101.72 tok/s`** (`100.92–102.52`) | **`9.67 GiB` Peak (`8.32x`)** |
+| **`StaticGemma4Engine` (Warm, `fp16`, `n=2`)** | **Tesla T4 GPU (`15 GB`)** | `16` / `32` | **15 (`L0–L14`)** | **`288` / `576 MB` (`-57.1%`)** | **`0`** | **100% Bit-Exact** | **`200.33` / `381.72 tok/s`** | **`9.80–10.16 GiB` (`31.2x`, `B=32: 368.42–395.01`)** |
 
 ---
 
-## 6. Quality Check: Zero Loss at `48.8x`, and Skipping Dormant Layers at `51.1x`
+## 6. Quality Check: Zero Loss at `42.0x`, and Skipping Dormant Layers at `161.90 tok/s`
 
-Going `48.8x` or `51.1x` faster only matters if the model's answers stay just as smart. So we tested `StaticGemma4Engine` across **512 problems (`128 Dev + 384 Held-Out Test`)** from four standard benchmarks:
+Going `42.0x` or `44.5x` faster only matters if the model's answers stay just as smart. So we tested `StaticGemma4Engine` across **512 problems (`128 Dev + 384 Held-Out Test`)** from four standard benchmarks:
 - **GSM8K** (grade-school math word problems)
 - **ARC-Challenge** (4-choice science questions)
 - **MMLU-Pro STEM** (10-choice college science, engineering, and math)
 - **MBPP Sanitized** (writing Python functions tested against real `assert` unit tests)
 
 <img src="/assets/img/gemma4-kv/quality_verification_and_bypass_law.png" alt="Quality Verification, the layer_scalar Grafting Law, and Multi-Benchmark Accuracy Retention" style="max-width: 100%;" />
-<p align="center" style="margin-top: -0.5rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Figure 6: Left (A): 100% bit-exact accuracy preservation of StaticGemma4Engine and the huge accuracy rescue from the layer_scalar rescaling rule when skipping dormant layers (S3_ctrl vs. S3a and S6b). Right (B): Zero-shot accuracy across all 512 benchmark items (GSM8K, ARC-Challenge, MMLU-Pro STEM, MBPP).</em></small></p>
+<p align="center" style="margin-top: -0.5rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Figure 6: Left (A): 100% bit-exact accuracy preservation of StaticGemma4Engine and the accuracy rescue from the layer_scalar rescaling rule when skipping dormant layers (S3_ctrl vs. S3a and S3b/S6b on Dev N=128). Right (B): Zero-shot accuracy across all 512 benchmark items (GSM8K, ARC-Challenge, MMLU-Pro STEM, MBPP).</em></small></p>
 
-### 6.1 Proving `100%` Bit-Exact Equivalence (`0.00%` Quality Loss at `48.8x` Speedup)
+### 6.1 Proving `100%` Bit-Exact Equivalence (`0.00%` Quality Loss at `42.0x` Mean Speedup)
 
-First, why does pure `StaticGemma4Engine` (`154.63 tok/s`, `48.8x` faster) have **`0.00%` quality loss** compared to Hugging Face's `MODEL.generate(do_sample=False)`?
+First, why does pure `StaticGemma4Engine` (`152.73 tok/s` mean across `n=4` runs, `42.0x` average speedup) have **`0.00%` quality loss** compared to Hugging Face's `MODEL.generate(do_sample=False)`?
 
 Because it computes the **exact same math**:
 1. Not allocating KV cache buffers for `L15–L34` only removes unused memory; `L15–L34` already read `L13` and `L14`.
 2. Writing into `L0–L14` via `index_copy_` and masking unused padding positions with $-\infty$ produces the exact same attention scores as `DynamicCache`.
 
-Here is the exact code we ran to verify that `StaticGemma4Engine` and `MODEL.generate()` produce the **exact same tokens, character for character** (`gemma4_surgery/probes/verify_fast_engine.py` and Cell 14 of our notebook):
+Here is the exact code we ran to verify that `StaticGemma4Engine` and `MODEL.generate()` produce the **exact same tokens, character for character** (`gemma4_surgery/probes/verify_fast_engine.py` and the interactive notebook):
 
 ```python
 smoke_prompt = (
@@ -823,13 +827,13 @@ smoke_prompt = (
 )
 fmt_prompts = engine.format_chat_prompts([smoke_prompt], enable_thinking=False)
 
-# 1. Standard Hugging Face MODEL.generate (3.17 tok/s)
+# 1. Standard Hugging Face MODEL.generate (3.64 tok/s mean, 3.17–3.89 tok/s)
 inp_hf = TOKENIZER(fmt_prompts[0], return_tensors="pt", add_special_tokens=False).to(DEVICE)
 with torch.no_grad():
     hf_tokens = MODEL.generate(**inp_hf, max_new_tokens=48, min_new_tokens=48, do_sample=False)
 hf_text = TOKENIZER.decode(hf_tokens[0, inp_hf["input_ids"].shape[1] :], skip_special_tokens=False)
 
-# 2. Our StaticGemma4Engine (154.63 tok/s at B=32)
+# 2. StaticGemma4Engine (152.73 tok/s mean at B=32, 149.67–154.63 tok/s)
 engine_out = engine.generate_batch_static(
     fmt_prompts, max_new_tokens=48, prompt_pad_bucket=128, early_stop_check_every=0, sync_every=4
 )
@@ -847,15 +851,15 @@ Static Output: "Here's how to solve the problem step-by-step:\n\n1. **Calculate 
 Exact Bit-Level Greedy Match: True (100.0% identical!)
 ```
 
-Even better: when we ran `StaticGemma4Engine` on all `N = 384` held-out test problems across two separate Colab TPU `v5e-1` VMs four days apart, both runs produced **the exact same score on every single benchmark**: `Overall = 63.54% (244/384)`, `GSM8K = 87.50% (84/96)`, `ARC-Challenge = 82.29% (79/96)`, `MMLU-Pro STEM = 37.50% (36/96)`, and `MBPP = 46.88% (45/96)`.
+Even better: when we ran `StaticGemma4Engine` on all `N = 384` held-out test problems across two independent Colab TPU `v5e-1` VM sessions, both runs produced **the exact same score on every single benchmark**: `Overall = 63.54% (244/384)`, `GSM8K = 87.50% (84/96)`, `ARC-Challenge = 82.29% (79/96)`, `MMLU-Pro STEM = 37.50% (36/96)`, and `MBPP = 46.88% (45/96)`.
 
-### 6.2 Pushing to `51.1x` (`161.90 tok/s`): Skipping Dormant Layers & The `layer_scalar` Rule
+### 6.2 Pushing to `161.90 tok/s` (`44.5x` vs. HF Mean): Skipping Dormant Layers & The `layer_scalar` Rule
 
 Remember those three "almost-sleepwalking" layers (`L30, L31, L32`) we spotted in our 35-layer MRI scan in Section 2.3?
 - Their input-to-output cosine similarity was **`0.982, 0.981, and 0.973`**.
 - And because they are in Zone 2 (`L15–L34`), **they never write to the KV cache**.
 
-That raises a tempting question: *What if we simply skip them during inference?* Skipping 3 layers sheds **`169.8M` active parameters** (`56.6M` per layer) and pushes batch-32 TPU speed from **`154.63 tok/s` (`48.8x`) to `161.90 tok/s` (`51.1x`)**.
+That raises a tempting question: *What if we simply skip them during inference?* Skipping 3 layers sheds **`169.8M` active parameters** (`56.6M` per layer) and pushes batch-32 TPU speed from **`152.73 tok/s` average (`42.0x`; up to `154.63`) to `161.90 tok/s` (`44.5x` vs. HF mean, `51.1x` over `3.17`)**.
 
 **Here is the catch that tripped us up on the first try:**
 If you simply replace Layers `30, 31, 32` with an identity pass-through (`return hidden_states`), accuracy on the `dev` set suddenly drops by **`-12.50%` (`62.50% -> 50.00%`)**!
@@ -906,9 +910,9 @@ def bypass_kv_shared_layers(text_model: torch.nn.Module, bypass_layers: list[int
             text_model.layers[l] = BypassDecoderLayer(text_model.layers[l])
 ```
 
-Look at what happens when we flip `compensate_scalar=False` (`S3_ctrl`) to `compensate_scalar=True` (`S3a`):
-- **Without `layer_scalar` rescaling (`S3_ctrl`)**: Accuracy drops from `62.50%` to **`50.00%` (`-12.50%`)**.
-- **With `layer_scalar` rescaling (`S3a`, multiplying `L29.layer_scalar` by `0.6284`)**: Accuracy immediately jumps back up by **`+9.38%` (`50.00% -> 59.38%`)** at **`161.90 tok/s` (`51.1x` speedup)**, and 10-choice **MMLU-Pro STEM jumps from `34.38%` to `50.00%` (`+15.62%`)**!
+Look at what happens on the `N = 128` `dev` suite (`exp3_dev_screen.json`) when we flip `compensate_scalar=False` (`S3_ctrl`) to `compensate_scalar=True` (`S3a` and 2-layer `S3b`):
+- **Without `layer_scalar` rescaling (`S3_ctrl`)**: Overall `dev` accuracy drops by **`-12.50%` (`62.50% -> 50.00%`, `64/128`, exact McNemar $p = 0.0052$)** and MBPP Python syntax collapses to `3.12% (1/32)`.
+- **With `layer_scalar` rescaling (`S3a`, multiplying `L29.layer_scalar` by `0.6284`)**: 10-choice **MMLU-Pro STEM jumps from `34.38%` to `50.00%` (`+15.62%`)** at **`161.90 tok/s` (`44.5x` vs. HF mean)** and overall accuracy rises to `53.12% (68/128)`, while skipping 2 dormant layers with rescaling (`S3b`, `L31–L32` folded into `L30`) recovers **`+10.16%` overall accuracy vs. uncompensated (`50.00% -> 60.16%`, `77/128`, exact McNemar $p = 0.0072$)** at `80.80 tok/s` eval speed!
 
 ### 6.3 Bonus: Trimming "Throat-Clearing" Filler Words from Late PLE Layers (`S1d` & `S6b`)
 
@@ -945,42 +949,42 @@ def project_out_prose_filler_ple(text_model: torch.nn.Module, lm_head_weight: to
 
 Look at what happens across all **512 benchmark problems (`128 Dev + 384 Test`)** when we combine `StaticGemma4Engine` with `S1d` (and with bypassing the single most dormant layer, `L31`, in `S6b`):
 
-| Engine & Zero-Training Intervention | Active Layers (Params Shed) | Batch-32 TPU Speed (`Speedup`) | Benchmark Eval Speed (`N=384`) | GSM8K (`N=128` Pooled) | ARC-C (`N=128` Pooled) | **GSM8K + ARC-C (`N=256`)** | MMLU-Pro (`N=128`) | MBPP (`N=128`) | **Overall (`N=512` Pooled)** |
+| Engine & Zero-Training Intervention | Active Layers (Params Shed) | Mean Batch-32 TPU Speed (`vs. HF 3.64`) | Held-Out Test Speed (`N=384`) | GSM8K (`N=128` Pooled) | ARC-C (`N=128` Pooled) | **GSM8K + ARC-C (`N=256`)** | MMLU-Pro (`N=128`) | MBPP (`N=128`) | **Overall (`N=512` Pooled)** |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **HF `MODEL.generate` (`DynamicCache`)** | 35 (`0`) | `3.17 tok/s` (`1.0x`) | `3.17 tok/s` | `84.38%` | `82.03%` | `83.20%` | `36.72%` | `50.00%` | `63.28%` (`324/512`) |
-| **`StaticGemma4Engine` (`00_baseline`)** | 35 (`0`) | **`154.63 tok/s` (`48.8x`)** | `78.50 tok/s` | `84.38%` (`0.00%` diff) | `82.03%` (`0.00%` diff) | `83.20%` (`100%` Bit-Exact) | `36.72%` | `50.00%` | **`63.28%` (`100%` Bit-Exact!)** |
-| **`StaticGemma4Engine` + `S1d` (Prose PLE Orth-Proj)** | 35 (`0`) | **`154.63 tok/s` (`48.8x`)** | **`85.83 tok/s` (`+9.3%`)** | **`88.28%` (`+3.91%`)** | **`83.59%` (`+1.56%`)** | **`85.94%` (`+2.73%`)** | **`39.06%` (`+2.34%`)** | **`50.78%` (`+0.78%`)** | **`65.43%` (`+2.15%`, 4/4 Wins!)** |
-| **`StaticGemma4Engine` + `S1c` (Stop-Subspace PLE)** | 35 (`0`) | **`154.63 tok/s` (`48.8x`)** | **`86.70 tok/s` (`+10.4%`)** | **`89.06%` (`+4.69%`)** | **`85.94%` (`+3.91%`)** | **`87.50%` (`+4.30%`, $p=0.052$)** | **`37.50%` (`+0.78%`)** | `48.44%` (`-1.56%`) | **`65.23%` (`+1.95%`)** |
-| **`StaticGemma4Engine` + `S6b` (Bypass `L31` + $\lambda_{31}$ Graft + `S1d`)** | **34 (`-56.6M`)** | **`~157.1 tok/s` (`49.6x`)** | **`87.62 tok/s` (`+11.6%`)** | **`91.41%` (`+7.03%`, $p=0.035^{\star}$)** | **`83.59%` (`+1.56%`)** | **`87.50%` (`+4.30%`, $p=0.052$)** | `32.81%` (`-3.91%`) | `42.19%` (`-7.81%`) | `62.50%` (`-0.78%`) |
-| **`StaticGemma4Engine` + `S3a` (Bypass `L30–L32` + $\prod\lambda$ Graft)** | **32 (`-169.8M`)** | **`161.90 tok/s` (`51.1x`)** | `~90.1 tok/s` (`+14.8%`) | `75.00%` (Dev `0.0%` diff) | `78.12%` (Dev) | `76.56%` (Dev) | **`50.00%` (Dev `+15.6%`)** | `34.38%` (Dev) | `59.38%` (Dev, vs `50.0%` uncomp) |
+| **HF `MODEL.generate` (`DynamicCache`)** | 35 (`0`) | `3.64 tok/s` (`1.00x`, `3.17–3.89`) | *(B=1 TPU)* | `84.38%` | `82.03%` | `83.20%` | `36.72%` | `50.00%` | `63.28%` (`324/512`) |
+| **`StaticGemma4Engine` (`00_baseline`)** | 35 (`0`) | **`152.73 tok/s` (`42.0x`)** (`149.67–154.63`) | `78.50 tok/s` | `84.38%` (`0.00%` diff) | `82.03%` (`0.00%` diff) | `83.20%` (`100%` Bit-Exact) | `36.72%` | `50.00%` | **`63.28%` (`100%` Bit-Exact!)** |
+| **`StaticGemma4Engine` + `S1d` (Prose PLE Orth-Proj)** | 35 (`0`) | **`152.73 tok/s` (`42.0x`)** | **`85.83 tok/s` (`+9.3%`)** | **`88.28%` (`+3.91%`)** | **`83.59%` (`+1.56%`)** | **`85.94%` (`+2.73%`)** | **`39.06%` (`+2.34%`)** | **`50.78%` (`+0.78%`)** | **`65.43%` (`+2.15%`, 4/4 Wins!)** |
+| **`StaticGemma4Engine` + `S1c` (Stop-Subspace PLE)** | 35 (`0`) | **`152.73 tok/s` (`42.0x`)** | **`86.70 tok/s` (`+10.4%`)** | **`89.06%` (`+4.69%`)** | **`85.94%` (`+3.91%`)** | **`87.50%` (`+4.30%`, $p=0.052$)** | **`37.50%` (`+0.78%`)** | `48.44%` (`-1.56%`) | **`65.23%` (`+1.95%`)** |
+| **`StaticGemma4Engine` + `S6b` (Bypass `L31` + $\lambda_{31}$ Graft + `S1d`)** | **34 (`-56.6M`)** | *(1L bypass, `78.05 tok/s` Dev)* | **`87.62 tok/s` (`+11.6%`)** | **`91.41%` (`+7.03%`, $p=0.035^{\star}$)** | **`83.59%` (`+1.56%`)** | **`87.50%` (`+4.30%`, $p=0.052$)** | `32.81%` (`-3.91%`) | `42.19%` (`-7.81%`) | `62.50%` (`-0.78%`) |
+| **`StaticGemma4Engine` + `S3a` (Bypass `L30–L32` + $\prod\lambda$ Graft)** | **32 (`-169.8M`)** | **`161.90 tok/s` (`44.5x`)** | `76.62 tok/s` *(Dev)* | `71.88%` *(Dev)* | **`84.38%` *(Dev `+3.1%`)*** | `78.12%` *(Dev)* | **`50.00%` *(Dev `+15.6%`)*** | `6.25%` *(Dev)* | `53.12%` *(Dev; `S3b`: `60.16%`)* |
 
-Look at the `S1d` row: subtracting out those 8 filler-word directions from `L25–L34` **improves accuracy on all 4 benchmarks (`63.28% -> 65.43%`)** *and* makes benchmark evaluation **`+9.3%` faster (`78.50 -> 85.83 tok/s`)** simply because the model stops wasting tokens on conversational throat-clearing (`"Sure! Let's calculate..."`) before getting to the math! And when we also bypass dormant **Layer 31** (`S6b`, shedding `56.6M` parameters with `layer_scalar` rescaling), **GSM8K math accuracy reaches `91.41%` (`+7.03%` over baseline, $p = 0.0352$)**.
+Look at the `S1d` row: subtracting out those 8 filler-word directions from `L25–L34` **improves accuracy on all 4 benchmarks (`63.28% -> 65.43%`)** *and* makes held-out benchmark evaluation **`+9.3%` faster (`78.50 -> 85.83 tok/s`)** simply because the model stops wasting tokens on conversational throat-clearing (`"Sure! Let's calculate..."`) before getting to the math! And when we also bypass dormant **Layer 31** (`S6b`, shedding `56.6M` parameters with `layer_scalar` rescaling), **GSM8K math accuracy reaches `91.41%` (`+7.03%` over baseline, $p = 0.0352$)**.
 
 ---
 
-## 7. Going Beyond PyTorch LazyTensor: Building `JaxStaticGemma4Engine` (`1,849.65 tok/s`, `583.5x` Speedup on the Same TPU `v5e-1`)
+## 7. Going Beyond PyTorch LazyTensor: Building `JaxStaticGemma4Engine` (`1,849.66 tok/s` Mean, `508.5x` Speedup on TPU `v5e-1`)
 
-At this point, our PyTorch `StaticGemma4Engine` has already taken the free Colab TPU `v5e-1` from **`3.17 tok/s`** to **`154.63 tok/s` (`48.8x`)** — and **`161.90 tok/s` (`51.1x`)** with `L30–L32` bypass — with **`0` XLA recompilations**.
+At this point, our PyTorch `StaticGemma4Engine` has already taken the free Colab TPU `v5e-1` from an average **`3.64 tok/s`** (`3.17–3.89`) to **`152.73 tok/s` mean (`149.67–154.63`, `42.0x` average speedup)** — and **`161.90 tok/s` (`44.5x` vs. HF mean, `51.1x` over `3.17`)** with `L30–L32` bypass — with **`0` warm XLA recompilations**.
 
 Wait a second, though. Let's do a quick back-of-the-envelope hardware check on our TPU `v5e-1`:
-- At `Batch = 1`, `StaticGemma4Engine` runs at **`5.44 tok/s` (`183.8 ms` per decode step)**.
-- At `Batch = 32`, `StaticGemma4Engine` runs at **`154.63 tok/s` (`206.9 ms` per decode step)**.
-- Notice something strange? **Generating 32 tokens in parallel (`206.9 ms/step`) takes almost the exact same time per step as generating 1 token (`183.8 ms/step`)!**
-- Why does a single decode step take `~184–207 ms` in PyTorch when reading `8.62 GB` of `bfloat16` weights from the TPU `v5e-1`'s **`819 GB/s` HBM** should theoretically take only `8.62 GB / 819 GB/s ≈ 10.5 ms`?
+- At `Batch = 1`, PyTorch `StaticGemma4Engine` averages **`5.00 tok/s` (`4.69–5.44`, `~200.0 ms` per decode step)**.
+- At `Batch = 32`, PyTorch `StaticGemma4Engine` averages **`152.73 tok/s` (`149.67–154.63`, `~209.5 ms` per decode step)**.
+- Notice something strange? **Generating 32 tokens in parallel (`~209.5 ms/step`) takes almost the exact same time per step as generating 1 token (`~200.0 ms/step`)!**
+- Why does a single decode step take `~184–214 ms` in PyTorch when reading `8.64 GB` of `bfloat16` weights from the TPU `v5e-1`'s **`819 GB/s` HBM** should theoretically take only `8.64 GB / 819 GB/s ≈ 10.5 ms`?
 
-### 7.1 Why PyTorch `StaticGemma4Engine` Pays `~170 ms/step` in CPU LazyTensor Overhead — and How Pure JAX Eliminates It
+### 7.1 Why PyTorch `StaticGemma4Engine` Pays `~170–199 ms/step` in CPU LazyTensor Overhead — and How Pure JAX Eliminates It
 
-Even when PyTorch/XLA (`torch_tpu`) has **zero** XLA graph recompilations, it still executes via a **LazyTensor bridge**:
+Even when PyTorch/XLA (`torch_tpu`) has **zero** warm XLA graph recompilations, it still executes via a **LazyTensor bridge**:
 1. On **every single decode step**, the Python thread on the host CPU still steps through all 35 `torch.nn.Module` layers (`~600` individual `aten::` operations per token).
 2. Every 4 steps (`sync_every = 4`), `torch_xla` builds a C++ Lazy IR graph of **`~2,400` nodes**, computes a 128-bit graph hash over all 2,400 nodes and tensor metadata to check if that graph is in the XLA cache, and then dispatches the cached binary over PJRT.
-3. Building and hashing that 2,400-node Lazy IR graph on the CPU takes **`~170–188 ms per decode step`** — whereas the actual TPU `v5e-1` hardware execution (MXU + HBM reads) takes only **`~14–18 ms per step`**! In other words, **over `90%` of PyTorch's warm decode time on TPU is spent on the CPU re-tracing and hashing the LazyTensor graph**.
+3. Building and hashing that 2,400-node Lazy IR graph on the CPU takes **`~170–199 ms per decode step`** (`~186 ms` on average) — whereas the actual TPU `v5e-1` hardware execution (MXU + HBM reads) takes only **`~14.0–18.0 ms per step`**! In other words, **over `90%` of PyTorch's warm decode time on TPU is spent on the CPU re-tracing and hashing the LazyTensor graph**.
 
 In **pure JAX (`@jax.jit` + `jax.lax.scan`)**, Python runs **only once** — during the initial trace. Once compiled:
 1. Calling a `@jax.jit` function skips Python layer loops, skips IR graph construction, and skips graph hashing completely, invoking the compiled XLA binary directly (`~14.0 ms/step` at $B=1$ and `~18.0 ms/step` at $B=32$).
 2. Even better, we can wrap both the **repeating 5-layer superblocks** (`4 sliding + 1 global`) *and* the **entire $G$-step autoregressive decode loop** inside **`jax.lax.scan`**, so **Prefill + all $G$ Decode steps execute inside a single XLA launch with `0.0 ms` of Python loop overhead**!
 
-<img src="/assets/img/gemma4-kv/pytorch_vs_jax_tpu_comparison.png" alt="PyTorch StaticGemma4Engine vs vLLM vs Pure JAX JaxStaticGemma4Engine on Cloud TPU v5e-1" style="max-width: 100%;" />
-<p align="center" style="margin-top: -0.5rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Figure 7: Direct comparison on the exact same Cloud TPU v5e-1. Top-Left (A): 16-step KV-cache update microbenchmark (from 5,431 ms in dynamic PyTorch down to 0.583 ms in fused JAX lax.scan + dynamic_update_slice). Top-Right (B): Why PyTorch LazyTensor pays ~170–188 ms/step of CPU IR tracing overhead while pure JAX runs at the 14.0–18.0 ms/step TPU hardware roofline. Bottom-Left (C): End-to-end TPU v5e-1 throughput across batch sizes (reaching 1,780.74 tok/s exact and 1,849.65 tok/s with L30–L32 bypass). Bottom-Right (D): N=128 benchmark accuracy and evaluation speed parity between PyTorch and JAX.</em></small></p>
+<img src="/assets/img/gemma4-kv/pytorch_vs_jax_tpu_comparison.png" alt="PyTorch StaticGemma4Engine vs Pure JAX JaxStaticGemma4Engine on Cloud TPU v5e-1 and Tesla T4 vLLM" style="max-width: 100%;" />
+<p align="center" style="margin-top: -0.5rem; margin-bottom: 1.5rem; color: var(--term-text-muted, #888);"><small><em>Figure 7: Multi-run comparison on Cloud TPU v5e-1 (n = 3 microbenchmark runs, n = 2 JAX runs, n = 4–5 PyTorch runs, with min–max error bars). Top-Left (A): 16-step KV-cache update microbenchmark (from 785.62 ms in dynamic JAX and 639.6 ms in dynamic PyTorch down to 0.535 ms in fused JAX lax.scan + dynamic_update_slice). Top-Right (B): PyTorch LazyTensor CPU IR tracing overhead (~186 ms/step mean) vs. Pure JAX at the 14.0–18.0 ms/step TPU hardware roofline. Bottom-Left (C): Mean TPU v5e-1 throughput across batch sizes (reaching 1,780.83 tok/s exact and 1,849.66 tok/s with L30–L32 bypass, vs. 468.48 tok/s T4 vLLM mean). Bottom-Right (D): N=128 Dev benchmark accuracy and 2-run evaluation speed parity across PyTorch and JAX.</em></small></p>
 
 ### 7.2 Building `JaxStaticGemma4Engine`: 15-Layer KV Cache + Stacked `jax.lax.scan` Superblocks
 
@@ -1181,11 +1185,11 @@ def apply_layer_bypass(self, bypass_layers: Sequence[int], compensate_scalar: bo
     self.z2_glob["layer_scalar"] = jax.device_put(jnp.asarray(glob_sc, dtype=jnp.bfloat16), self.dev)
 ```
 
-### 7.5 Live Colab TPU `v5e-1` Results: PyTorch vs. `vLLM` vs. Pure JAX (`1,849.65 tok/s`!)
+### 7.5 Multi-Run Cloud TPU `v5e-1` Results: PyTorch vs. Pure JAX (`1,780.83 -> 1,849.66 tok/s` Mean) vs. T4 `vLLM`
 
-We deployed `JaxStaticGemma4Engine` to our Colab Cloud TPU `v5e-1` and ran the exact same equivalence, throughput, and `N = 128` multi-benchmark evaluation suite (`gemma4_surgery/results/jax_throughput_report.json` and `jax_eval_report.json`).
+We deployed `JaxStaticGemma4Engine` across two independent Cloud TPU `v5e-1` sessions (`jax_throughput_report.json` / `jax_eval_report.json` standalone runs plus the executed Colab TPU notebook, $n = 2$) and compared those averages against our PyTorch `StaticGemma4Engine` TPU runs ($n = 4\text{–}5$) and our Tesla T4 `vLLM 0.33.0` GPU runs ($n = 3$; stock PyPI `vLLM` fails to import on TPU without out-of-tree `tpu_inference`).
 
-First, let's check **bit-exact greedy equivalence** against Hugging Face `MODEL.generate()` and PyTorch `StaticGemma4Engine`:
+First, both frameworks confirm **100% bit-exact greedy equivalence** against Hugging Face `MODEL.generate()`:
 
 ```text
 HF PyTorch Output: "Here's how to solve the problem step-by-step:\n\n1. **Calculate the total number of eggs laid:**\n   Janet's duck"
@@ -1193,67 +1197,66 @@ Pure JAX Output:   "Here's how to solve the problem step-by-step:\n\n1. **Calcul
 100% Bit-Exact Greedy Token Match (JAX == PyTorch == HF): True
 ```
 
-Second, look at the **end-to-end throughput and step latency across batch sizes ($B = 1, 8, 16, 32$)** on the exact same Cloud TPU `v5e-1`:
+Second, look at the **multi-run end-to-end throughput and step latency across batch sizes ($B = 1, 8, 16, 32$)** on Cloud TPU `v5e-1` (plus Tesla T4 `vLLM 0.33.0` for cross-hardware reference):
 
-| Engine & Execution Mode | Hardware | Batch ($B$) | KV Layers Allocated | Warm XLA Compiles | Latency per Step | Throughput (`tok/s`) | Speedup vs. HF Baseline | Speedup vs. PyTorch `StaticGemma4Engine` |
+| Engine & Execution Mode | Hardware | Batch ($B$) | KV Layers Allocated | Warm XLA Compiles | Mean Step Latency | Mean Throughput (`Min–Max`, `tok/s`) | Speedup vs. HF TPU Mean (`3.64`) | Speedup vs. PyTorch `StaticGemma4Engine` |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **HF `MODEL.generate` (`DynamicCache`)** | TPU `v5e-1` | `1` | 35 (Dynamic) | `432` | `315.5 ms` | `3.17 tok/s` | `1.00x` | — |
-| **PyTorch `StaticGemma4Engine` (Warm)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | `183.8 ms` | `5.44 tok/s` | `1.72x` | `1.00x` ($B=1$ PT) |
-| **`vLLM` TPU (`v0.19.0`, PagedAttention)** | TPU `v5e-1` | `1` | 35 (Uniform Pool) | **`0`** | `12.57 ms` | `79.56 tok/s` | `25.1x` | `14.6x` |
-| **Pure JAX `JaxStaticGemma4Engine` (Step-Loop)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | `14.03 ms` | **`71.28 tok/s`** | **`22.5x`** | **`13.1x` Faster** |
-| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | **`14.02 ms`** | **`71.32 tok/s`** | **`22.5x`** | **`13.1x` Faster** |
-| **Pure JAX + `L30–L32` Bypass (Fused `lax.scan`)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | **`13.52 ms`** | **`73.99 tok/s`** | **`23.3x`** | **`13.6x` Faster** |
-| **PyTorch `StaticGemma4Engine` (Warm)** | TPU `v5e-1` | `8` | **15 (`L0–L14`)** | **`0`** | `174.2 ms` | `45.92 tok/s` | `14.5x` | `1.00x` ($B=8$ PT) |
-| **`vLLM` TPU (`v0.19.0`, PagedAttention)** | TPU `v5e-1` | `8` | 35 (Uniform Pool) | **`0`** | `21.65 ms` | `369.51 tok/s` | `116.6x` | `8.05x` |
-| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`)** | TPU `v5e-1` | `8` | **15 (`L0–L14`)** | **`0`** | **`14.79 ms`** | **`540.97 tok/s`** | **`170.7x`** | **`11.8x` Faster (`1.46x` vs vLLM)** |
-| **PyTorch `StaticGemma4Engine` (Warm)** | TPU `v5e-1` | `16` | **15 (`L0–L14`)** | **`0`** | `179.0 ms` | `89.37 tok/s` | `28.2x` | `1.00x` ($B=16$ PT) |
-| **`vLLM` TPU (`v0.19.0`, PagedAttention)** | TPU `v5e-1` | `16` | 35 (Uniform Pool) | **`0`** | `30.90 ms` | `517.80 tok/s` | `163.3x` | `5.79x` |
-| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`)** | TPU `v5e-1` | `16` | **15 (`L0–L14`)** | **`0`** | **`15.79 ms`** | **`1,013.57 tok/s`** | **`319.7x`** | **`11.3x` Faster (`1.96x` vs vLLM)** |
-| **PyTorch `StaticGemma4Engine` (Warm, `sync=4`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | `206.9 ms` | `154.63 tok/s` | `48.8x` | `1.00x` ($B=32$ PT) |
-| **PyTorch `StaticGemma4Engine` + `L30–L32` Bypass** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | `197.7 ms` | `161.90 tok/s` | `51.1x` | `1.05x` |
-| **`vLLM` TPU (`v0.19.0`, PagedAttention)** | TPU `v5e-1` | `32` | 35 (Uniform Pool) | **`0`** | `48.72 ms` | `656.83 tok/s` | `207.2x` | `4.25x` |
-| **Pure JAX `JaxStaticGemma4Engine` (Step-Loop)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | `18.02 ms` | **`1,776.26 tok/s`** | **`560.3x`** | **`11.5x` Faster (`2.70x` vs vLLM)** |
-| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | **`17.97 ms`** | **`1,780.74 tok/s`** | **`561.7x`** | **`11.5x` Faster (`2.71x` vs vLLM)** |
-| **Pure JAX + `L30–L32` Bypass (Fused `lax.scan`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | **`17.30 ms`** | **`1,849.65 tok/s`** | **`583.5x`!** | **`12.0x` Faster (`2.82x` vs vLLM)** |
+| **HF `MODEL.generate` (`DynamicCache`, `n=4`)** | TPU `v5e-1` | `1` | 35 (Dynamic) | `432` | `274.7 ms` | `3.64 tok/s` (`3.17–3.89`) | `1.00x` | — |
+| **PyTorch `StaticGemma4Engine` (Warm, `n=5`)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | `200.0 ms` | `5.00 tok/s` (`4.69–5.44`) | `1.37x` | `1.00x` ($B=1$ PT) |
+| **Pure JAX `JaxStaticGemma4Engine` (Step-Loop, `n=1`)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | `14.03 ms` | **`71.28 tok/s`** | **`19.6x`** | **`14.3x` Faster** |
+| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`, `n=2`)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | **`14.02 ms`** | **`71.32 tok/s`** (`71.32–71.33`) | **`19.6x`** | **`14.3x` Faster** |
+| **Pure JAX + `L30–L32` Bypass (Fused `lax.scan`, `n=2`)** | TPU `v5e-1` | `1` | **15 (`L0–L14`)** | **`0`** | **`13.52 ms`** | **`73.99 tok/s`** (`73.99–73.99`) | **`20.3x`** | **`14.8x` Faster** |
+| **PyTorch `StaticGemma4Engine` (Warm, `n=1`)** | TPU `v5e-1` | `8` | **15 (`L0–L14`)** | **`0`** | `205.5 ms` | `38.93 tok/s` | `10.7x` | `1.00x` ($B=8$ PT) |
+| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`, `n=2`)** | TPU `v5e-1` | `8` | **15 (`L0–L14`)** | **`0`** | **`14.79 ms`** | **`540.98 tok/s`** (`540.97–540.99`) | **`148.7x`** | **`13.9x` Faster** |
+| **PyTorch `StaticGemma4Engine` (Warm, `n=4`)** | TPU `v5e-1` | `16` | **15 (`L0–L14`)** | **`0`** | `202.7 ms` | `78.93 tok/s` (`73.17–89.37`) | `21.7x` | `1.00x` ($B=16$ PT) |
+| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`, `n=2`)** | TPU `v5e-1` | `16` | **15 (`L0–L14`)** | **`0`** | **`15.79 ms`** | **`1,013.64 tok/s`** (`1,013.57–1,013.71`) | **`278.7x`** | **`12.8x` Faster** |
+| **PyTorch `StaticGemma4Engine` (Warm, `sync=4`, `n=4`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | `209.5 ms` | `152.73 tok/s` (`149.67–154.63`) | `42.0x` *(up to `48.8x`)* | `1.00x` ($B=32$ PT) |
+| **PyTorch `StaticGemma4Engine` + `L30–L32` Bypass (`n=1`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | `197.7 ms` | `161.90 tok/s` | `44.5x` | `1.06x` |
+| **`vLLM` (`0.33.0`, Turing `tile=16`, `half`, `n=3`)** | Tesla T4 GPU | `32` | 5 Hybrid Grps | `0` (CUDA) | `68.31 ms` | `468.48 tok/s` (`461.88–471.97`) | `38.3x` *(vs T4 HF `12.22`)* | `3.07x` *(vs $B=32$ PT)* |
+| **Pure JAX `JaxStaticGemma4Engine` (Step-Loop, `n=1`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | `18.02 ms` | **`1,776.26 tok/s`** | **`488.3x`** | **`11.6x` Faster (`3.79x` vs T4 `vLLM`)** |
+| **Pure JAX `JaxStaticGemma4Engine` (Fused `lax.scan`, `n=2`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | **`17.97 ms`** | **`1,780.83 tok/s`** (`1,780.74–1,780.91`) | **`489.6x`** | **`11.7x` Faster (`3.80x` vs T4 `vLLM`)** |
+| **Pure JAX + `L30–L32` Bypass (Fused `lax.scan`, `n=2`)** | TPU `v5e-1` | `32` | **15 (`L0–L14`)** | **`0`** | **`17.30 ms`** | **`1,849.66 tok/s`** (`1,849.65–1,849.68`) | **`508.5x`!** | **`12.1x` Faster (`3.95x` vs T4 `vLLM`)** |
 
-Look closely at what those numbers show:
-1. **Single-Stream ($B=1$) Hits `75%` of the Physical HBM Bandwidth Roofline**:
-   At $B=1$, pure JAX drops per-token latency from `183.8 ms` (PyTorch `StaticGemma4Engine`) to **`14.02 ms` (`71.32 tok/s`)** — **`13.1x` faster than PyTorch** and **`22.5x` faster than HF `DynamicCache`**. Reading `8.62 GB` of model weights at `71.32 tok/s` streams **`615 GB/s` of sustained HBM bandwidth** out of the TPU `v5e-1`'s `819 GB/s` theoretical peak (`75.1%` hardware bandwidth utilization)!
-2. **Batch 32 ($B=32$) Reaches `1,780.74 tok/s` Exact — and `1,849.65 tok/s` (`583.5x`) With `L30–L32` Bypass**:
-   Because the TPU `v5e-1`'s 128×128 systolic MXU can multiply 32 batch rows in almost the same time as 1 row (`17.97 ms/step` at $B=32$ vs. `14.02 ms/step` at $B=1$), batch-32 throughput jumps to **`1,780.74 tok/s`** (`561.7x` faster than HF `DynamicCache`, **`11.5x` faster than PyTorch `StaticGemma4Engine`**, and **`2.71x` faster than `vLLM` TPU's `656.83 tok/s`** because `vLLM` still pages across all 35 layers instead of freezing KV at Layer 14). Enabling our zero-recompile `L30–L32` bypass pushes throughput to **`1,849.65 tok/s` (`583.5x` speedup)**!
+Look closely at what those multi-run averages establish:
+1. **Single-Stream ($B=1$) Hits `75%` of the Physical HBM Bandwidth Roofline With `<0.02%` Variance**:
+   Across independent runs, pure JAX locks onto **`71.32 tok/s` (`71.32–71.33`, `14.02 ms/step`)** — **`14.3x` faster than PyTorch `StaticGemma4Engine`'s `5.00 tok/s` average** and **`19.6x` faster than HF `DynamicCache`'s `3.64 tok/s` average**. Streaming `~8.62–8.64 GB` of weights at `71.32 tok/s` sustains **`~615–616 GB/s` out of the TPU `v5e-1`'s `819 GB/s` peak (`~75.2%` HBM bandwidth utilization)**!
+2. **Batch 32 ($B=32$) Reaches `1,780.83 tok/s` Exact — and `1,849.66 tok/s` (`508.5x` vs. HF Mean) With `L30–L32` Bypass**:
+   Because the TPU `v5e-1`'s 128×128 systolic MXU multiplies 32 batch rows in almost the same time as 1 row (`17.97 ms/step` at $B=32$ vs. `14.02 ms/step` at $B=1$), batch-32 throughput averages **`1,780.83 tok/s`** (`489.6x` faster than HF `DynamicCache` mean, **`11.7x` faster than PyTorch `StaticGemma4Engine` mean**, and **`3.80x` faster than Tesla T4 `vLLM 0.33.0`'s `468.48 tok/s` mean**). Enabling zero-recompile `L30–L32` bypass pushes the mean to **`1,849.66 tok/s` (`508.5x` vs. HF mean, `3.95x` vs. T4 `vLLM` mean)**!
 
-### 7.6 Multi-Benchmark Quality & Speed Parity (`N = 128`: PyTorch vs. Pure JAX)
+### 7.6 Multi-Benchmark Quality & Speed Parity (`Dev N = 128`: PyTorch vs. Two Pure JAX Runs)
 
-Finally, we ran all 5 surgical candidates across the `N = 128` 4-benchmark evaluation suite (`GSM8K`, `ARC-Challenge`, `MMLU-Pro STEM`, and `MBPP Python`) in `JaxStaticGemma4Engine` (`jax_eval_report.json`) and compared them directly against our PyTorch `StaticGemma4Engine` results:
+Finally, we evaluated the core surgical candidates across the `N = 128` `dev` suite (`GSM8K`, `ARC-Challenge`, `MMLU-Pro STEM`, and `MBPP Python`) in `JaxStaticGemma4Engine` twice — once warm (`jax_eval_report.json`) and once including cold XLA compilation inside the executed Colab TPU notebook — and compared their **2-run average** directly against our PyTorch `StaticGemma4Engine` runs (`exp3_dev_screen.json` and `exp3b_dev_refinement.json`):
 
-| Candidate & Intervention | Engine | Active Layers | Eval Wall Time (`128` items) | Effective Eval Speed (`tok/s`) | GSM8K Math (`N=32`) | ARC-Challenge (`N=32`) | MMLU-Pro STEM (`N=32`) | MBPP Python (`N=32`) | **Overall Accuracy (`N=128`)** |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`00_baseline` (Unmodified 35L)** | **PyTorch** | 35 | `434.0 s` | `32.4 tok/s` | `75.00%` (`24/32`) | `81.25%` (`26/32`) | `34.38%` (`11/32`) | `59.38%` (`19/32`) | **`62.50%` (`80/128`)** |
-| **`00_jax_baseline` (Unmodified 35L)** | **Pure JAX** | 35 | **`55.3 s` (`7.8x` faster)** | **`254.4 tok/s`** | **`75.00%` (`24/32`)** | **`81.25%` (`26/32`)** | **`37.50%` (`12/32`)** | **`59.38%` (`19/32`)** | **`63.28%` (`81/128`)** |
-| **`S1d` (Prose PLE Orth-Proj `L25–L34`)** | **PyTorch** | 35 | `248.1 s` | `55.3 tok/s` | `84.38%` (`27/32`) | `84.38%` (`27/32`) | `40.62%` (`13/32`) | `59.38%` (`19/32`) | **`67.19%` (`86/128`, `+4.69%`)** |
-| **`S1d_jax` (Prose PLE Orth-Proj `L25–L34`)** | **Pure JAX** | 35 | **`30.6 s` (`8.1x` faster)** | **`461.4 tok/s` (`947` on MBPP!)** | **`84.38%` (`27/32`, `+9.4%`)** | **`84.38%` (`27/32`, `+3.1%`)** | **`46.88%` (`15/32`, `+9.4%`)** | **`68.75%` (`22/32`, `+9.4%`)** | **`71.09%` (`91/128`, `+7.81%`, 4/4 Wins!)** |
-| **`S6b` (Bypass `L31` + $\lambda_{31}$ Graft + `S1d`)** | **PyTorch** | **34 (`-56.6M`)** | `322.8 s` | `41.3 tok/s` | **`93.75%` (`30/32`, `+18.8%`)** | `81.25%` (`26/32`) | `40.62%` (`13/32`) | `53.12%` (`17/32`) | **`67.19%` (`86/128`, `+4.69%`)** |
-| **`S6b_jax` (Bypass `L31` + $\lambda_{31}$ Graft + `S1d`)** | **Pure JAX** | **34 (`-56.6M`)** | **`30.2 s` (`10.7x` faster)** | **`469.2 tok/s`** | **`93.75%` (`30/32`, `+18.8%`!)** | **`87.50%` (`28/32`, `+6.2%`)** | **`43.75%` (`14/32`, `+6.2%`)** | `50.00%` (`16/32`) | **`68.75%` (`88/128`, `+5.47%`)** |
-| **`S3a_jax` (Bypass `L30–L32` WITH $\prod\lambda$ Graft)** | **Pure JAX** | **32 (`-169.8M`)** | **`29.4 s`** | **`521.5 tok/s`** | **`78.12%` (`+3.1%` vs base)** | **`90.62%` (`+9.4%` vs base)** | `25.00%` | `15.62%` | **`52.34%` (`+3.90%` vs uncomp)** |
-| **`S3_ctrl_jax` (Bypass `L30–L32` NO Graft)** | **Pure JAX** | 32 (`-169.8M`) | `29.4 s` | `530.6 tok/s` | `71.88%` (`-6.2%` vs `S3a`) | `84.38%` (`-6.2%` vs `S3a`) | `18.75%` (`-6.2%` vs `S3a`) | `18.75%` | `48.44%` (Uncompensated drop) |
+| Candidate & Intervention | Engine (`Runs`) | Active Layers | Mean Eval Speed (`Warm / Cold+Warm`) | GSM8K (`N=32`) | ARC-Challenge (`N=32`) | MMLU-Pro STEM (`N=32`) | MBPP Python (`N=32`) | **Overall Accuracy (`N=128`)** |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`00_baseline` (Unmodified 35L)** | **PyTorch** (`n=1`, `246.8 s`) | 35 | `57.2 tok/s` | `75.00%` | `81.25%` | `34.38%` | `59.38%` | **`62.50%` (`80/128`)** |
+| **`00_jax_baseline` (Unmodified 35L)** | **Pure JAX** (`n=2` Mean) | 35 | **`180.6 tok/s`** (`254.4 / 106.9`) | `76.56%` (`75.0 / 78.1`) | `82.81%` (`81.2 / 84.4`) | `39.06%` (`37.5 / 40.6`) | `60.94%` (`59.4 / 62.5`) | **`64.84%`** (`63.28% / 66.41%`) |
+| **`S1d` (Prose PLE Orth-Proj `L25–L34`)** | **PyTorch** (`n=1`, `195.3 s`) | 35 | `73.1 tok/s` | `84.38%` | `84.38%` | `46.88%` | `59.38%` | **`68.75%` (`88/128`, `+6.25%`)** |
+| **`S1d_jax` (Prose PLE Orth-Proj `L25–L34`)** | **Pure JAX** (`n=2` Mean) | 35 | **`354.5 tok/s`** (`461.4 / 247.7`) | **`84.38%`** (`84.4 / 84.4`) | **`84.38%`** (`84.4 / 84.4`) | **`46.88%`** (`46.9 / 46.9`) | **`65.62%`** (`68.8 / 62.5`) | **`70.31%`** (`71.09% / 69.53%`) |
+| **`S6b` (Bypass `L31` + $\lambda_{31}$ Graft + `S1d`)** | **PyTorch** (`n=1`, `184.2 s`) | **34 (`-56.6M`)** | `78.1 tok/s` | **`93.75%` (`30/32`)** | `81.25%` | `43.75%` | `50.00%` | **`67.19%` (`86/128`, `+4.69%`)** |
+| **`S6b_jax` (Bypass `L31` + $\lambda_{31}$ Graft + `S1d`)** | **Pure JAX** (`n=2` Mean) | **34 (`-56.6M`)** | **`361.4 tok/s`** (`469.2 / 253.7`) | **`93.75%` (`30/32` both runs!)** | **`85.94%`** (`87.5 / 84.4`) | **`42.19%`** (`43.8 / 40.6`) | `50.00%` (`50.0 / 50.0`) | **`67.97%`** (`68.75% / 67.19%`) |
+| **`S3a` (Bypass `L30–L32` WITH $\prod\lambda$ Graft)** | **PyTorch** (`n=1`, `199.4 s`) | **32 (`-169.8M`)** | `76.6 tok/s` | `71.88%` | `84.38%` | **`50.00%`** | `6.25%` | `53.12%` (`68/128`) |
+| **`S3a_jax` (Bypass `L30–L32` WITH $\prod\lambda$ Graft)** | **Pure JAX** (`n=2` Mean) | **32 (`-169.8M`)** | **`401.0 tok/s`** (`521.5 / 280.5`) | `75.00%` (`78.1 / 71.9`) | **`87.50%`** (`90.6 / 84.4`) | `32.81%` (`31.2 / 34.4`) | `7.81%` (`9.4 / 6.2`) | **`50.78%`** (`52.34% / 49.22%`) |
+| **`S3_ctrl` (Bypass `L30–L32` NO Graft)** | **PyTorch** (`n=1`, `195.4 s`) | 32 (`-169.8M`) | `79.1 tok/s` | `78.12%` | `84.38%` | `34.38%` | `3.12%` | `50.00%` (`64/128`) |
+| **`S3_ctrl_jax` (Bypass `L30–L32` NO Graft)** | **Pure JAX** (`n=2` Mean) | 32 (`-169.8M`) | `404.2 tok/s` (`530.6 / 277.7`) | `73.44%` (`71.9 / 75.0`) | `84.38%` (`84.4 / 84.4`) | `32.81%` (`34.4 / 31.2`) | `3.12%` (`3.1 / 3.1`) | `48.44%` (`48.44% / 48.44%`) |
 
-Look at how cleanly the PyTorch and JAX results reinforce each other:
-- **Exact Baseline Parity (`00_baseline` vs. `00_jax_baseline`)**: Both engines get the exact same score on `GSM8K` (`24/32 = 75.00%`), `ARC-Challenge` (`26/32 = 81.25%`), and `MBPP` (`19/32 = 59.38%`), with JAX finishing all 128 problems in **`55.3 seconds` (`254.4 effective tok/s`, reaching `922.9 tok/s` on MBPP)** vs. `434.0 seconds` in PyTorch!
-- **`S1d` Prose PLE Orthogonal Projection Wins 4/4 Benchmarks in JAX (`63.28% -> 71.09%`, `+7.81%`)**: Projecting out the 8 conversational filler-word directions from `L25–L34` boosts every single benchmark in JAX (`GSM8K` `75.0% -> 84.4%`, `ARC-C` `81.2% -> 84.4%`, `MMLU-Pro` `37.5% -> 46.9%`, `MBPP` `59.4% -> 68.8%`) *and* accelerates evaluation speed by **`+81.4%` (`254.4 -> 461.4 effective tok/s`, finishing all 128 problems in just `30.6 seconds`)**!
-- **`S6b` Dormant `L31` Bypass + $\lambda_{31}$ Grafting Hits `93.75%` (`30/32`) on GSM8K in Both Frameworks**: Both PyTorch `S6b` and JAX `S6b_jax` jump from `75.00%` (`24/32`) to **`93.75%` (`30/32`, `+18.75%`) on GSM8K math** (`p = 0.0312`) while shedding `56.6M` parameters and running at **`469.2 effective tok/s` (`30.2 seconds` for 128 problems)**!
+Look at how cleanly the PyTorch and Pure JAX evaluation runs reinforce each other:
+- **4.4x–6.0x Faster `Dev` Evaluation (`55.3 s` Warm vs. `246.8 s` PyTorch)**: When warm, `00_jax_baseline` finishes all 128 items in **`55.3 s` (`254.4 effective tok/s`, peaking at `922.9 tok/s` on MBPP)** vs. **`246.8 s` (`57.2 tok/s`)** in PyTorch (`4.45x` faster); even including cold XLA compilation in the first candidate inside the Colab notebook, the 2-run baseline mean is **`180.6 effective tok/s` (`3.16x` PyTorch)**, scaling to **`354.5 tok/s` (`S1d_jax`, `30.6 s` warm / `461.4 tok/s`, peaking at `947.4 tok/s` on MBPP)**!
+- **`S1d` Prose PLE Orthogonal Projection Leads Overall Accuracy in Both Frameworks (`68.75%` PT, `70.31%` JAX Mean)**: Projecting out the 8 conversational filler-word directions from `L25–L34` boosts every benchmark in the standalone warm JAX run (`63.28% -> 71.09%`, `+7.81%`, 4/4 positive) and raises the 2-run JAX mean to **`70.31%`** (`+5.47%` over JAX baseline mean), matching the PyTorch `dev` jump (`62.50% -> 68.75%`, `+6.25%`) while cutting eval time roughly in half!
+- **`S6b` Dormant `L31` Bypass + $\lambda_{31}$ Grafting Hits `93.75%` (`30/32`) on GSM8K in Every Single Run**: PyTorch `S6b` and both independent JAX `S6b_jax` runs independently land on **`93.75%` (`30/32`) on `dev` GSM8K math** while shedding `56.6M` parameters (`184.2 s` PT; `30.2 s` warm / `361.4 tok/s` 2-run mean in JAX)!
 
 ---
 
 ## 8. Four Takeaways to Keep in Your Back Pocket
 
 1. **Check Which Layers Actually Write to the KV Cache**:
-   Modern hybrid models like Gemma 4 freeze their KV cache part-way through the network (`num_kv_shared_layers = 20`). Allocating KV cache buffers only for the **15 active layers (`L0–L14`)** cuts **`57.14%` of KV memory** with zero change to the math — allowing `StaticGemma4Engine` to fit `B=32` inside `10.16 GiB` peak VRAM on a 15 GB T4 GPU at **`395.01 tok/s`** (`~2.6 GiB` leaner than `vLLM 0.33.0`, which reaches `461.88 tok/s` at `12.76 GiB` once `TRITON_ATTN` `tile=16` resolves T4's 64 KB SMEM limit on `head_dim=512`).
+   Modern hybrid models like Gemma 4 freeze their KV cache part-way through the network (`num_kv_shared_layers = 20`). Allocating KV cache buffers only for the **15 active layers (`L0–L14`)** cuts **`57.14%` of KV memory** with zero change to the math — allowing `StaticGemma4Engine` to average **`381.72 tok/s` at $B=32$ (`368.42–395.01`, `10.16 GiB` peak)** on a 15 GB T4 GPU (`~2.6 GiB` leaner than `vLLM 0.33.0`, which averages **`468.48 tok/s`** (`461.88–471.97`) at `12.76–12.86 GiB` peak once `TRITON_ATTN` `tile=16` resolves T4's 64 KB SMEM limit on `head_dim=512`).
 2. **On TPUs, Fixed Tensor Shapes Aren't Enough — Your Slice Indices Must Be Device Tensors Too**:
-   Even if you pre-allocate a static KV buffer, writing to `buf[:, :, i:i+1]` with a Python integer `i` forces XLA to recompile on every step because `i` is baked into the graph as a constant. Putting the index in a 1-element device tensor and calling `buf.index_copy_(2, pos_tensor, k_new)` in PyTorch (or `jax.lax.dynamic_update_slice(buf, k_new, (0, 0, pos, 0))` with `donate_argnums` in JAX) drops XLA recompilations from **432 to 0** and speeds up Cloud TPU `v5e-1` decoding from **`3.17 tok/s` to `154.63 tok/s` (`48.8x`) in PyTorch** and **`1,780.74 tok/s` (`561.7x`) in pure JAX** with **100% bit-exact outputs**.
+   Even if you pre-allocate a static KV buffer, writing to `buf[:, :, i:i+1]` with a Python integer `i` forces XLA to recompile on every step because `i` is baked into the graph as a constant. Putting the index in a device tensor and calling `buf.index_copy_(2, pos_tensor, k_new)` inside a compiled `StaticGemma4Engine` graph (or `jax.lax.dynamic_update_slice` + `donate_argnums` in JAX) drops warm XLA recompilations from **432 to 0** and raises average Cloud TPU `v5e-1` $B=32$ decoding from **`3.64 tok/s` (`3.17–3.89`) to `152.73 tok/s` (`149.67–154.63`, `42.0x`) in PyTorch** and **`1,780.83 tok/s` (`489.6x`) in pure JAX** with **100% bit-exact outputs**.
 3. **If You Skip Dormant Layers, Keep Their `layer_scalar` Multiplier**:
-   Because KV-shared layers (`L15–L34`) never write to the KV cache, dormant layers like `L30–L32` ($\cos \approx 0.982$) can be skipped at runtime (`161.90 tok/s` in PyTorch, `1,849.65 tok/s` in JAX) — as long as you multiply their learned `layer_scalar` into the previous layer so the hidden state volume stays balanced.
+   Because KV-shared layers (`L15–L34`) never write to the KV cache, dormant layers like `L30–L32` ($\cos \approx 0.982$) can be skipped at runtime (`161.90 tok/s` in PyTorch, `1,849.66 tok/s` mean in JAX) — as long as you multiply their learned `layer_scalar` into the previous layer so the hidden state magnitude stays balanced (rescuing 2-layer bypass by `+10.16%`, `p = 0.0072`).
 4. **When You Need Peak TPU Hardware Roofline, Bypass LazyTensor with `@jax.jit` + `jax.lax.scan`**:
-   Even with `0` XLA recompilations, PyTorch/XLA's LazyTensor bridge still spends `~170–188 ms/step` on the host CPU walking Python modules and hashing a 2,400-node IR graph. Stacking repeating layer blocks and fusing the decode loop with `jax.lax.scan` in pure JAX eliminates 100% of that CPU overhead, dropping step latency to `14.0–18.0 ms/step` (`11.5x–13.1x` faster than PyTorch and `2.7x–2.8x` faster than `vLLM` TPU).
+   Even with `0` warm XLA recompilations, PyTorch/XLA's LazyTensor bridge still spends **`~170–199 ms/step`** on the host CPU walking Python modules and hashing a 2,400-node IR graph. Stacking repeating layer blocks and fusing the decode loop with `jax.lax.scan` in pure JAX eliminates 100% of that CPU overhead, dropping step latency to **`14.0–18.0 ms/step`** (**`11.7x–14.3x` faster than PyTorch on TPU**, and **`3.80x–3.95x` faster than `vLLM` on a Tesla T4 GPU**).
 
 ---
 
@@ -1263,7 +1266,7 @@ Look at how cleanly the PyTorch and JAX results reinforce each other:
 | :--- | :--- |
 | **KV-Shared Layer (`CLA`)** | A layer (`L15–L34` in Gemma 4) that has no $W_K$ or $W_V$ weights of its own and instead reuses the frozen Key-Value cache from an earlier layer (`L13` for sliding or `L14` for global). |
 | **Per-Layer Embedding (`PLE`)** | Gemma 4's `embed_tokens_per_layer` lookup table (`2.35B` parameters, `50.7%` of text weights) that feeds a static `256`-d vector of the current input token into every layer. |
-| **XLA Recompilation Storm** | The massive slowdown on TPUs (`3.17 tok/s`) when growing tensor shapes (`torch.cat`) or Python integer slice offsets force the XLA compiler to recompile the model on every generated token. |
+| **XLA Recompilation Storm** | The massive slowdown on TPUs (**`3.64 tok/s` mean**, `3.17–3.89`) when growing tensor shapes (`torch.cat`) or Python integer slice offsets force the XLA compiler to recompile the model on every generated token. |
 | **Device-Tensor `index_copy_` / `dynamic_update_slice`** | Updating a pre-allocated tensor in-place using a 1-element index tensor that lives on the TPU/GPU (`index_copy_` in PyTorch, `jax.lax.dynamic_update_slice` + `donate_argnums` in JAX), keeping the compiled XLA graph 100% identical across all decode steps. |
 | **`jax.lax.scan` Superblocks & Decode Loop** | Compiling repeating Transformer superblocks (`4 sliding + 1 global`) and the entire $G$-step token generation loop into a single XLA program with zero Python host loop or LazyTensor IR tracing overhead. |
 | **`layer_scalar` Grafting** | When skipping dormant Gemma 4 layers, multiplying their learned `layer_scalar` values into the previous active layer so the hidden state magnitude doesn't blow up. |
